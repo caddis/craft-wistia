@@ -45,9 +45,6 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		return array(
 			'projects' => array(
 				AttributeType::Mixed,
-				'default' => array(
-					'' => Craft::t('None')
-				)
 			),
 			'min' => array(
 				AttributeType::Number,
@@ -67,7 +64,8 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	public function getSettingsHtml()
 	{
 		return craft()->templates->render('wistia/fieldtype/settings', array(
-			'settings' => $this->getSettings()
+			'settings' => $this->getSettings(),
+			'projectList' => craft()->wistia->getProjects()
 		));
 	}
 
