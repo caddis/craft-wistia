@@ -1,34 +1,31 @@
-{% import '_includes/forms' as forms %}
+{% import '_includes/forms' as form %}
 
 {{
-	forms.textField({
-		label: 'API Key'|t,
-		id: 'apiKey',
-		name: 'apiKey',
-		instructions: 'Your Wistia API key'|t,
-		value: settings.apiKey,
-		errors: settings.getErrors('apiKey')
+	form.multiselectField({
+		label: 'Select projects to display'|t,
+		id: 'projects',
+		name: 'projects',
+		options: craft.wistia.projects,
+		values: settings.projects
 	})
 }}
 
 {{
-	forms.textField({
-		label: 'Cache Duration'|t,
-		id: 'cacheDuration',
-		name: 'cacheDuration',
-		instructions: 'Hours to cache video data by default'|t,
-		value: settings.cacheDuration,
-		errors: settings.getErrors('cacheDuration')
+	form.textField({
+		label: 'Minimum selections'|t,
+		id: 'minimum',
+		name: 'minimum',
+		value: settings.min,
+		size: 2
 	})
 }}
 
 {{
-	forms.textField({
-		label: 'Thumbnail Path'|t,
-		id: 'thumbnailPath',
-		name: 'thumbnailPath',
-		instructions: 'Relative path from the public directory'|t,
-		value: settings.thumbnailPath,
-		errors: settings.getErrors('thumbnailPath')
+	form.textField({
+		label: 'Maximum selections'|t,
+		id: 'maximum',
+		name: 'maximum',
+		value: settings.max,
+		size: 2
 	})
 }}
