@@ -1,0 +1,10 @@
+{% import '_includes/forms' as form %}
+
+{{
+	form.multiselect({
+		id: 'videos',
+		name: 'videos',
+		options: videos,
+		values: value
+	})
+}}

@@ -1,34 +1,31 @@
-{% import '_includes/forms' as forms %}
+{% import '_includes/forms' as form %}
 
 {{
-	forms.selectField({
-        label: 'Select Projects to Display'|t,
-        id: 'projects',
-        name: 'projects',
-        options: projectList,
-        errors: settings.getErrors('projects'),
-        required: true,
-    })
-}}
-
-{{
-	forms.textField({
-		label: 'Minimum Selection'|t,
-		id: 'min',
-		name: 'min',
-		instructions: 'The minimum number of video selections'|t,
-		value: settings.min,
-		errors: settings.getErrors('min')
+	form.multiselectField({
+		label: 'Select projects to display'|t,
+		id: 'projects',
+		name: 'projects',
+		options: craft.wistia.projects,
+		values: settings.projects
 	})
 }}
 
 {{
-	forms.textField({
-		label: 'Maximum Selection'|t,
-		id: 'max',
-		name: 'min',
-		instructions: 'The maximum number of video selections'|t,
+	form.textField({
+		label: 'Minimum selections'|t,
+		id: 'minimum',
+		name: 'minimum',
+		value: settings.min,
+		size: 2
+	})
+}}
+
+{{
+	form.textField({
+		label: 'Maximum selections'|t,
+		id: 'maximum',
+		name: 'maximum',
 		value: settings.max,
-		errors: settings.getErrors('max')
+		size: 2
 	})
 }}
