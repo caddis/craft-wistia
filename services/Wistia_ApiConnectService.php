@@ -106,4 +106,21 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		return $result;
 	}
+
+	/**
+	 * Function to safely return the value of an array
+	 *
+	 * @param string $needle   The value to look for.
+	 * @param array  $haystack The array to search in.
+	 *
+	 * @return mixed False on failure, or the array at position $needle.
+	 */
+	private function getValue($needle, $haystack)
+	{
+		if (! is_array($haystack) || ! array_key_exists($needle, $haystack)) {
+			return false;
+		}
+
+		return $haystack[$needle];
+	}
 }
