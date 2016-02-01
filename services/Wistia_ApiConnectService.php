@@ -141,6 +141,63 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		return $projects;
 	}
 
+	public function getVideoData($wistiaId = false, $type = 1) // 1 = Video, 2 = Stats
+	{
+		$videosModel = new Wistia_VideosModel();
+
+		if (empty($wistiaId)) {
+			throw new Exception(lang('error_invalid_videoid') . "'$wistiaId'", 2);
+		} else {
+			// TODO: Return session object if it exists
+			// if (ee()->session->cache('wisteea', $wistiaId . '_' . $type, false) !== false) {
+			// 	return ee()->session->cache('wisteea', $wistiaId . '_' . $type);
+			// }
+
+			// Get cached data
+			$cacheId = false;
+			$row = $videosModel->getCachedData($wistiaId, $type);
+
+			// Return database data if it exists and hasn't expired
+			if (! empty($row)) {
+				if ($row['edit_date'] < (ee()->localize->now - (24 * 3600))) {
+					$cacheId = $row['cache_id'];
+				} else {
+					$data = unserialize($row['data']);
+
+					// Cache data
+					ee()->session->set_cache('wisteea', $wistiaId . '_' . $type, $data);
+
+					return $data;
+				}
+			}
+
+			// Append Wistia ID to endpoint URL
+			$endpoint = 'medias/' . $wistiaId;
+
+			if ($type == 2) {
+				$endpoint .= '/stats';
+			}
+
+			$endpoint .= '.json';
+
+			// Get JSON data from Wistia API
+			$data = $this->getApiData($endpoint);
+
+			if ($cacheId !== false) {
+				ee()->wisteea_model->update_cached_data($cacheId, $data);
+			} else {
+				$hashed_id = $data['hashed_id'];
+
+				ee()->wisteea_model->insert_cached_data($wistiaId, $hashed_id, $type, $data);
+			}
+
+			// TODO: Add the data to the session cache
+			// ee()->session->set_cache('wisteea', $wistiaId . '_' + $type, $data);
+
+			return $data;
+		}
+	}
+
 	/**
 	 * Function to return an API URL
 	 *
