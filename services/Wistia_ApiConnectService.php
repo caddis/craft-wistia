@@ -18,6 +18,84 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	}
 
 	/**
+	 * Function to get an array of available videos given API key and project list.
+	 *
+	 * @throws Exception if unable to get a list of projects from the API.
+	 * @throws Exception if unable to get a list of videos for a project.
+	 *
+	 * @access private
+	 * @return array
+	 */
+	public function getVideos($projects)
+	{
+		$projects = is_array($projects) ? $projects : [];
+
+		$cacheString = implode('_', $projects);
+
+		// TODO: Add session caching with Craft
+		// if (($videos = ee()->session->cache(__CLASS__, 'project_videos' . $cacheString, false)) !== false) {
+		// 	return $videos;
+		// }
+
+		// Try to get project names
+		try {
+			$projectNames = $this->getProjects();
+		} catch (Exception $e) {
+			throw new Exception(lang('error_no_projects'), 1, $e);
+		}
+
+		// If no defined projects, fail out
+		if (! is_array($projects) || ! is_array($projectNames)) {
+			return false;
+		}
+
+		// Add videos from each project
+		$videos = [];
+
+		foreach ($projects as $project) {
+			$params = [
+				'sort_by' => 'name'
+			];
+
+			if ($project !== '--') {
+				$params['project_id'] = $project;
+			}
+
+			// Try to get a list of videos for this project
+			try {
+				$data = $this->getApiData('medias.json', $params);
+			} catch (Exception $e) {
+				throw new Exception(lang('error_no_video_list') . $project, 5, $e);
+			}
+
+			// Skip empty datasets
+			if (! is_array($data)) {
+				continue;
+			}
+
+			// Add each video
+			foreach ($data as $video) {
+				$id = $this->getValue('id', $video);
+				$name = $this->getValue('name', $video);
+				$section = $this->getValue('section', $video); // TODO: Not sure why this is here. Copied from original.
+
+				$videos[$id] = $name;
+			}
+
+			if ($project === '--') {
+				break;
+			}
+		}
+
+		ksort($videos);
+
+		// TODO: Add session caching with Craft
+		// ee()->session->set_cache(__CLASS__, 'project_videos' . $cacheString, $videos);
+
+		return $videos;
+	}
+
+	/**
 	 * Function to get an array of available projects given an API key.
 	 *
 	 * @throws Exception If unable to retrieve a list of projects from the API.
@@ -61,23 +139,6 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		// ee()->session->set_cache(__CLASS__, 'projects', $projects);
 
 		return $projects;
-	}
-
-	/**
-	 * Retrieve videos
-	 *
-	 * @return array
-	 */
-	public function getVideos()
-	{
-		$results = [];
-		$rawVideos = json_decode($this->send('medias.json'));
-
-		foreach ($rawVideos as $rawVideo) {
-			$results[$rawVideo->id] = $rawVideo->name;
-		}
-
-		return $results;
 	}
 
 	/**

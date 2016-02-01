@@ -45,7 +45,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		$params = [];
 		$videos = craft()
 			->wistia_apiConnect
-			->getVideos();
+			->getVideos($this->getSettings()->projects);
 
 		if (is_array($videos)) {
 			$template = 'wistia/fieldtype';
