@@ -7,7 +7,11 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 	public function __construct()
 	{
-		$this->apiKey = craft()->plugins->getPlugin('wistia')->getSettings()->apiKey;
+		$this->apiKey = craft()
+			->plugins
+			->getPlugin('wistia')
+			->getSettings()
+			->apiKey;
 	}
 
 	/**
@@ -77,7 +81,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	}
 
 	private function getData($endpoint, $params = []) {
-		$baseUrl = craft()->config->get('apiUrl', 'wistia')
+		$baseUrl = craft()
+			->config
+			->get('apiUrl', 'wistia');
 	}
 
 	/**
@@ -87,10 +93,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 */
 	private function send($url)
 	{
-		$apiKey = craft()->plugins->getPlugin('wistia')->getSettings()->apiKey;
-
 		// Fail if no API key defined
-		if ($apiKey === false) {
+		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
@@ -100,7 +104,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERPWD, 'api:' . $apiKey);
+		curl_setopt($ch, CURLOPT_USERPWD, 'api:' . $this->apiKey);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 

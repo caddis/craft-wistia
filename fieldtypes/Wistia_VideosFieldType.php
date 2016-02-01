@@ -93,19 +93,19 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	protected function defineSettings()
 	{
 		return array(
-			'projects' => array(
+			'projects' => [
 				AttributeType::Mixed,
-				'default' => array(
+				'default' => [
 					'' => '--'
-				)
-			),
-			'min' => array(
+				]
+			],
+			'min' => [
 				AttributeType::Number,
 				'default' => 0
-			),
-			'max' => array(
+			],
+			'max' => [
 				AttributeType::Number
-			)
+			]
 		);
 	}
 
