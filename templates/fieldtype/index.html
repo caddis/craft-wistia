@@ -1,10 +1,21 @@
 {% import '_includes/forms' as form %}
 
-{{
-	form.multiselect({
-		id: 'videos',
-		name: 'videos',
-		options: videos,
-		values: value
-	})
-}}
+{% if settings.max is not null and settings.max <= 1 %}
+	{{
+		form.select({
+			id: name,
+			name: name,
+			options: videos,
+			value: value
+		})
+	}}
+{% else %}
+	{{
+		form.multiselect({
+			id: name,
+			name: name,
+			options: videos,
+			values: value
+		})
+	}}
+{% endif %}
