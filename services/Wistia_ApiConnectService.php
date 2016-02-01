@@ -9,6 +9,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 	public function __construct()
 	{
+		// Set the API key from the global settings
 		$this->apiKey = craft()
 			->plugins
 			->getPlugin('wistia')
@@ -17,39 +18,49 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Retrieve projects
+	 * Function to get an array of available projects given an API key.
 	 *
+	 * @throws Exception If unable to retrieve a list of projects from the API.
+	 *
+	 * @access private
 	 * @return array
 	 */
 	public function getProjects() {
-		$results = [];
-
 		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		$rawProjects = json_decode($this->send('projects.json'));
+		// TODO: Add session caching with Craft
+		// if (($projects = ee()->session->cache(__CLASS__, 'projects', false)) !== false) {
+		// 	return $projects;
+		// }
 
-		if (is_array($rawProjects)) {
-			$projects = [];
+		$projects = [];
+		$params = [
+			'sort_by' => 'name'
+		];
 
-			foreach ($rawProjects as $rawProject) {
-				$projects[$rawProject->id] = $rawProject->name;
-			}
-
-			$any = [
-				'--' => '--Any--'
-			];
-
-			$results = [
-				'--' => '--Any--'
-			] + $projects;
-		} else {
-			$results = $rawProjects;
+		try {
+			$data = $this->getApiData('projects', $params);
+		} catch (Exception $e) {
+			throw new Exception(lang('error_no_projects'), 1, $e);
 		}
 
-		return $results;
+		// Add each project
+		$projects['--'] = '-- Any --';
+
+		foreach ($data as $project) {
+			$id = $this->getValue('id', $project);
+			$name = $this->getValue('name', $project);
+
+			$projects[$id] = $name;
+		}
+
+		// TODO: Add session caching with Craft
+		// ee()->session->set_cache(__CLASS__, 'projects', $projects);
+
+		return $projects;
 	}
 
 	/**
@@ -59,11 +70,6 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 */
 	public function getVideos()
 	{
-		// Fail if no API key defined
-		if ($this->apiKey === false) {
-			throw new Exception(lang('error_no_api_key'), 0);
-		}
-
 		$results = [];
 		$rawVideos = json_decode($this->send('medias.json'));
 
@@ -75,16 +81,66 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Fire curl request to endpoint
+	 * Function to return an API URL
 	 *
-	 * @return array
+	 * @param string $endpoint	 The Wistia API endpoint to query.
+	 * @param array  $params Additional parameters to append to the request.
+	 *
+	 * @throws Exception If no API key is defined.
+	 * @throws Exception If video data is requested with an id that is blank or 0.
+	 * @throws Exception If unable to download the JSON data from the API provider.
+	 *
+	 * @access private
+	 * @return string The formatted URL.
 	 */
-	private function send($url)
-	{
+	private function getApiData($endpoint, $params = array(), $page = false) {
 		// Set the base URL from the global settings
 		$baseUrl = self::WISTIA_API_URL;
-		$url = $baseUrl . $url;
 
+		$apiParams = array(
+			'per_page=100'
+		);
+
+		if ($page) {
+			$apiParams[] = '&page=' . $page;
+		}
+
+		foreach ($params as $key => $value) {
+			$apiParams[] = "$key=$value";
+		}
+
+		$url_params = '?' . implode('&', $apiParams);
+
+		$baseUrl .= $endpoint . $url_params;
+
+		// Return JSON-decoded stream
+		$json_data = $this->send($baseUrl);
+
+		if ($json_data === false) {
+			throw new Exception(lang('error_remote_file') . $baseUrl, 3);
+		}
+
+		$data = json_decode($json_data, true);
+
+		// TODO: Not sure why this is needed. Throwing a Craft error.
+		// if ($page) {
+		// 	foreach ($data as $val) {
+		// 		$this->data[] = $val;
+		// 	}
+		// } else {
+		// 	$this->data = $data;
+		// 	$page = 1;
+		// }
+
+		if (count($data) === 100) {
+			$this->getApiData($endpoint, $params, $page + 1);
+		}
+
+		return $data;
+	}
+
+	private function send($url)
+	{
 		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
