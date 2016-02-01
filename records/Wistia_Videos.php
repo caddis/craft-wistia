@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_Video extends BaseRecord
+class Wistia_Videos extends BaseRecord
 {
 	public function getTableName()
 	{
