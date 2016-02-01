@@ -31,10 +31,10 @@ class Wistia_CacheRecord extends BaseRecord
 	{
 		return [
 			[
-				'columns' => 'hashedId'
-			],
-			[
-				'columns' => 'type'
+				'columns' => [
+					'hashedId',
+					'type'
+				]
 			]
 		];
 	}

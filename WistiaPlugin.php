@@ -46,9 +46,7 @@ class WistiaPlugin extends BasePlugin
 	protected function defineSettings()
 	{
 		return array(
-			'apiKey' => [
-				AttributeType::String
-			],
+			'apiKey' => AttributeType::String,
 			'cacheDuration' => [
 				AttributeType::Number,
 				24

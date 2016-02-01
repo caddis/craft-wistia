@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_Videos extends BaseRecord
+class Wistia_VideosRecord extends BaseRecord
 {
 	public function getTableName()
 	{
@@ -15,10 +15,22 @@ class Wistia_Videos extends BaseRecord
 				AttributeType::Number,
 				'column' => ColumnType::PK
 			],
-			'siteId' => AttributeType::Bool,
-			'sectionId' => AttributeType::Number,
-			'entryId' => AttributeType::Number,
-			'fieldId' => AttributeType::Number,
+			'siteId' => [
+				AttributeType::Bool,
+				'default' => 1
+			],
+			'sectionId' => [
+				AttributeType::Number,
+				'column' => ColumnType::Int
+			],
+			'entryId' => [
+				AttributeType::Number,
+				'column' => ColumnType::Int
+			],
+			'fieldId' => [
+				AttributeType::Number,
+				'column' => ColumnType::Int
+			],
 			'type' => [
 				AttributeType::Enum,
 				'values' => 'single, channel, structure'
@@ -26,7 +38,10 @@ class Wistia_Videos extends BaseRecord
 			'wistiaId' => AttributeType::Number,
 			'hashedId' => AttributeType::Number,
 			'memberId' => AttributeType::Number,
-			'position' => AttributeType::Bool
+			'position' => [
+				AttributeType::Bool,
+				'default' => 1
+			]
 		];
 	}
 
@@ -34,13 +49,11 @@ class Wistia_Videos extends BaseRecord
 	{
 		return [
 			[
-				'columns' => 'type'
-			],
-			[
-				'columns' => 'wistiaId'
-			],
-			[
-				'columns' => 'hashedId'
+				'columns' => [
+					'type',
+					'wistiaId',
+					'hashedId'
+				]
 			]
 		];
 	}
