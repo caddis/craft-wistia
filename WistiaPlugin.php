@@ -46,24 +46,24 @@ class WistiaPlugin extends BasePlugin
 	protected function defineSettings()
 	{
 		return array(
-			'apiKey' => array(
+			'apiKey' => [
 				AttributeType::String
-			),
-			'cacheDuration' => array(
+			],
+			'cacheDuration' => [
 				AttributeType::Number,
 				24
-			),
-			'thumbnailPath' => array(
+			],
+			'thumbnailPath' => [
 				AttributeType::String,
 				'/images/videos/'
-			)
+			]
 		);
 	}
 
 	public function getSettingsHtml()
 	{
-		return craft()->templates->render('wistia/plugin/settings', array(
+		return craft()->templates->render('wistia/plugin/settings', [
 			'settings' => $this->getSettings()
-		));
+		]);
 	}
 }

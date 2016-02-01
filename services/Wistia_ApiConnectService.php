@@ -55,35 +55,21 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 *
 	 * @return array
 	 */
-	public function getVideos($projects) {
+	public function getVideos()
+	{
 		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		$videos = [];
+		$results = [];
+		$rawVideos = json_decode($this->send('medias.json'));
 
-		foreach ($projects as $project) {
-			$params = [];
-
-			if ($project !== '--') {
-				$params['project_id'] = $project;
-			}
-
-			$rawVideos = json_decode($this->send('medias.json?' . implode('=', $params));
-
-			foreach ($rawVideos as $rawVideo) {
-				$videos[$rawVideo->id] = $rawVideo->name;
-			}
+		foreach ($rawVideos as $rawVideo) {
+			$results[$rawVideo->id] = $rawVideo->name;
 		}
 
-		return $videos;
-	}
-
-	private function getData($endpoint, $params = []) {
-		$baseUrl = craft()
-			->config
-			->get('apiUrl', 'wistia');
+		return $results;
 	}
 
 	/**
@@ -93,6 +79,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 */
 	private function send($url)
 	{
+		$baseUrl = craft()->config->get('apiUrl', 'wistia');
+		$url = $baseUrl . $url;
+
 		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
