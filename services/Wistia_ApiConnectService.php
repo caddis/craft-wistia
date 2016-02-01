@@ -32,8 +32,13 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 				$projects[$rawProject->id] = $rawProject->name;
 			}
 
-			$any = ['--' => '--Any--'];
-			$results = ['--' => '--Any--'] + $projects;
+			$any = [
+				'--' => '--Any--'
+			];
+
+			$results = [
+				'--' => '--Any--'
+			] + $projects;
 		} else {
 			$results = $rawProjects;
 		}
@@ -105,5 +110,4 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		return $result;
 	}
-
 }

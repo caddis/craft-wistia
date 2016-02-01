@@ -7,7 +7,11 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 	public function __construct()
 	{
-		$this->apiKey = craft()->plugins->getPlugin('wistia')->getSettings()->apiKey;
+		$this->apiKey = craft()
+			->plugins
+			->getPlugin('wistia')
+			->getSettings()
+			->apiKey;
 	}
 
 	/**
@@ -23,6 +27,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	/**
 	 * Modify stored data
 	 *
+	 * @var $value Wistia video id from db
 	 * @return string
 	 */
 	public function prepValue($value)
@@ -37,25 +42,25 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$videos = craft()->wistia_apiConnect->getVideos($this->getSettings()->projects);
+		$videos = craft()
+			->wistia_apiConnect
+			->getVideos($this->getSettings()->projects);
 
 		if (is_array($videos)) {
-			$results = craft()->templates->render('wistia/fieldtype', array(
+			$results = 'wistia/fieldtype', [
 				'name'  => $name,
 				'value' => $value,
 				'videos' => $videos
-			));
+			]);
 		} else {
-			$results = craft()->templates->render(
-				'wistia/fieldtype/errors', array(
-					'errors' => array(
-						'error' => $videos
-					)
+			$results = 'wistia/fieldtype/errors', [
+				'errors' => array(
+					'error' => $videos
 				)
-			);
+			]);
 		}
 
-		return $results;
+		return craft()->templates->render($results);
 	}
 
 	/**
@@ -114,22 +119,18 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		$projects = craft()->wistia_apiConnect->getProjects();
 
 		if (is_array($projects)) {
-			$results = craft()->templates->render(
-				'wistia/fieldtype/settings', array(
-					'settings' => $this->getSettings()
-				)
-			);
+			$results = 'wistia/fieldtype/settings', [
+				'settings' => $this->getSettings()
+			]);
 		} else {
-			$results = craft()->templates->render(
-				'wistia/fieldtype/errors', array(
-					'errors' => array(
-						'error' => $projects
-					)
-				)
-			);
+			$results = 'wistia/fieldtype/errors', [
+				'errors' => [
+					'error' => $projects
+				]
+			]);
 		}
 
-		return $results;
+		return craft()->templates->render($results);
 	}
 
 	/**
