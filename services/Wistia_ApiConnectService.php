@@ -5,6 +5,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 {
 	private $apiKey;
 
+	const WISTIA_API_URL = 'https://api.wistia.com/v1/';
+
 	public function __construct()
 	{
 		$this->apiKey = craft()
@@ -79,7 +81,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 */
 	private function send($url)
 	{
-		$baseUrl = craft()->config->get('apiUrl', 'wistia');
+		// Set the base URL from the global settings
+		$baseUrl = self::WISTIA_API_URL;
 		$url = $baseUrl . $url;
 
 		// Fail if no API key defined

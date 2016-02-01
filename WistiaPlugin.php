@@ -49,11 +49,11 @@ class WistiaPlugin extends BasePlugin
 			'apiKey' => AttributeType::String,
 			'cacheDuration' => [
 				AttributeType::Number,
-				24
+				'default' => 24
 			],
 			'thumbnailPath' => [
 				AttributeType::String,
-				'/images/videos/'
+				'default' => '/images/videos/'
 			]
 		);
 	}
