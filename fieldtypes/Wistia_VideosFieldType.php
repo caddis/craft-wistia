@@ -105,10 +105,9 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		$projects = craft()->wistia_apiConnect->getProjects();
-
 		return craft()->templates->render('wistia/fieldtype/settings', [
-			'settings' => $this->getSettings()
+			'settings' => $this->getSettings(),
+			'projects' => craft()->wistia_apiConnect->getProjects()
 		]);
 	}
 
