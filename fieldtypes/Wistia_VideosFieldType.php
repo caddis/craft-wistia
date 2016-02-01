@@ -42,28 +42,16 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$params = [];
 		$videos = craft()
 			->wistia_apiConnect
 			->getVideos($this->getSettings()->projects);
 
-		if (is_array($videos)) {
-			$template = 'wistia/fieldtype';
-			$params = [
-				'name'  => $name,
-				'value' => $value,
-				'videos' => $videos
-			];
-		} else {
-			$template = 'wistia/fieldtype/errors';
-			$params = [
-				'errors' => [
-					'error' => $videos
-				]
-			];
-		}
-
-		return craft()->templates->render($template, $params);
+		return craft()->templates->render('wistia/fieldtype', [
+			'settings' => $this->getSettings(),
+			'name'  => $name,
+			'value' => $value,
+			'videos' => $videos
+		]);
 	}
 
 	/**
@@ -106,9 +94,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				AttributeType::Number,
 				'default' => 0
 			],
-			'max' => [
-				AttributeType::Number
-			]
+			'max' => AttributeType::Number
 		);
 	}
 
@@ -119,24 +105,11 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		$params = [];
 		$projects = craft()->wistia_apiConnect->getProjects();
 
-		if (is_array($projects)) {
-			$template = 'wistia/fieldtype/settings';
-			$params = [
-				'settings' => $this->getSettings()
-			];
-		} else {
-			$template = 'wistia/fieldtype/errors';
-			$params = [
-				'errors' => [
-					'error' => $projects
-				]
-			];
-		}
-
-		return craft()->templates->render($template, $params);
+		return craft()->templates->render('wistia/fieldtype/settings', [
+			'settings' => $this->getSettings()
+		]);
 	}
 
 	/**
