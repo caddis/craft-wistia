@@ -10,32 +10,32 @@ class Wistia_CacheRecord extends BaseRecord
 
 	protected function defineAttributes()
 	{
-		return array(
-			'id' => array(
+		return [
+			'id' => [
 				AttributeType::Number,
 				'column' => ColumnType::PK
-			),
+			],
 			'hashedId' => AttributeType::String,
-			'type' => array(
+			'type' => [
 				AttributeType::Enum,
 				'values' => 'data, stats'
-			),
-			'data' => array(
+			],
+			'data' => [
 				AttributeType::String,
 				'column' => ColumnType::Text
-			)
-		);
+			]
+		];
 	}
 
 	public function defineIndexes()
 	{
-		return array(
-			array(
+		return [
+			[
 				'columns' => 'hashedId'
-			),
-			array(
+			],
+			[
 				'columns' => 'type'
-			)
-		);
+			]
+		];
 	}
 }
