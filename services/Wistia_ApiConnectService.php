@@ -18,6 +18,73 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	}
 
 	/**
+	 * Interface for Wisteea fieldtype saving
+	 *
+	 * @param  array Validated publish form data
+	 * @return boolean
+	 */
+	public function saveVideos($field, $element)
+	{
+		$wistiaModel = new Wistia_VideosModel;
+
+		$entryId = $element->id;
+		$fieldId = $field->id;
+		$wistiaIds = $element->getFieldValue($field->handle);
+
+		// Get array of stored videos
+		$currentVideos = [];
+		$currentVideoIds = [];
+		$storedVideos = $wistiaModel->getStoredVideos($entryId, $fieldId);
+
+		foreach ($storedVideos as $storedVideo) {
+			$videoId = $storedVideo['id'];
+
+			$currentVideos[$videoId] = $storedVideo;
+			$currentVideoIds[] = $videoId;
+		}
+
+		// Loop through posted videos
+		$postedVideoIds = [];
+		$index = 0;
+
+		if ($wistiaIds) {
+			foreach ($wistiaIds as $wistiaId) {
+				// Check for existing record
+				$video = $wistiaModel->getVideoByWistiaId($wistiaId, $entryId, $fieldId);
+
+				if (! empty($video)) {
+					$videoId = $video['id'];
+
+					$wistiaModel->updateVideo($videoId);
+				} else {
+					$videoId = $wistiaModel->insertVideo($wistiaId, $field, $element);
+				}
+
+				// Add to posted videos array
+				$postedVideoIds[] = $videoId;
+
+				$index++;
+			}
+		}
+
+		// Delete removed videos
+		$removedVideos = array_diff($currentVideoIds, $postedVideoIds);
+
+		if (count($removedVideos) > 0) {
+			foreach ($removedVideos as $videoId) {
+				$wistiaModel->removeVideo($videoId);
+			}
+		}
+
+		// Clear field value if no videos
+
+		// if ($index === 0)
+		// {
+		// 	ee()->wisteea_model->clear_videos($entry_id, $field_id, $row_id, $col_id);
+		// }
+	}
+
+	/**
 	 * Function to get an array of available videos given API key and project list.
 	 *
 	 * @throws Exception if unable to get a list of projects from the API.
@@ -211,7 +278,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 * @access private
 	 * @return string The formatted URL.
 	 */
-	private function getApiData($endpoint, $params = array(), $page = false) {
+	private function getApiData($endpoint, $params = [], $page = false) {
 		// Set the base URL from the global settings
 		$baseUrl = self::WISTIA_API_URL;
 
