@@ -1,6 +1,6 @@
 {% import '_includes/forms' as form %}
 
-{% if settings.max is not null and settings.max <= 1 %}
+{% if settings.max and settings.max <= 1 %}
 	{{
 		form.select({
 			id: name,
