@@ -25,9 +25,19 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
+	 * Define database column
+	 *
+	 * @return AttributeType::String
+	 */
+	public function defineContentAttribute()
+	{
+		return array(AttributeType::String);
+	}
+
+	/**
 	 * Modify stored data
 	 *
-	 * @var $value Wistia video id from db
+	 * @var $value Wistia video ids from db
 	 * @return string
 	 */
 	public function prepValue($value)
@@ -55,13 +65,24 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Define database column
+	 * Save videos to wistia_videos db
 	 *
-	 * @return AttributeType::String
+	 * @return array
 	 */
-	public function defineContentAttribute()
+	public function onAfterElementSave()
 	{
-		return array(AttributeType::String);
+		// TODO: add session caching
+		// if (($data = ee()->session->cache('wisteea', $this->name(), false)) !== false) {
+		// } elseif (isset($this->settings['entry_id'])) {
+		// 	$entry_id = $this->settings['entry_id'];
+
+		// 	ee()->wisteea_lib->remove_videos($entry_id, $field_id, $row_id, $col_id);
+		// }
+
+		$field = $this->model;
+		$element = $this->element;
+
+		return craft()->wistia_apiConnect->saveVideos($field, $element);
 	}
 
 	/**
