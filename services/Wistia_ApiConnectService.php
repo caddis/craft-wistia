@@ -17,6 +17,12 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 			->apiKey;
 	}
 
+	/**
+	 * Get videos from API or cache
+	 *
+	 * @param $hashedIds
+	 * @return array
+	 */
 	public function getVideosByHashedIds($hashedIds)
 	{
 		if (! $hashedIds) {
@@ -202,13 +208,13 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		$baseUrl .= $endpoint . $url_params;
 
 		// Return JSON-decoded stream
-		$json_data = $this->send($baseUrl);
+		$jsonData = $this->send($baseUrl);
 
-		if ($json_data === false) {
+		if ($jsonData === false) {
 			throw new Exception(lang('error_remote_file') . $baseUrl, 3);
 		}
 
-		$data = json_decode($json_data, true);
+		$data = json_decode($jsonData, true);
 
 		// TODO: Not sure why this is needed. Throwing a Craft error.
 		// if ($page) {
