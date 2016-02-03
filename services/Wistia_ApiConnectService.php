@@ -23,19 +23,46 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 * @param $hashedIds
 	 * @return array
 	 */
-	public function getVideosByHashedIds($hashedIds)
+	public function getVideosByHashedIds($hashedIds, $params)
 	{
 		if (! $hashedIds) {
 			return false;
 		}
 
+		// Set default parameters
+		$defaultParams = [
+			'autoPlay' => 'default',
+			'controlsVisibleOnLoad' => 'true',
+			'email' => 'default',
+			'endVideoBehavior' => 'pause',
+			'fullscreenButton' => 'true',
+			'height' => 360,
+			'playbar' => 'true',
+			'playButton' => 'true',
+			'playerColor' => 'default', // TODO: add from config
+			'smallPlayButton' => 'true',
+			'stillUrl' => 'default',
+			'time' => 'default',
+			'volumeControl' => 'true',
+			'width' => 640
+		];
+
+		// Compare defaults with input parameters
+		$params = array_merge($defaultParams, $params);
+		$params['videoFoam'] = true; // TODO: needs to update based on $params input
+
+		// Loop throw the hashed ids
 		$hashedIds = json_decode($hashedIds);
 
 		$videos = [];
 
 		foreach ($hashedIds as $hashedId) {
+			// Get embed code
+			$embed = $this->getSuperEmbed($hashedId, $params);
+
 			$cachedVideo = craft()->cache->get($hashedId);
 
+			// Cache Wistia API data
 			if ($cachedVideo) {
 				$video = $cachedVideo;
 			} else {
@@ -49,6 +76,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 				craft()->cache->set($hashedId, $video, $duration);
 			}
+
+			// Add embed after caching video data
+			$video['embed'] = $embed;
 
 			$videos[] = $video;
 		}
@@ -172,6 +202,30 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		craft()->httpSession->add('projects', $projects);
 
 		return $projects;
+	}
+
+	/**
+	 * Embeds the video as a JS API embed
+	 *
+	 * @param string $hashedId
+	 * @param array $params
+	 *
+	 * @access private
+	 * @return string
+	 */
+	private function getSuperEmbed($hashedId, $params)
+	{
+		$params = array_filter($params, function($val) {
+			return $val !== 'default';
+		});
+
+		$settings = http_build_query($params, '', ' ');
+
+		$embed = '<script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>' .
+			'<div class="wistia_embed wistia_async_' . $hashedId . ' ' . $settings . '" ' .
+			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>';
+
+		return $embed;
 	}
 
 	/**
