@@ -100,10 +100,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		$cacheString = implode('_', $projects);
 
-		// TODO: Add session caching with Craft
-		// if (($videos = ee()->session->cache(__CLASS__, 'project_videos' . $cacheString, false)) !== false) {
-		// 	return $videos;
-		// }
+		if (($videos = craft()->httpSession->get('project_videos' . $cacheString, false)) !== false) {
+			return $videos;
+		}
 
 		// Try to get project names
 		try {
@@ -157,8 +156,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		ksort($videos);
 
-		// TODO: Add session caching with Craft
-		// ee()->session->set_cache(__CLASS__, 'project_videos' . $cacheString, $videos);
+		craft()->httpSession->add('project_videos' . $cacheString, $videos);
 
 		return $videos;
 	}
@@ -194,7 +192,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		}
 
 		// Add each project
-		$projects['--'] = '-- Any --';
+		// $projects['--'] = '-- Any --'; TODO: Do I need this for Craft???
 
 		foreach ($data as $project) {
 			$id = $this->getValue('id', $project);
