@@ -29,17 +29,20 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		$entryId = $element->id;
 		$fieldId = $field->id;
+
 		$wistiaIds = $element->getFieldValue($field->handle);
 
 		// Get array of stored videos
 		$currentVideos = [];
 		$currentVideoIds = [];
+
 		$storedVideos = $wistiaModel->getStoredVideos($entryId, $fieldId);
 
 		foreach ($storedVideos as $storedVideo) {
 			$videoId = $storedVideo['id'];
 
 			$currentVideos[$videoId] = $storedVideo;
+
 			$currentVideoIds[] = $videoId;
 		}
 
@@ -77,11 +80,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		}
 
 		// Clear field value if no videos
-
-		// if ($index === 0)
-		// {
-		// 	ee()->wisteea_model->clear_videos($entry_id, $field_id, $row_id, $col_id);
-		// }
+		if ($index === 0) {
+			$wistiaModel->clearVideos($entryId);
+		}
 	}
 
 	/**
