@@ -52,8 +52,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$videos = craft()
-			->wistia_apiConnect
+		$videos = craft()->wistia_apiConnect
 			->getVideos($this->getSettings()->projects);
 
 		return craft()->templates->render('wistia/fieldtype', [
@@ -107,9 +106,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		return array(
 			'projects' => [
 				AttributeType::Mixed,
-				'default' => [
-					'' => '--'
-				]
+				'default' => '*'
 			],
 			'min' => [
 				AttributeType::Number,
