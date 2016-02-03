@@ -3,8 +3,8 @@ namespace Craft;
 
 class WistiaVariable
 {
-	public function videos()
+	public function videos($wistiaId)
 	{
-		return 'foo';
+		var_dump($wistiaId); // TODO: just playing around with data
 	}
 }
