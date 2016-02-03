@@ -175,10 +175,9 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		// TODO: Add session caching with Craft
-		// if (($projects = ee()->session->cache(__CLASS__, 'projects', false)) !== false) {
-		// 	return $projects;
-		// }
+		if (($projects = craft()->httpSession->get('projects', false)) !== false) {
+			return $projects;
+		}
 
 		$projects = [];
 		$params = [
@@ -201,8 +200,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 			$projects[$id] = $name;
 		}
 
-		// TODO: Add session caching with Craft
-		// ee()->session->set_cache(__CLASS__, 'projects', $projects);
+		craft()->httpSession->set_cache('projects', $projects);
 
 		return $projects;
 	}
