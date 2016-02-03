@@ -56,10 +56,22 @@ class Wistia_VideosModel extends BaseModel
 	 */
 	public function removeVideo($videoId)
 	{
-		craft()->db->createCommand()
-			->delete($this->_table, [
-				'id' => $videoId
-			]);
+		craft()->db
+			->createCommand()
+			->delete($this->_table, 'id=' . $videoId);
+	}
+
+	/**
+	 * Clear video field
+	 *
+	 * @param  int Entry ID
+	 * @return void
+	 */
+	public function clearVideos($entryId)
+	{
+		craft()->db
+			->createCommand()
+			->delete($this->_table, 'entryId=' . $entryId);
 	}
 
 	/**
@@ -76,17 +88,19 @@ class Wistia_VideosModel extends BaseModel
 	 */
 	public function getStoredVideos($entryId, $fieldId = false, $order = 'position', $sort = 'asc', $limit = 10000, $offset = 0)
 	{
-		$results = craft()->db->createCommand()->select('*');
+		$command = craft()->db->createCommand();
+
+		$command->select('*');
 
 		if ($entryId) {
-			$results = $results->where('entryId=' . $entryId);
+			$command->where('entryId=' . $entryId);
 		}
 
 		if ($fieldId !== false) {
-			$results = $results->andWhere('fieldId=' . $fieldId);
+			$command->andWhere('fieldId=' . $fieldId);
 		}
 
-		$results = $results->from($this->_table)
+		$results = $command->from($this->_table)
 			->order($order, $sort)
 			->limit($limit, $offset)
 			->group('wistiaId')
@@ -103,18 +117,20 @@ class Wistia_VideosModel extends BaseModel
 	 */
 	public function getVideoByWistiaId($wistiaId, $entryId = false, $fieldId = false)
 	{
-		$results = craft()->db->createCommand()->select('*')
+		$command = craft()->db->createCommand();
+
+		$command->select('*')
 			->where('wistiaId=' . $wistiaId);
 
 		if ($entryId !== false) {
-			$results = $results->where('entryId=' . $entryId);
+			$command->andWhere('entryId=' . $entryId);
 		}
 
 		if ($fieldId !== false) {
-			$results = $results->where('fieldId=' . $fieldId);
+			$command->andWhere('fieldId=' . $fieldId);
 		}
 
-		$results = $results->from($this->_table)->queryRow();
+		$results = $command->from($this->_table)->queryRow();
 
 		return $results;
 	}
@@ -129,7 +145,8 @@ class Wistia_VideosModel extends BaseModel
 	 */
 	public function cacheData($wistiaId, $hashedId, $type, $data)
 	{
-		craft()->db->createCommand()
+		craft()->db
+			->createCommand()
 			->insert($this->_cache_table, [
 				'wistiaId' => $wistiaId,
 				'hashedId' => $hashedId,
@@ -147,7 +164,8 @@ class Wistia_VideosModel extends BaseModel
 	 */
 	public function getCachedData($wistiaId, $type)
 	{
-		craft()->db->createCommand()
+		craft()->db
+			->createCommand()
 			->select('*')
 			->where('wistiaId', $wistiaId)
 			->where('type', $type)
