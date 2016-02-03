@@ -41,20 +41,19 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function getSources($context = null)
 	{
-		$sources = array(
-			'*' => array(
+		$sources = [
+			'*' => [
 				'label'    => Craft::t('All videos'),
-			)
-		);
+			]
+		];
 
-		foreach (craft()->wistia_apiConnect->getProjects() as $id => $project)
-		{
+		foreach (craft()->wistia_apiConnect->getProjects() as $id => $project) {
 			$key = 'project:'.$id;
 
-			$sources[$key] = array(
+			$sources[$key] = [
 				'label'    => $project,
-				'criteria' => array('projectId' => $project)
-			);
+				'criteria' => ['projectId' => $project]
+			];
 		}
 
 		return $sources;
