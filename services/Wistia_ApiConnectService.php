@@ -57,10 +57,12 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		$videos = [];
 
 		foreach ($hashedIds as $hashedId) {
+			$cacheKey = 'wistia_hashedId_' . $hashedId;
+
 			// Get embed code
 			$embed = $this->getSuperEmbed($hashedId, $params);
 
-			$cachedVideo = craft()->cache->get($hashedId);
+			$cachedVideo = craft()->cache->get($cacheKey);
 
 			// Cache Wistia API data
 			if ($cachedVideo) {
@@ -72,9 +74,13 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 				$video = $this->getApiData('medias.json', $params)[0];
 
-				$duration = (int) craft()->plugins->getPlugin('wistia')->getSettings()->cacheDuration * 60 * 60;
+				$duration = (int) craft()
+					->plugins
+					->getPlugin('wistia')
+					->getSettings()
+					->cacheDuration * 60 * 60;
 
-				craft()->cache->set($hashedId, $video, $duration);
+				craft()->cache->set($cacheKey, $video, $duration);
 			}
 
 			// Add embed after caching video data
