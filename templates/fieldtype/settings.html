@@ -1,8 +1,9 @@
 {% import '_includes/forms' as form %}
 
 {{
-	form.multiselectField({
-		label: 'Select projects to display'|t,
+	form.checkboxSelectField({
+		label: "Projects"|t,
+		instructions: "Which projects do you want to display in your element?"|t,
 		id: 'projects',
 		name: 'projects',
 		options: projects,
