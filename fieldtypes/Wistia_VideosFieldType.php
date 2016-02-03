@@ -21,7 +21,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getName()
 	{
-		return Craft::t('Wistia Videos');
+		return Craft::t('Wistia');
 	}
 
 	/**
