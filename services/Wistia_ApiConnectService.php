@@ -17,72 +17,35 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 			->apiKey;
 	}
 
-	/**
-	 * Interface for Wisteea fieldtype saving
-	 *
-	 * @param  array Validated publish form data
-	 * @return boolean
-	 */
-	public function saveVideos($field, $element)
+	public function getVideosByHashedIds($hashedIds)
 	{
-		$wistiaModel = new Wistia_VideosModel;
-
-		$entryId = $element->id;
-		$fieldId = $field->id;
-
-		$wistiaIds = $element->getFieldValue($field->handle);
-
-		// Get array of stored videos
-		$currentVideos = [];
-		$currentVideoIds = [];
-
-		$storedVideos = $wistiaModel->getStoredVideos($entryId, $fieldId);
-
-		foreach ($storedVideos as $storedVideo) {
-			$videoId = $storedVideo['id'];
-
-			$currentVideos[$videoId] = $storedVideo;
-
-			$currentVideoIds[] = $videoId;
+		if (! $hashedIds) {
+			return false;
 		}
 
-		// Loop through posted videos
-		$postedVideoIds = [];
-		$index = 0;
+		$hashedIds = json_decode($hashedIds);
 
-		if ($wistiaIds) {
-			foreach ($wistiaIds as $wistiaId) {
-				// Check for existing record
-				$video = $wistiaModel->getVideoByWistiaId($wistiaId, $entryId, $fieldId);
+		$videos = [];
 
-				if (! empty($video)) {
-					$videoId = $video['id'];
+		foreach ($hashedIds as $hashedId) {
+			if (craft()->cache->get($hashedId)) {
+				$video = craft()->cache->get($hashedId);
+			} else {
+				$params = [
+					'hashed_id' => $hashedId
+				];
 
-					$wistiaModel->updateVideo($videoId);
-				} else {
-					$videoId = $wistiaModel->insertVideo($wistiaId, $field, $element);
-				}
+				$video = $this->getApiData('medias.json', $params)[0];
 
-				// Add to posted videos array
-				$postedVideoIds[] = $videoId;
+				$duration = (int) craft()->plugins->getPlugin('wistia')->getSettings()->cacheDuration * 60 * 60;
 
-				$index++;
+				craft()->cache->set($hashedId, $video, $duration);
 			}
+
+			$videos[] = $video;
 		}
 
-		// Delete removed videos
-		$removedVideos = array_diff($currentVideoIds, $postedVideoIds);
-
-		if (count($removedVideos) > 0) {
-			foreach ($removedVideos as $videoId) {
-				$wistiaModel->removeVideo($videoId);
-			}
-		}
-
-		// Clear field value if no videos
-		if ($index === 0) {
-			$wistiaModel->clearVideos($entryId);
-		}
+		return $videos;
 	}
 
 	/**
@@ -124,7 +87,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 				'sort_by' => 'name'
 			];
 
-			if ($project !== '--') {
+			if ($project !== '*') {
 				$params['project_id'] = $project;
 			}
 
@@ -142,14 +105,14 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 			// Add each video
 			foreach ($data as $video) {
-				$id = $this->getValue('id', $video);
+				$hashedId = $this->getValue('hashed_id', $video);
 				$name = $this->getValue('name', $video);
 				$section = $this->getValue('section', $video); // TODO: Not sure why this is here. Copied from original.
 
-				$videos[$id] = $name;
+				$videos[$hashedId] = $name;
 			}
 
-			if ($project === '--') {
+			if ($project === '*') {
 				break;
 			}
 		}
@@ -191,8 +154,6 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 		}
 
 		// Add each project
-		// $projects['--'] = '-- Any --'; TODO: Do I need this for Craft???
-
 		foreach ($data as $project) {
 			$id = $this->getValue('id', $project);
 			$name = $this->getValue('name', $project);
@@ -200,7 +161,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 			$projects[$id] = $name;
 		}
 
-		craft()->httpSession->set_cache('projects', $projects);
+		craft()->httpSession->add('projects', $projects);
 
 		return $projects;
 	}
