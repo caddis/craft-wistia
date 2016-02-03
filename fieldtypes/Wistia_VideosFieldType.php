@@ -64,27 +64,6 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Save videos to wistia_videos db
-	 *
-	 * @return array
-	 */
-	public function onAfterElementSave()
-	{
-		// TODO: add session caching
-		// if (($data = ee()->session->cache('wisteea', $this->name(), false)) !== false) {
-		// } elseif (isset($this->settings['entry_id'])) {
-		// 	$entry_id = $this->settings['entry_id'];
-
-		// 	ee()->wisteea_lib->remove_videos($entry_id, $field_id, $row_id, $col_id);
-		// }
-
-		$field = $this->model;
-		$element = $this->element;
-
-		return craft()->wistia_apiConnect->saveVideos($field, $element);
-	}
-
-	/**
 	 * Returns the label for the Options setting.
 	 *
 	 * @access protected
