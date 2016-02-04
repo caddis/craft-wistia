@@ -20,7 +20,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	/**
 	 * Get videos from API or cache
 	 *
-	 * @param $hashedIds
+	 * @param array $hashedIds
+	 * @param array $params
 	 * @return array
 	 */
 	public function getVideosByHashedIds($hashedIds, $params)
@@ -103,61 +104,63 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 */
 	public function getVideos($projects)
 	{
-		$projects = is_array($projects) ? $projects : [];
-
-		$cacheString = implode('_', $projects);
+		$cacheString = is_array($projects) ? implode('_', $projects) : '_' . $projects;
 
 		if (($videos = craft()->httpSession->get('project_videos' . $cacheString, false)) !== false) {
 			return $videos;
 		}
 
-		// Try to get project names
-		try {
-			$projectNames = $this->getProjects();
-		} catch (Exception $e) {
-			throw new Exception(lang('error_no_projects'), 1, $e);
-		}
-
-		// If no defined projects, fail out
-		if (! is_array($projects) || ! is_array($projectNames)) {
-			return false;
-		}
-
-		// Add videos from each project
 		$videos = [];
 
-		foreach ($projects as $project) {
-			$params = [
-				'sort_by' => 'name'
-			];
-
-			if ($project !== '*') {
-				$params['project_id'] = $project;
-			}
-
-			// Try to get a list of videos for this project
+		// Add videos from each project
+		if (is_array($projects)) {
+			// Try to get project names
 			try {
-				$data = $this->getApiData('medias.json', $params);
+				$projectNames = $this->getProjects();
 			} catch (Exception $e) {
-				throw new Exception(lang('error_no_video_list') . $project, 5, $e);
+				throw new Exception(lang('error_no_projects'), 1, $e);
 			}
 
-			// Skip empty datasets
-			if (! is_array($data)) {
-				continue;
+			// If no defined projects, fail out
+			if (! is_array($projects) || ! is_array($projectNames)) {
+				return false;
 			}
 
-			// Add each video
+			$data = [];
+
+			foreach ($projects as $project) {
+				$params = [
+					'sort_by' => 'name',
+					'project_id' => $project
+				];
+
+				// Try to get a list of videos for this project
+				try {
+					$data = $this->getApiData('medias.json', $params);
+				} catch (Exception $e) {
+					throw new Exception(lang('error_no_video_list') . $project, 5, $e);
+				}
+
+				// Skip empty datasets
+				if (! is_array($data)) {
+					continue;
+				}
+
+				foreach ($data as $video) {
+					$hashedId = $this->getValue('hashed_id', $video);
+					$name = $this->getValue('name', $video);
+
+					$videos[$hashedId] = $name;
+				}
+			}
+		} else {
+			$data = $this->getApiData('medias.json', []);
+
 			foreach ($data as $video) {
 				$hashedId = $this->getValue('hashed_id', $video);
 				$name = $this->getValue('name', $video);
-				$section = $this->getValue('section', $video); // TODO: Not sure why this is here. Copied from original.
 
 				$videos[$hashedId] = $name;
-			}
-
-			if ($project === '*') {
-				break;
 			}
 		}
 
