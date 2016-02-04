@@ -59,7 +59,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 			$videos = craft()->wistia_videos
 				->getVideos($this->getSettings()->projects);
 
-			$template = 'wistia/fieldtype';
+			$template = 'wistia/fieldtype/input';
 
 			$params = [
 				'settings' => $this->getSettings(),
