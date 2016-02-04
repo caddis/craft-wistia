@@ -25,9 +25,9 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @param array $params
 	 * @return array
 	 */
-	public function getVideosByHashedIds($hashedIds, $params)
+	public function getVideoByHashedId($hashedId, $params = [])
 	{
-		if (! $hashedIds) {
+		if (! $hashedId) {
 			return false;
 		}
 
@@ -53,45 +53,36 @@ class Wistia_VideosService extends BaseApplicationComponent
 		$params = array_merge($defaultParams, $params);
 		$params['videoFoam'] = true; // TODO: needs to update based on $params input
 
-		// Loop through the hashed ids
-		$hashedIds = json_decode($hashedIds);
+		$cacheKey = 'wistia_hashedId_' . $hashedId;
 
-		$videos = [];
+		// Get embed code
+		$embed = $this->getSuperEmbed($hashedId, $params);
 
-		foreach ($hashedIds as $hashedId) {
-			$cacheKey = 'wistia_hashedId_' . $hashedId;
+		$cachedVideo = craft()->cache->get($cacheKey);
 
-			// Get embed code
-			$embed = $this->getSuperEmbed($hashedId, $params);
+		$video = [];
 
-			$cachedVideo = craft()->cache->get($cacheKey);
+		// Cache Wistia API data
+		if ($cachedVideo) {
+			$video = $cachedVideo;
+		} else {
+			$video = $this->getApiData('medias.json', [
+				'hashed_id' => $hashedId
+			]);
 
-			// Cache Wistia API data
-			if ($cachedVideo) {
-				$video = $cachedVideo;
-			} else {
-				$params = [
-					'hashed_id' => $hashedId
-				];
+			$duration = (int) craft()
+				->plugins
+				->getPlugin('wistia')
+				->getSettings()
+				->cacheDuration * 60 * 60;
 
-				$video = $this->getApiData('medias.json', $params)[0];
-
-				$duration = (int) craft()
-					->plugins
-					->getPlugin('wistia')
-					->getSettings()
-					->cacheDuration * 60 * 60;
-
-				craft()->cache->set($cacheKey, $video, $duration);
-			}
-
-			// Add embed after caching video data
-			$video['embed'] = $embed;
-
-			$videos[] = $video;
+			craft()->cache->set($cacheKey, $video, $duration);
 		}
 
-		return $videos;
+		// Add embed after caching video data
+		$video['embed'] = $embed;
+
+		return $video;
 	}
 
 	/**
@@ -234,6 +225,15 @@ class Wistia_VideosService extends BaseApplicationComponent
 			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>');
 
 		return $embed;
+
+		// TODO: Potentially use twig template to output embed???
+		// return craft()->templates->render('wistia/fieldtype/embed', [
+		// 	'embedUrl' => self::WISTIA_EMBED_URL,
+		// 	'settings' => http_build_query($params, '', ' '),
+		// 	'hashedId' => $hashedId,
+		// 	'width' = $params['width'],
+		// 	'height' = $params['height']
+		// ]);
 	}
 
 	/**
