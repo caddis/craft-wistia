@@ -53,7 +53,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		$params = array_merge($defaultParams, $params);
 		$params['videoFoam'] = true; // TODO: needs to update based on $params input
 
-		// Loop throw the hashed ids
+		// Loop through the hashed ids
 		$hashedIds = json_decode($hashedIds);
 
 		$videos = [];
@@ -187,7 +187,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		if (($projects = craft()->httpSession->get('projects', false)) !== false) {
+		if ($projects = craft()->httpSession->get('projects', false)) {
 			return $projects;
 		}
 
@@ -204,10 +204,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		// Add each project
 		foreach ($data as $project) {
-			$id = $this->getValue('id', $project);
-			$name = $this->getValue('name', $project);
-
-			$projects[$id] = $name;
+			$projects[$this->getValue('id', $project)] = $this->getValue('name', $project);
 		}
 
 		craft()->httpSession->add('projects', $projects);
@@ -282,15 +279,14 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$data = json_decode($jsonData, true);
 
-		// TODO: Not sure why this is needed. Throwing a Craft error.
-		// if ($page) {
-		// 	foreach ($data as $val) {
-		// 		$this->data[] = $val;
-		// 	}
-		// } else {
-		// 	$this->data = $data;
-		// 	$page = 1;
-		// }
+		if ($page) {
+			foreach ($data as $val) {
+				$data[] = $val;
+			}
+		} else {
+			$data = $data;
+			$page = 1;
+		}
 
 		if (count($data) === 100) {
 			$this->getApiData($endpoint, $params, $page + 1);
@@ -333,10 +329,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 */
 	private function getValue($needle, $haystack)
 	{
-		if (! is_array($haystack) || ! array_key_exists($needle, $haystack)) {
-			return false;
-		}
-
-		return $haystack[$needle];
+		return array_key_exists($needle, $haystack) ? $haystack[$needle] : false;
 	}
 }
