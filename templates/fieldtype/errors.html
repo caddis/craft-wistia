@@ -1,8 +1,3 @@
 {% for error in errors %}
-	{% if error.code is defined and error.code == "unauthorized_credentials" %}
-		<p class="error">Oops! You either forgot to add your Wistia API key, or entered an invalid key.</p>
-		<p>Please check your <a href="/cms/settings/plugins/wistia">Wistia plugin settings</a>.</p>
-	{% else %}
-		<p class="error">{{ error.error }}</p>
-	{% endif %}
+	{{ error.message }}
 {% endfor %}

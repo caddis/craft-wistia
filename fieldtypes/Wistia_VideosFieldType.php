@@ -4,14 +4,26 @@ namespace Craft;
 class Wistia_VideosFieldType extends BaseOptionsFieldType
 {
 	private $apiKey;
+	private $apiKeyError;
+	private $apiKeyErrorTemplate;
 
 	public function __construct()
 	{
-		$this->apiKey = craft()
-			->plugins
+		$this->apiKey = craft()->plugins
 			->getPlugin('wistia')
 			->getSettings()
 			->apiKey;
+
+		$this->apiKeyError = [
+			'errors' => [
+				0 => [
+					'message' => TemplateHelper::getRaw('<p><span class="error">Oops! You forgot to add your Wistia API key.</span> ' .
+						'Please check your <a href="/cms/settings/plugins/wistia">Wistia plugin settings</a>.</p>')
+				]
+			]
+		];
+
+		$this->apiKeyErrorTemplate = 'wistia/fieldtype/errors';
 	}
 
 	/**
@@ -54,15 +66,27 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$videos = craft()->wistia_videos
-			->getVideos($this->getSettings()->projects);
+		$params = [];
 
-		return craft()->templates->render('wistia/fieldtype', [
-			'settings' => $this->getSettings(),
-			'name'  => $name,
-			'value' => $value,
-			'videos' => $videos
-		]);
+		if ($this->apiKey) {
+			$videos = craft()->wistia_videos
+				->getVideos($this->getSettings()->projects);
+
+			$template = 'wistia/fieldtype';
+
+			$params = [
+				'settings' => $this->getSettings(),
+				'name'  => $name,
+				'value' => $value,
+				'videos' => $videos
+			];
+		} else {
+			$template = $this->apiKeyErrorTemplate;
+
+			$params = $this->apiKeyError;
+		}
+
+		return craft()->templates->render($template, $params);
 	}
 
 	/**
@@ -104,10 +128,21 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		return craft()->templates->render('wistia/fieldtype/settings', [
-			'settings' => $this->getSettings(),
-			'projects' => craft()->wistia_videos->getProjects()
-		]);
+		$params = [];
+
+		if ($this->apiKey) {
+			$template = 'wistia/fieldtype/settings';
+
+			$params = [
+				'settings' => $this->getSettings(),
+				'projects' => craft()->wistia_videos->getProjects()
+			];
+		} else {
+			$template = $this->apiKeyErrorTemplate;
+
+			$params = $this->apiKeyError;
+		}
+		return craft()->templates->render($template, $params);
 	}
 
 	/**
