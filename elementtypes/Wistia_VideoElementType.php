@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_VideosElementType extends BaseElementType
+class Wistia_VideoElementType extends BaseElementType
 {
 	/**
 	 * Returns the element type name.
@@ -68,9 +68,9 @@ class Wistia_VideosElementType extends BaseElementType
 	public function defineTableAttributes($source = null)
 	{
 		return array(
-			'title'     => Craft::t('Title'),
-			// 'startDate' => Craft::t('Start Date'),
-			// 'endDate'   => Craft::t('End Date'),
+			'name'     => Craft::t('Title'),
+			'created' => Craft::t('Create Date'),
+			'updated'   => Craft::t('Update Date'),
 		);
 	}
 
@@ -83,28 +83,7 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function getTableAttributeHtml(BaseElementModel $element, $attribute)
 	{
-		switch ($attribute)
-		{
-			case 'startDate':
-			case 'endDate':
-			{
-				$date = $element->$attribute;
-
-				if ($date)
-				{
-					return $date->localeDate();
-				}
-				else
-				{
-					return '';
-				}
-			}
-
-			default:
-			{
-				return parent::getTableAttributeHtml($element, $attribute);
-			}
-		}
+		return parent::getTableAttributeHtml($element, $attribute);
 	}
 
 	/**
@@ -114,13 +93,7 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function defineCriteriaAttributes()
 	{
-		return array(
-			'calendar'   => AttributeType::Mixed,
-			'calendarId' => AttributeType::Mixed,
-			'startDate'  => AttributeType::Mixed,
-			'endDate'    => AttributeType::Mixed,
-			'order'      => array(AttributeType::String, 'default' => 'events.startDate asc'),
-		);
+
 	}
 
 	/**
@@ -132,30 +105,7 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
 	{
-		$query
-			->addSelect('events.calendarId, events.startDate, events.endDate')
-			->join('events events', 'events.id = elements.id');
 
-		if ($criteria->calendarId)
-		{
-			$query->andWhere(DbHelper::parseParam('events.calendarId', $criteria->calendarId, $query->params));
-		}
-
-		if ($criteria->calendar)
-		{
-			$query->join('events_calendars events_calendars', 'events_calendars.id = events.calendarId');
-			$query->andWhere(DbHelper::parseParam('events_calendars.handle', $criteria->calendar, $query->params));
-		}
-
-		if ($criteria->startDate)
-		{
-			$query->andWhere(DbHelper::parseDateParam('events.startDate', $criteria->startDate, $query->params));
-		}
-
-		if ($criteria->endDate)
-		{
-			$query->andWhere(DbHelper::parseDateParam('events.endDate', $criteria->endDate, $query->params));
-		}
 	}
 
 	/**
@@ -166,7 +116,7 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function populateElementModel($row)
 	{
-		return Events_EventModel::populateModel($row);
+		return Wistia_VideoModel::populateModel($row);
 	}
 
 	/**
@@ -177,14 +127,6 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function getEditorHtml(BaseElementModel $element)
 	{
-		// Start/End Dates
-		// $html = craft()->templates->render('events/_edit', array(
-		// 	'element' => $element,
-		// ));
-
-		// Everything else
-		$html .= parent::getEditorHtml($element);
-
-		return $html;
+		return parent::getEditorHtml($element);
 	}
 }
