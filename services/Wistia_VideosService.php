@@ -220,20 +220,23 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$settings = http_build_query($params, '', ' ');
 
-		$embed = TemplateHelper::getRaw('<script src="' . self::WISTIA_EMBED_URL . '" async></script>' .
-			'<div class="wistia_embed wistia_async_' . $hashedId . ' ' . $settings . '" ' .
-			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>');
+		$oldPath = craft()->path->getTemplatesPath();
 
-		return $embed;
+		$newPath = craft()->path->getPluginsPath().'wistia/templates';
 
-		// TODO: Potentially use twig template to output embed???
-		// return craft()->templates->render('wistia/fieldtype/embed', [
-		// 	'embedUrl' => self::WISTIA_EMBED_URL,
-		// 	'settings' => http_build_query($params, '', ' '),
-		// 	'hashedId' => $hashedId,
-		// 	'width' = $params['width'],
-		// 	'height' = $params['height']
-		// ]);
+		craft()->path->setTemplatesPath($newPath);
+
+		$html = craft()->templates->render('fieldtype/embed', [
+			'embedUrl' => self::WISTIA_EMBED_URL,
+			'settings' => $settings,
+			'hashedId' => $hashedId,
+			'width' => $params['width'],
+			'height' => $params['height']
+		]);
+
+		craft()->path->setTemplatesPath($oldPath);
+
+		return TemplateHelper::getRaw($html);
 	}
 
 	/**
