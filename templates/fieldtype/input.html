@@ -1,4 +1,4 @@
-{# {% import '_includes/forms' as form %}
+{% import '_includes/forms' as form %}
 
 {% if settings.max and settings.max <= 1 %}
 	{{
@@ -18,45 +18,4 @@
 			values: value
 		})
 	}}
-{% endif %} #}
-
-<input type="hidden" name="{{ name }}" value="">
-
-{# {% set elements = (elements is defined ? elements : []) -%}
-{% set jsClass = (jsClass is defined and jsClass ? jsClass : 'Craft.BaseElementSelectInput') -%}
-{% set sources = (sources is defined and sources ? sources : null) -%}
-{% set criteria = (criteria is defined and criteria ? criteria : null) -%}
-{% set storageKey = (storageKey is defined and storageKey ? storageKey : null) -%} #}
-
-{% set elements = value %}
-
-<div id="{{ name }}" class="elementselect">
-	<div class="elements">
-		{% for element in elements %}
-			{% include "_elements/element" with {
-				context: 'field',
-				size: (viewMode == 'large' ? 'large' : 'small')
-			} %}
-		{% endfor %}
-	</div>
-
-	<div class="btn add icon dashed">{{ selectionLabel }}</div>
-</div>
-
-{# {% set jsSettings = {
-	id: id|namespaceInputId,
-	name: name|namespaceInputName,
-	elementType: elementType.getClassHandle(),
-	sources: sources,
-	criteria: criteria,
-	sourceElementId: sourceElementId,
-	viewMode: viewMode,
-	limit: limit,
-	modalStorageKey: storageKey,
-	fieldId: fieldId
-} %}
-
-{% includejs %}
-	new {{ jsClass }}({{ jsSettings|json_encode|raw }});
-{% endincludejs %}
- #}
+{% endif %}
