@@ -52,7 +52,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$videos = craft()->wistia_apiConnect
+		$videos = craft()->wistia_videos
 			->getVideos($this->getSettings()->projects);
 
 		return craft()->templates->render('wistia/fieldtype', [
@@ -71,7 +71,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	protected function getOptionsSettingsLabel()
 	{
-		return Craft::t('Wistia Video Options');
+		return Craft::t('Wistia Options');
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	protected function defineSettings()
 	{
-		return array(
+		return [
 			'projects' => [
 				AttributeType::Mixed,
 				'default' => '*'
@@ -92,7 +92,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'default' => 0
 			],
 			'max' => AttributeType::Number
-		);
+		];
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	{
 		return craft()->templates->render('wistia/fieldtype/settings', [
 			'settings' => $this->getSettings(),
-			'projects' => craft()->wistia_apiConnect->getProjects()
+			'projects' => craft()->wistia_videos->getProjects()
 		]);
 	}
 

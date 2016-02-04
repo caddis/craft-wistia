@@ -1,11 +1,12 @@
 <?php
 namespace Craft;
 
-class Wistia_ApiConnectService extends BaseApplicationComponent
+class Wistia_VideosService extends BaseApplicationComponent
 {
 	private $apiKey;
 
 	const WISTIA_API_URL = 'https://api.wistia.com/v1/';
+	const WISTIA_EMBED_URL = 'https://fast.wistia.com/assets/external/E-v1.js';
 
 	public function __construct()
 	{
@@ -179,7 +180,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 * @access private
 	 * @return array
 	 */
-	public function getProjects() {
+	public function getProjects()
+	{
 		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
@@ -230,7 +232,7 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 
 		$settings = http_build_query($params, '', ' ');
 
-		$embed = '<script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>' .
+		$embed = '<script src="' . self::WISTIA_EMBED_URL . '" async></script>' .
 			'<div class="wistia_embed wistia_async_' . $hashedId . ' ' . $settings . '" ' .
 			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>';
 
@@ -250,7 +252,8 @@ class Wistia_ApiConnectService extends BaseApplicationComponent
 	 * @access private
 	 * @return string The formatted URL.
 	 */
-	private function getApiData($endpoint, $params = [], $page = false) {
+	private function getApiData($endpoint, $params = [], $page = false)
+	{
 		// Set the base URL from the global settings
 		$baseUrl = self::WISTIA_API_URL;
 

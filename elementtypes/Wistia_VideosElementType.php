@@ -10,7 +10,7 @@ class Wistia_VideosElementType extends BaseElementType
 	 */
 	public function getName()
 	{
-		return Craft::t('Videos');
+		return Craft::t('Wistia');
 	}
 
 	/**
@@ -47,7 +47,7 @@ class Wistia_VideosElementType extends BaseElementType
 			]
 		];
 
-		foreach (craft()->wistia_apiConnect->getProjects() as $id => $project) {
+		foreach (craft()->wistia_videos->getProjects() as $id => $project) {
 			$key = 'project:'.$id;
 
 			$sources[$key] = [
