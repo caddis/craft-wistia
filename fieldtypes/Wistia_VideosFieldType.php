@@ -4,8 +4,6 @@ namespace Craft;
 class Wistia_VideosFieldType extends BaseOptionsFieldType
 {
 	private $apiKey;
-	private $apiKeyError;
-	private $apiKeyErrorTemplate;
 
 	public function __construct()
 	{
@@ -13,17 +11,6 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 			->getPlugin('wistia')
 			->getSettings()
 			->apiKey;
-
-		$this->apiKeyError = [
-			'errors' => [
-				0 => [
-					'message' => TemplateHelper::getRaw('<p><span class="error">Oops! You forgot to add your Wistia API key.</span> ' .
-						'Please check your <a href="/cms/settings/plugins/wistia">Wistia plugin settings</a>.</p>')
-				]
-			]
-		];
-
-		$this->apiKeyErrorTemplate = 'wistia/fieldtype/errors';
 	}
 
 	/**
@@ -81,9 +68,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'videos' => $videos
 			];
 		} else {
-			$template = $this->apiKeyErrorTemplate;
-
-			$params = $this->apiKeyError;
+			$template = 'wistia/fieldtype/errors';
 		}
 
 		return craft()->templates->render($template, $params);
@@ -138,10 +123,9 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'projects' => craft()->wistia_videos->getProjects()
 			];
 		} else {
-			$template = $this->apiKeyErrorTemplate;
-
-			$params = $this->apiKeyError;
+			$template = 'wistia/fieldtype/errors';
 		}
+
 		return craft()->templates->render($template, $params);
 	}
 
