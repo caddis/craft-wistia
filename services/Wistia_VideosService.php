@@ -229,9 +229,9 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$settings = http_build_query($params, '', ' ');
 
-		$embed = '<script src="' . self::WISTIA_EMBED_URL . '" async></script>' .
+		$embed = TemplateHelper::getRaw('<script src="' . self::WISTIA_EMBED_URL . '" async></script>' .
 			'<div class="wistia_embed wistia_async_' . $hashedId . ' ' . $settings . '" ' .
-			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>';
+			'style="width:' . $params['width'] . 'px;height:' . $params['height'] . 'px;"></div>');
 
 		return $embed;
 	}
