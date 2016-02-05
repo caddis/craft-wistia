@@ -43,6 +43,8 @@ function modal() {
 			} else {
 				$modal.show();
 			}
+
+			updateSelect();
 		}
 	});
 
@@ -78,16 +80,24 @@ function removeElement() {
  * Select element row
  */
 function selectElement() {
-	var $submit = $('.js-submit');
+	var $row = $('.js-element-row');
 
-	new Garnish.Select($('.js-element-body'), $('.js-element-row').filter(':not(.disabled)'), {
-		onSelectionChange: function() {
-			if ($('.js-element-row.sel').length > 0) {
-				$submit.removeClass(isDisabled);
+	$row.on('click', function() {
+		var $el = $(this);
+
+		if (! $el.hasClass(isDisabled)) {
+			if (! $el.hasClass(isSelected)) {
+				$row.removeClass(isSelected);
+
+				$el.addClass(isSelected);
 			} else {
-				$submit.addClass(isDisabled);
+				$el.removeClass(isSelected);
 			}
+		} else {
+			$row.removeClass(isSelected);
 		}
+
+		updateSelect();
 	});
 }
 
@@ -113,8 +123,10 @@ function submitSelections() {
 
 				$('.js-elements').append(newElement);
 
+				// Push newly added elements into main values array
 				values.push($el.data('id'));
 
+				// Update drag and sort
 				if ($sorter) {
 					$sorter.addItems(newElement);
 				} else {
@@ -122,10 +134,7 @@ function submitSelections() {
 				}
 			});
 
-			$selections.removeClass(isSelected).addClass(isDisabled);
-
-			$this.addClass(isDisabled);
-
+			// Hide add more elements button if element max is met
 			if (values.length >= $open.data('max')) {
 				$open.addClass(isDisabled);
 			}
@@ -133,6 +142,19 @@ function submitSelections() {
 			$modal.hide();
 		}
 	});
+}
+
+/**
+ * Update select button based on select elements
+ */
+function updateSelect() {
+	$submit = $('.js-submit');
+
+	if ($('.js-element-row').filter('.sel').length > 0) {
+		$submit.removeClass(isDisabled);
+	} else {
+		$submit.addClass(isDisabled);
+	}
 }
 
 /**
