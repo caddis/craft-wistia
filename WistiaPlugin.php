@@ -38,10 +38,11 @@ class WistiaPlugin extends BasePlugin
 		return '1.0.0';
 	}
 
-	public function hasCpSection()
-	{
-		return true;
-	}
+	// TODO: Add CP section once fully fleshed out
+	// public function hasCpSection()
+	// {
+	// 	return true;
+	// }
 
 	protected function defineSettings()
 	{
