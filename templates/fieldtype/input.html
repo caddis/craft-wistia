@@ -1,21 +1,83 @@
-{% import '_includes/forms' as form %}
+<input type="hidden" name="{{ name }}" value="">
 
-{% if settings.max and settings.max <= 1 %}
-	{{
-		form.select({
-			id: name,
-			name: name,
-			options: videos,
-			value: value
-		})
-	}}
-{% else %}
-	{{
-		form.multiselect({
-			id: name,
-			name: name,
-			options: videos,
-			values: value
-		})
-	}}
-{% endif %}
+<div id="{{ name }}" class="elementselect">
+	<div class="elements">
+		{% for selectedVideo in selectedVideos %}
+			<div
+				class="element small hasstatus removable"
+				data-id="{{ selectedVideo.hashed_id }}"
+				data-label="Inspection"
+				data-locale="en_us"
+				data-status="live"
+			>
+				<input name="fields[{{ name }}][]" type="hidden" value="{{ selectedVideo.hashed_id }}">
+				<a class="delete icon" title="Remove"></a>
+				<span class="status live"></span>
+				<div class="label">
+					<span class="title">{{ selectedVideo.name }}</span>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div class="btn add icon dashed js-wistia-add-video" data-max="{{ settings.max }}">Add a video</div>
+</div>
+
+<section class="modal elementselectormodal js-wistia-modal" style="display: none">
+	<div class="body">
+		<div class="content">
+			<div class="main">
+				<div class="toolbar">
+					<table class="inputs fullwidth">
+						<tbody>
+							<tr>
+								<td>
+									<div class="texticon search icon clearable">
+										<input autocomplete="off" class="text nicetext fullwidth" placeholder="Search" type="text">
+										<div class="clear hidden" title="Clear"></div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="spinner hidden"></div>
+				</div>
+				<div class="elements">
+					<table class="data fullwidth">
+						<thead>
+							<tr>
+								<th>Title</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for key, video in videos %}
+								<tr data-id="{{ key }}">
+									<td data-title="Title">
+										<div
+											class="element small hasstatus"
+											data-id="{{ key }}"
+											data-locale="en_us"
+											data-status="live"
+										>
+											<span class="status live"></span>
+											<div class="label">
+												<span class="title">{{ video }}</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<div class="spinner hidden"></div>
+		<div class="buttons right">
+			<div class="btn js-wistia-close-modal">Cancel</div>
+			<div class="btn disabled submit">Select</div>
+		</div>
+	</div>
+</section>
