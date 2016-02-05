@@ -69,9 +69,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 			if ($cachedVideo) {
 				$video = $cachedVideo;
 			} else {
-				$video = $this->getApiData('medias.json', [
-					'hashed_id' => $hashedId
-				]);
+				$video = current($this->getApiData('medias.json', [
+						'hashed_id' => $hashedId
+					])
+				);
 
 				$duration = (int) craft()
 					->plugins
