@@ -25,21 +25,28 @@
 	</div>
 </div>
 
-<div class="modal elementselectormodal js-modal" style="display: none">
+<div
+	class="modal elementselectormodal js-modal"
+	style="display: none"
+>
 	<div class="header">
-		<h1>Videos</h1>
+		<h1>Wistia Videos</h1>
 	</div>
 	<div class="body">
 		<div class="content">
 			<div class="main">
-				{# TODO: Add search functionality #}
-				{# <div class="toolbar">
+				<div class="toolbar">
 					<table class="inputs fullwidth">
 						<tbody>
 							<tr>
 								<td>
 									<div class="texticon search icon clearable">
-										<input autocomplete="off" class="text nicetext fullwidth" placeholder="Search" type="text">
+										<input
+											autocomplete="off"
+											class="text nicetext fullwidth js-element-search"
+											placeholder="Search"
+											type="text"
+										>
 										<div class="clear hidden" title="Clear"></div>
 									</div>
 								</td>
@@ -47,7 +54,7 @@
 						</tbody>
 					</table>
 					<div class="spinner hidden"></div>
-				</div> #}
+				</div>
 				<div class="elements">
 					<div class="tableview">
 						<table class="data fullwidth">
@@ -58,7 +65,11 @@
 							</thead>
 							<tbody class="js-element-body">
 								{% for key, video in videos %}
-									<tr class="js-element-row" data-id="{{ key }}" data-name="{{ name }}" disabled>
+									<tr
+										class="js-element-row"
+										data-id="{{ key }}"
+										data-title="{{ video }}"
+									>
 										<td>
 											<div
 												class="element small hasstatus js-element"

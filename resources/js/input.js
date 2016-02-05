@@ -1,7 +1,8 @@
 /**
  * Define global vars
  */
-var $modal,
+var vars = {},
+	$modal,
 	$sorter,
 	isDisabled = 'disabled',
 	isSelected = 'sel',
@@ -144,8 +145,42 @@ function dragSort() {
 }
 
 /**
+ * Search through elements
+ */
+function searchElements() {
+	$('.js-element-search').on('keyup', function() {
+		var $this = $(this);
+
+		// Clear the timer if one is set
+		if (vars.filterSearchTimer) {
+			clearTimeout(vars.filterSearchTimer);
+		}
+
+		vars.filterSearchTimer = setTimeout(function() {
+			// Retrieve the input field text
+			var filter = $this.val();
+
+			// Loop through the labels
+			$('.js-element-row').each(function() {
+				var $this = $(this);
+
+				// If the label does not contain the text phrase hide it
+				if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
+					$this.hide();
+				} else {
+					// Show the label if the phrase matches
+					$this.show();
+				}
+			});
+		}, 300);
+	});
+}
+
+
+/**
  * Instantiate functions
  */
 modal();
 removeElement();
 dragSort();
+searchElements();
