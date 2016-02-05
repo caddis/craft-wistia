@@ -1,14 +1,14 @@
 <input type="hidden" name="{{ name }}" value="">
 
 <div id="{{ name }}" class="elementselect">
-	<div class="elements js-wistia-elements">
+	<div class="elements js-elements">
 		{% for value in values %}
 			<div
-				class="element small hasstatus removable js-wistia-element"
+				class="element small hasstatus js-element removable"
 				data-id="{{ value.id }}"
 			>
 				<input name="{{ name }}[]" type="hidden" value="{{ value.id }}">
-				<a class="delete icon js-wistia-remove-video"></a>
+				<a class="delete icon js-remove-element"></a>
 				<span class="status live"></span>
 				<div class="label">
 					<span class="title">{{ value.title }}</span>
@@ -17,10 +17,18 @@
 		{% endfor %}
 	</div>
 
-	<div class="btn add icon dashed js-wistia-add-video" data-max="{{ settings.max }}">Add a video</div>
+	<div
+		class="btn add icon dashed js-open-modal{% if values|length >= settings.max %} disabled{% endif %}"
+		data-max="{{ settings.max }}"
+	>
+		Add a video
+	</div>
 </div>
 
-<div class="modal elementselectormodal js-wistia-modal" style="display: none">
+<div class="modal elementselectormodal js-modal" style="display: none">
+	<div class="header">
+		<h1>Videos</h1>
+	</div>
 	<div class="body">
 		<div class="content">
 			<div class="main">
@@ -48,12 +56,12 @@
 									<th>Title</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody class="js-element-body">
 								{% for key, video in videos %}
-									<tr class="js-wistia-element-row" data-id="{{ key }}" data-name="{{ name }}">
+									<tr class="js-element-row" data-id="{{ key }}" data-name="{{ name }}" disabled>
 										<td>
 											<div
-												class="element small hasstatus js-wistia-element"
+												class="element small hasstatus js-element"
 												data-id="{{ key }}"
 											>
 												<span class="status live"></span>
@@ -74,8 +82,8 @@
 	<div class="footer">
 		<div class="spinner hidden"></div>
 		<div class="buttons right">
-			<div class="btn js-wistia-close-modal">Cancel</div>
-			<div class="btn disabled submit js-wistia-submit">Select</div>
+			<div class="btn js-close-modal">Cancel</div>
+			<div class="btn disabled submit js-submit">Select</div>
 		</div>
 	</div>
 </div>
