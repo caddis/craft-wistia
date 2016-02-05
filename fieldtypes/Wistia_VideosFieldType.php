@@ -77,6 +77,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'settings' => $this->getSettings(),
 				'name'  => $name,
 				'values' => $values,
+				'value' => $value,
 				'videos' => craft()->wistia_videos->getVideos($this->getSettings()->projects)
 			];
 		} else {
