@@ -2,16 +2,16 @@
 
 <div id="{{ name }}" class="elementselect">
 	<div class="elements js-wistia-videos">
-		{% for selectedVideo in selectedVideos %}
+		{% for value in values %}
 			<div
 				class="element small hasstatus removable"
-				data-id="{{ selectedVideo.hashed_id }}"
+				data-id="{{ value.id }}"
 			>
-				<input name="fields[{{ name }}][]" type="hidden" value="{{ selectedVideo.hashed_id }}">
+				<input name="{{ name }}[]" type="hidden" value="{{ value.id }}">
 				<a class="delete icon js-wistia-remove-video"></a>
 				<span class="status live"></span>
 				<div class="label">
-					<span class="title">{{ selectedVideo.name }}</span>
+					<span class="title">{{ value.title }}</span>
 				</div>
 			</div>
 		{% endfor %}
