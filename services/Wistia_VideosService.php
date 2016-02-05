@@ -21,15 +21,17 @@ class Wistia_VideosService extends BaseApplicationComponent
 	/**
 	 * Get videos from API or cache
 	 *
-	 * @param array $hashedIds
+	 * @param string $hashedIds
 	 * @param array $params
 	 * @return array
 	 */
-	public function getVideoByHashedId($hashedId, $params = [])
+	public function getVideosByHashedId($hashedIds, $params = [])
 	{
-		if (! $hashedId) {
+		if (! $hashedIds) {
 			return false;
 		}
+
+		$hashedIds = json_decode($hashedIds);
 
 		// Set default parameters
 		$defaultParams = [
@@ -53,36 +55,43 @@ class Wistia_VideosService extends BaseApplicationComponent
 		$params = array_merge($defaultParams, $params);
 		$params['videoFoam'] = true; // TODO: needs to update based on $params input
 
-		$cacheKey = 'wistia_hashedId_' . $hashedId;
+		$videos = [];
 
-		// Get embed code
-		$embed = $this->getSuperEmbed($hashedId, $params);
+		foreach ($hashedIds as $hashedId) {
+			$cacheKey = 'wistia_video_' . $hashedId;
 
-		$cachedVideo = craft()->cache->get($cacheKey);
+			// // Get embed code
+			$embed = $this->getSuperEmbed($hashedId, $params);
 
-		$video = [];
+			$cachedVideo = craft()->cache->get($cacheKey);
 
-		// Cache Wistia API data
-		if ($cachedVideo) {
-			$video = $cachedVideo;
-		} else {
-			$video = $this->getApiData('medias.json', [
-				'hashed_id' => $hashedId
-			]);
+			// Cache Wistia API data
+			if ($cachedVideo) {
+				$video = $cachedVideo;
+			} else {
+				$video = current($this->getApiData('medias.json', [
+						'hashed_id' => $hashedId
+					])
+				);
 
-			$duration = (int) craft()
-				->plugins
-				->getPlugin('wistia')
-				->getSettings()
-				->cacheDuration * 60 * 60;
+				$video['name'] = htmlspecialchars_decode($video['name']);
 
-			craft()->cache->set($cacheKey, $video, $duration);
+				$duration = (int) craft()
+					->plugins
+					->getPlugin('wistia')
+					->getSettings()
+					->cacheDuration * 60 * 60;
+
+				craft()->cache->set($cacheKey, $video, $duration);
+			}
+
+			// Add embed after caching video data
+			$video['embed'] = $embed;
+
+			$videos[] = $video;
 		}
 
-		// Add embed after caching video data
-		$video['embed'] = $embed;
-
-		return $video;
+		return $videos;
 	}
 
 	/**
@@ -140,7 +149,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 				foreach ($data as $video) {
 					$hashedId = $this->getValue('hashed_id', $video);
-					$name = $this->getValue('name', $video);
+					$name = htmlspecialchars_decode($this->getValue('name', $video));
 
 					$videos[$hashedId] = $name;
 				}
@@ -150,7 +159,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 			foreach ($data as $video) {
 				$hashedId = $this->getValue('hashed_id', $video);
-				$name = $this->getValue('name', $video);
+				$name = htmlspecialchars_decode($this->getValue('name', $video));
 
 				$videos[$hashedId] = $name;
 			}

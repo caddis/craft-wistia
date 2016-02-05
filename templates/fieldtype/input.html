@@ -1,21 +1,89 @@
-{% import '_includes/forms' as form %}
+<input type="hidden" name="{{ name }}" value="" class="js-elements-value" data-value="{{ value }}">
 
-{% if settings.max and settings.max <= 1 %}
-	{{
-		form.select({
-			id: name,
-			name: name,
-			options: videos,
-			value: value
-		})
-	}}
-{% else %}
-	{{
-		form.multiselect({
-			id: name,
-			name: name,
-			options: videos,
-			values: value
-		})
-	}}
-{% endif %}
+<div id="{{ name }}" class="elementselect">
+	<div class="elements js-elements">
+		{% for value in values %}
+			<div
+				class="element small hasstatus js-element removable"
+				data-id="{{ value.id }}"
+			>
+				<input name="{{ name }}[]" type="hidden" value="{{ value.id }}">
+				<a class="delete icon js-remove-element"></a>
+				<span class="status live"></span>
+				<div class="label">
+					<span class="title">{{ value.title }}</span>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div
+		class="btn add icon dashed js-open-modal{% if values|length >= settings.max %} disabled{% endif %}"
+		data-max="{{ settings.max }}"
+	>
+		Add a video
+	</div>
+</div>
+
+<div class="modal elementselectormodal js-modal" style="display: none">
+	<div class="header">
+		<h1>Videos</h1>
+	</div>
+	<div class="body">
+		<div class="content">
+			<div class="main">
+				{# TODO: Add search functionality #}
+				{# <div class="toolbar">
+					<table class="inputs fullwidth">
+						<tbody>
+							<tr>
+								<td>
+									<div class="texticon search icon clearable">
+										<input autocomplete="off" class="text nicetext fullwidth" placeholder="Search" type="text">
+										<div class="clear hidden" title="Clear"></div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="spinner hidden"></div>
+				</div> #}
+				<div class="elements">
+					<div class="tableview">
+						<table class="data fullwidth">
+							<thead>
+								<tr>
+									<th>Title</th>
+								</tr>
+							</thead>
+							<tbody class="js-element-body">
+								{% for key, video in videos %}
+									<tr class="js-element-row" data-id="{{ key }}" data-name="{{ name }}" disabled>
+										<td>
+											<div
+												class="element small hasstatus js-element"
+												data-id="{{ key }}"
+											>
+												<span class="status live"></span>
+												<div class="label">
+													<span class="title">{{ video }}</span>
+												</div>
+											</div>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<div class="spinner hidden"></div>
+		<div class="buttons right">
+			<div class="btn js-close-modal">Cancel</div>
+			<div class="btn disabled submit js-submit">Select</div>
+		</div>
+	</div>
+</div>
