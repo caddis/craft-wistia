@@ -74,6 +74,8 @@ class Wistia_VideosService extends BaseApplicationComponent
 					])
 				);
 
+				$video['name'] = htmlspecialchars_decode($video['name']);
+
 				$duration = (int) craft()
 					->plugins
 					->getPlugin('wistia')
@@ -147,7 +149,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 				foreach ($data as $video) {
 					$hashedId = $this->getValue('hashed_id', $video);
-					$name = $this->getValue('name', $video);
+					$name = htmlspecialchars_decode($this->getValue('name', $video));
 
 					$videos[$hashedId] = $name;
 				}
@@ -157,7 +159,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 			foreach ($data as $video) {
 				$hashedId = $this->getValue('hashed_id', $video);
-				$name = $this->getValue('name', $video);
+				$name = htmlspecialchars_decode($this->getValue('name', $video));
 
 				$videos[$hashedId] = $name;
 			}
