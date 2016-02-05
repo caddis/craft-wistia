@@ -1,32 +1,23 @@
 /**
- * Define global vars (yucky)
+ * Define global vars
  */
-var $element = $('.js-element'),
-	$elements = $('.js-elements'),
-	$elementRow = $('.js-element-row'),
-	$submit = $('.js-submit'),
-	$garnishModal,
+var $modal,
 	$sorter,
 	isDisabled = 'disabled',
 	isSelected = 'sel',
-	isRemovable = 'removable';
+	isRemovable = 'removable',
+	values = $('.js-elements-value').data('value');
 
 /**
  * Update selectable elements in the modal
  */
 function updateSelections() {
-	var selectedElements = [];
-
-	$('.js-element.removable').each(function() {
-		selectedElements.push($(this).data('id'));
-	});
-
-	$elementRow.each(function(e, el) {
+	$('.js-element-row').each(function(e, el) {
 		var $el = $(el);
 
 		$el.removeClass(isDisabled);
 
-		$(selectedElements).each(function(i, val) {
+		$(values).each(function(i, val) {
 			if ($el.data('id') === val) {
 				$el.addClass(isDisabled);
 			}
@@ -42,19 +33,20 @@ function modal() {
 		if (! $(this).hasClass(isDisabled)) {
 			updateSelections();
 
-			if (! $garnishModal) {
-				$garnishModal = new Garnish.Modal($('.js-modal'));
+			if (! $modal) {
+				$modal = new Garnish.Modal($('.js-modal'));
 
 				selectElement();
+
 				submitSelections();
 			} else {
-				$garnishModal.show();
+				$modal.show();
 			}
 		}
 	});
 
 	$('.js-close-modal').on('click', function() {
-		$garnishModal.hide();
+		$modal.hide();
 	});
 }
 
@@ -62,12 +54,22 @@ function modal() {
  * Remove selected element
  */
 function removeElement() {
-	$elements.on('click', '.js-remove-element', function() {
+	var $open = $('.js-open-modal');
+
+	$('.js-elements').on('click', '.js-remove-element', function() {
 		$parent = $(this).parent();
 
 		$parent.remove();
 
-		$sorter.removeItems($parent);
+		values.splice(values.indexOf($parent.data('id')), 1);
+
+		if (values.length >= 1) {
+			$sorter.removeItems($parent);
+		}
+
+		if (values.length < $open.data('max')) {
+			$open.removeClass(isDisabled);
+		}
 	});
 }
 
@@ -75,46 +77,59 @@ function removeElement() {
  * Select element row
  */
 function selectElement() {
-	var rowSelect = new Garnish.Select($('.js-element-body'), $elementRow.not('.disabled'), {
-			multi: true,
-			onSelectionChange: function() {
-				if ($('.js-element-row.sel').length > 0) {
-					$submit.removeClass(isDisabled);
-				} else {
-					$submit.addClass(isDisabled);
-				}
+	var $submit = $('.js-submit');
+
+	new Garnish.Select($('.js-element-body'), $('.js-element-row').filter(':not(.disabled)'), {
+		onSelectionChange: function() {
+			if ($('.js-element-row.sel').length > 0) {
+				$submit.removeClass(isDisabled);
+			} else {
+				$submit.addClass(isDisabled);
 			}
-		});
+		}
+	});
 }
 
 /**
  * Submit element row selections
  */
 function submitSelections() {
-	$submit.on('click', function() {
+	var $open = $('.js-open-modal');
+
+	$('.js-submit').on('click', function() {
 		var $this = $(this),
 			$selections = $('.js-element-row.sel');
 
 		if (! $this.hasClass(isDisabled)) {
 			$selections.each(function(e, el) {
 				var $el = $(el),
-					newElement = $el.find($element)
+					newElement = $el.find($('.js-element'))
 						.clone()
 						.addClass(isRemovable + ' fresh')
 						.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
 							'<a class="delete icon js-remove-element"></a>'
 						);
 
-				$elements.append(newElement);
+				$('.js-elements').append(newElement);
 
-				$sorter.addItems(newElement);
+				values.push($el.data('id'));
+
+				if ($sorter) {
+					$sorter.addItems(newElement);
+				} else {
+					dragSort();
+				}
 			});
 
 			$selections.removeClass(isSelected).addClass(isDisabled);
 
 			$this.addClass(isDisabled);
 
-			$garnishModal.hide();
+			if (values.length >= $open.data('max')) {
+				$open.addClass(isDisabled);
+			}
+
+			$modal.hide();
 		}
 	});
 }
@@ -123,7 +138,9 @@ function submitSelections() {
  * Sort elements
  */
 function dragSort() {
-	$sorter = new Garnish.DragSort($('.js-element.removable'));
+	if (values.length > 1) {
+		$sorter = new Garnish.DragSort($('.js-element.removable'));
+	}
 }
 
 /**
