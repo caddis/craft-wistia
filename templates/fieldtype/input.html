@@ -1,10 +1,10 @@
 <input type="hidden" name="{{ name }}" value="">
 
 <div id="{{ name }}" class="elementselect">
-	<div class="elements js-wistia-videos">
+	<div class="elements js-wistia-elements">
 		{% for value in values %}
 			<div
-				class="element small hasstatus removable"
+				class="element small hasstatus removable js-wistia-element"
 				data-id="{{ value.id }}"
 			>
 				<input name="{{ name }}[]" type="hidden" value="{{ value.id }}">
@@ -20,11 +20,12 @@
 	<div class="btn add icon dashed js-wistia-add-video" data-max="{{ settings.max }}">Add a video</div>
 </div>
 
-<section class="modal elementselectormodal js-wistia-modal" style="display: none">
+<div class="modal elementselectormodal js-wistia-modal" style="display: none">
 	<div class="body">
 		<div class="content">
 			<div class="main">
-				<div class="toolbar">
+				{# TODO: Add search functionality #}
+				{# <div class="toolbar">
 					<table class="inputs fullwidth">
 						<tbody>
 							<tr>
@@ -38,7 +39,7 @@
 						</tbody>
 					</table>
 					<div class="spinner hidden"></div>
-				</div>
+				</div> #}
 				<div class="elements">
 					<div class="tableview">
 						<table class="data fullwidth">
@@ -49,13 +50,11 @@
 							</thead>
 							<tbody>
 								{% for key, video in videos %}
-									<tr class="js-wistia-video-row" data-id="{{ key }}" data-title="{{ video }}">
+									<tr class="js-wistia-element-row" data-id="{{ key }}" data-name="{{ name }}">
 										<td>
 											<div
-												class="element small hasstatus"
+												class="element small hasstatus js-wistia-element"
 												data-id="{{ key }}"
-												data-locale="en_us"
-												data-status="live"
 											>
 												<span class="status live"></span>
 												<div class="label">
@@ -79,4 +78,4 @@
 			<div class="btn disabled submit js-wistia-submit">Select</div>
 		</div>
 	</div>
-</section>
+</div>
