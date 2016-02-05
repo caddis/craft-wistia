@@ -1,9 +1,7 @@
 /**
- * Define global vars
+ * Define global scope
  */
-var vars = {},
-	$modal,
-	$sorter,
+var scope = {},
 	isDisabled = 'disabled',
 	isSelected = 'sel',
 	isRemovable = 'removable',
@@ -34,22 +32,24 @@ function modal() {
 		if (! $(this).hasClass(isDisabled)) {
 			updateSelections();
 
-			if (! $modal) {
-				$modal = new Garnish.Modal($('.js-modal'));
+			if (! scope.modal) {
+				scope.modal = new Garnish.Modal($('.js-modal'), {
+					onShow: function() {
+						updateSelect();
+					}
+				});
 
 				selectElement();
 
 				submitSelections();
 			} else {
-				$modal.show();
+				scope.modal.show();
 			}
-
-			updateSelect();
 		}
 	});
 
 	$('.js-close-modal').on('click', function() {
-		$modal.hide();
+		scope.modal.hide();
 	});
 }
 
@@ -67,7 +67,7 @@ function removeElement() {
 		values.splice(values.indexOf($parent.data('id')), 1);
 
 		if (values.length >= 1) {
-			$sorter.removeItems($parent);
+			scope.sorter.removeItems($parent);
 		}
 
 		if (values.length < $open.data('max')) {
@@ -127,8 +127,8 @@ function submitSelections() {
 				values.push($el.data('id'));
 
 				// Update drag and sort
-				if ($sorter) {
-					$sorter.addItems(newElement);
+				if (scope.sorter) {
+					scope.sorter.addItems(newElement);
 				} else {
 					dragSort();
 				}
@@ -139,7 +139,7 @@ function submitSelections() {
 				$open.addClass(isDisabled);
 			}
 
-			$modal.hide();
+			scope.modal.hide();
 		}
 	});
 }
@@ -162,7 +162,7 @@ function updateSelect() {
  */
 function dragSort() {
 	if (values.length > 1) {
-		$sorter = new Garnish.DragSort($('.js-element.removable'));
+		scope.sorter = new Garnish.DragSort($('.js-element.removable'));
 	}
 }
 
@@ -174,11 +174,11 @@ function searchElements() {
 		var $this = $(this);
 
 		// Clear the timer if one is set
-		if (vars.filterSearchTimer) {
-			clearTimeout(vars.filterSearchTimer);
+		if (scope.filterSearchTimer) {
+			clearTimeout(scope.filterSearchTimer);
 		}
 
-		vars.filterSearchTimer = setTimeout(function() {
+		scope.filterSearchTimer = setTimeout(function() {
 			// Retrieve the input field text
 			var filter = $this.val();
 
