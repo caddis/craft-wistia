@@ -58,22 +58,12 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		if ($this->apiKey) {
     		craft()->templates->includeJsResource('wistia/js/input.js');
 
-    		$selectedVideos = [];
-
-			if ($value) {
-				$hashedIds = json_decode($value);
-
-				foreach ($hashedIds as $hashedId) {
-					$selectedVideos[] = craft()->wistia_videos->getVideoByHashedId($hashedId, $params)[0];
-				}
-			}
-
 			$template = 'wistia/fieldtype/input';
 
 			$params = [
 				'settings' => $this->getSettings(),
 				'name'  => $name,
-				'selectedVideos' => $selectedVideos,
+				'selectedVideos' => craft()->wistia_videos->getVideosByHashedId($value),
 				'videos' => craft()->wistia_videos->getVideos($this->getSettings()->projects),
 				'selectionLabel' => 'Add a video'
 			];
