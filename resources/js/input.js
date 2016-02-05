@@ -1,26 +1,42 @@
-/**
- * CP modal
- */
 var $modal = $('.js-wistia-modal'),
-	$videos = $('.js-wistia-videos'),
+	$element = $('.js-wistia-element'),
+	$elements = $('.js-wistia-elements'),
+	$elementRow = $('.js-wistia-element-row'),
 	$submit = $('.js-wistia-submit'),
-	$row = $('.js-wistia-video-row'),
 	$garnishModal,
 	isDisabled = 'disabled',
-	isSelected = 'sel';
+	isSelected = 'sel',
+	isRemovable = 'removable';
 
+/**
+ * Garnish modal
+ */
 $('.js-wistia-add-video').on('click', function() {
+	var selectedElements = [];
+
+	$('.js-wistia-element.removable').each(function() {
+		selectedElements.push($(this).data('id'));
+	});
+
 	if (! $garnishModal) {
 		$modal.appendTo('body').show();
 
-		$garnishModal = new Garnish.Modal($modal, {
-			onShow: function() {
-				console.log('hello'); // TODO: A bit of testing
-			}
-		});
+		$garnishModal = new Garnish.Modal($modal);
 	} else {
 		$garnishModal.show();
 	}
+
+	$elementRow.each(function(e, el) {
+		var $el = $(el);
+
+		$el.removeClass(isDisabled);
+
+		$(selectedElements).each(function(i, val) {
+			if ($el.data('id') === val) {
+				$el.addClass(isDisabled);
+			}
+		});
+	});
 });
 
 $('.js-wistia-close-modal').on('click', function() {
@@ -30,17 +46,21 @@ $('.js-wistia-close-modal').on('click', function() {
 /**
  * Remove selected item
  */
-$videos.on('click', '.js-wistia-remove-video', function() {
+$elements.on('click', '.js-wistia-remove-video', function() {
 	$(this).parent().remove();
 });
 
 /**
  * Select video row
  */
-$row.on('click', function() {
-	$(this).toggleClass(isSelected);
+$elementRow.on('click', function() {
+	var $this = $(this);
 
-	if ($('.js-wistia-video-row.sel').length > 0) {
+	if (! $this.hasClass(isDisabled)) {
+		$this.toggleClass(isSelected);
+	}
+
+	if ($('.js-wistia-element-row.sel').length > 0) {
 		$submit.removeClass(isDisabled);
 	} else {
 		$submit.addClass(isDisabled);
@@ -51,22 +71,26 @@ $row.on('click', function() {
  * Submit video selections
  */
 $submit.on('click', function() {
-	if (! $(this).hasClass(isDisabled)) {
-		$garnishModal.hide();
+	var $this = $(this),
+		$selections = $('.js-wistia-element-row.sel');
 
-		$('.js-wistia-video-row.sel').each(function(e, el) {
-			var $el = $(el),
-				id = $el.data('id'),
-				title = $el.data('title');
+	if (! $this.hasClass(isDisabled)) {
+		$selections.each(function(e, el) {
+			var $el = $(el);
 
-			$videos.append('<div class="element small hasstatus removable" data-id="{{ selectedVideo.hashed_id }}">' +
-				'<input name="fields[videos][]" type="hidden" value="' + id + '">' +
-					'<a class="delete icon js-wistia-remove-video"></a>' +
-					'<span class="status live"></span>' +
-					'<div class="label">' +
-						'<span class="title">' + title + '</span>' +
-					'</div>' +
-				'</div>');
+			$elements.append($el.find($element)
+				.clone()
+				.addClass(isRemovable)
+				.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
+					'<a class="delete icon js-wistia-remove-video"></a>'
+				)
+			);
 		});
+
+		$selections.removeClass(isSelected).addClass(isDisabled);
+
+		$this.addClass(isDisabled);
+
+		$garnishModal.hide();
 	}
 });
