@@ -109,10 +109,10 @@ function submitSelections() {
 
 	$('.js-submit').on('click', function() {
 		var $this = $(this),
-			$selections = $('.js-element-row.sel');
+			$row = $('.js-element-row');
 
 		if (! $this.hasClass(isDisabled)) {
-			$selections.each(function(e, el) {
+			$row.filter('.sel').each(function(e, el) {
 				var $el = $(el),
 					newElement = $el.find($('.js-element'))
 						.clone()
@@ -121,6 +121,7 @@ function submitSelections() {
 							'<a class="delete icon js-remove-element"></a>'
 						);
 
+				// Add new elements to selection list
 				$('.js-elements').append(newElement);
 
 				// Push newly added elements into main values array
@@ -139,7 +140,14 @@ function submitSelections() {
 				$open.addClass(isDisabled);
 			}
 
+			// Hide the modal
 			scope.modal.hide();
+
+			// Add disabled class to select button
+			$this.addClass(isDisabled);
+
+			// Remove selected class from all rows
+			$row.removeClass(isSelected);
 		}
 	});
 }
