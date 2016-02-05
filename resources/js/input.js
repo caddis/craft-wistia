@@ -19,8 +19,6 @@ $('.js-wistia-add-video').on('click', function() {
 	});
 
 	if (! $garnishModal) {
-		$modal.appendTo('body').show();
-
 		$garnishModal = new Garnish.Modal($modal);
 	} else {
 		$garnishModal.show();
