@@ -1,216 +1,209 @@
-/**
- * Define global scope
- */
-var scope = {},
-	isDisabled = 'disabled',
-	isSelected = 'sel',
-	isRemovable = 'removable',
-	values = $('.js-elements-value').data('value');
+(function() {
+	var scope = {
+		isDisabled: 'disabled',
+		isSelected: 'sel',
+		values: $('.js-elements-value').data('value')
+	};
 
-/**
- * Update selectable elements in the modal
- */
-function updateSelections() {
-	$('.js-element-row').each(function(e, el) {
-		var $el = $(el);
+	/**
+	 * Open and close modal
+	 */
+	function modal() {
+		$('.js-open-modal').on('click', function() {
+			if (! $(this).hasClass(scope.isDisabled)) {
+				if (! scope.modal) {
+					scope.modal = new Garnish.Modal($('.js-modal'), {
+						onShow: function() {
+							updateSelectBtn();
+							updateSelectableElements();
+						}
+					});
 
-		$el.removeClass(isDisabled);
+					selectModalElement();
 
-		$(values).each(function(i, val) {
-			if ($el.data('id') === val) {
-				$el.addClass(isDisabled);
+					submitSelections();
+				} else {
+					scope.modal.show();
+				}
 			}
 		});
-	});
-}
 
-/**
- * Garnish modal
- */
-function modal() {
-	$('.js-open-modal').on('click', function() {
-		if (! $(this).hasClass(isDisabled)) {
-			updateSelections();
+		$('.js-close-modal').on('click', function() {
+			scope.modal.hide();
+		});
+	}
 
-			if (! scope.modal) {
-				scope.modal = new Garnish.Modal($('.js-modal'), {
-					onShow: function() {
-						updateSelect();
+	/**
+	 * Remove selected element from final list
+	 */
+	function removeElement() {
+		var $open = $('.js-open-modal');
+
+		$('.js-elements').on('click', '.js-remove-element', function() {
+			$parent = $(this).parent();
+
+			$parent.remove();
+
+			scope.values.splice(scope.values.indexOf($parent.data('id')), 1);
+
+			if (scope.values.length >= 1) {
+				scope.sorter.removeItems($parent);
+			}
+
+			if (scope.values.length < $open.data('max')) {
+				$open.removeClass(scope.isDisabled);
+			}
+		});
+	}
+
+	/**
+	 * Select modal element row
+	 */
+	function selectModalElement() {
+		var $row = $('.js-element-row');
+
+		$row.on('click', function() {
+			var $el = $(this);
+
+			if (! $el.hasClass(scope.isDisabled)) {
+				if (! $el.hasClass(scope.isSelected)) {
+					$row.removeClass(scope.isSelected);
+
+					$el.addClass(scope.isSelected);
+				} else {
+					$el.removeClass(scope.isSelected);
+				}
+			} else {
+				$row.removeClass(scope.isSelected);
+			}
+
+			updateSelectBtn();
+		});
+	}
+
+	/**
+	 * Add selected modal elements to final list
+	 */
+	function submitSelections() {
+		var $open = $('.js-open-modal');
+
+		$('.js-submit').on('click', function() {
+			var $this = $(this),
+				$row = $('.js-element-row');
+
+			if (! $this.hasClass(scope.isDisabled)) {
+				$row.filter('.sel').each(function(e, el) {
+					var $el = $(el),
+						newElement = $el.find($('.js-element'))
+							.clone()
+							.addClass('removable fresh')
+							.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
+								'<a class="delete icon js-remove-element"></a>');
+
+					// Add new elements to selection list
+					$('.js-elements').append(newElement);
+
+					// Push newly added elements into main values array
+					scope.values.push($el.data('id'));
+
+					// Update drag and sort
+					if (scope.sorter) {
+						scope.sorter.addItems(newElement);
+					} else {
+						dragSort();
 					}
 				});
 
-				selectElement();
+				// Hide add more elements button if element max is met
+				if (scope.values.length >= $open.data('max')) {
+					$open.addClass(scope.isDisabled);
+				}
 
-				submitSelections();
-			} else {
-				scope.modal.show();
+				// Hide the modal
+				scope.modal.hide();
+
+				// Add disabled class to select button
+				$this.addClass(scope.isDisabled);
+
+				// Remove selected class from all rows
+				$row.removeClass(scope.isSelected);
 			}
-		}
-	});
+		});
+	}
 
-	$('.js-close-modal').on('click', function() {
-		scope.modal.hide();
-	});
-}
+	/**
+	 * Update which modal elements are selectable
+	 */
+	function updateSelectableElements() {
+		$('.js-element-row').each(function(e, el) {
+			var $el = $(el);
 
-/**
- * Remove selected element
- */
-function removeElement() {
-	var $open = $('.js-open-modal');
+			$el.removeClass(scope.isDisabled);
 
-	$('.js-elements').on('click', '.js-remove-element', function() {
-		$parent = $(this).parent();
+			$(scope.values).each(function(i, val) {
+				if ($el.data('id') === val) {
+					$el.addClass(scope.isDisabled);
+				}
+			});
+		});
+	}
 
-		$parent.remove();
+	/**
+	 * Update select button based on which modal elements are selected
+	 */
+	function updateSelectBtn() {
+		$submit = $('.js-submit');
 
-		values.splice(values.indexOf($parent.data('id')), 1);
-
-		if (values.length >= 1) {
-			scope.sorter.removeItems($parent);
-		}
-
-		if (values.length < $open.data('max')) {
-			$open.removeClass(isDisabled);
-		}
-	});
-}
-
-/**
- * Select element row
- */
-function selectElement() {
-	var $row = $('.js-element-row');
-
-	$row.on('click', function() {
-		var $el = $(this);
-
-		if (! $el.hasClass(isDisabled)) {
-			if (! $el.hasClass(isSelected)) {
-				$row.removeClass(isSelected);
-
-				$el.addClass(isSelected);
-			} else {
-				$el.removeClass(isSelected);
-			}
+		if ($('.js-element-row').filter('.sel').length > 0) {
+			$submit.removeClass(scope.isDisabled);
 		} else {
-			$row.removeClass(isSelected);
+			$submit.addClass(scope.isDisabled);
 		}
+	}
 
-		updateSelect();
-	});
-}
+	/**
+	 * Drag and sort elements
+	 */
+	function dragSort() {
+		if (scope.values.length > 1) {
+			scope.sorter = new Garnish.DragSort($('.js-element.removable'));
+		}
+	}
 
-/**
- * Submit element row selections
- */
-function submitSelections() {
-	var $open = $('.js-open-modal');
+	/**
+	 * Search through elements
+	 */
+	function searchElements() {
+		$('.js-element-search').on('keyup', function() {
+			var $this = $(this);
 
-	$('.js-submit').on('click', function() {
-		var $this = $(this),
-			$row = $('.js-element-row');
-
-		if (! $this.hasClass(isDisabled)) {
-			$row.filter('.sel').each(function(e, el) {
-				var $el = $(el),
-					newElement = $el.find($('.js-element'))
-						.clone()
-						.addClass(isRemovable + ' fresh')
-						.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
-							'<a class="delete icon js-remove-element"></a>'
-						);
-
-				// Add new elements to selection list
-				$('.js-elements').append(newElement);
-
-				// Push newly added elements into main values array
-				values.push($el.data('id'));
-
-				// Update drag and sort
-				if (scope.sorter) {
-					scope.sorter.addItems(newElement);
-				} else {
-					dragSort();
-				}
-			});
-
-			// Hide add more elements button if element max is met
-			if (values.length >= $open.data('max')) {
-				$open.addClass(isDisabled);
+			// Clear the timer if one is set
+			if (scope.filterSearchTimer) {
+				clearTimeout(scope.filterSearchTimer);
 			}
 
-			// Hide the modal
-			scope.modal.hide();
+			scope.filterSearchTimer = setTimeout(function() {
+				// Retrieve the input field text
+				var filter = $this.val();
 
-			// Add disabled class to select button
-			$this.addClass(isDisabled);
+				// Loop through the rows
+				$('.js-element-row').each(function() {
+					var $this = $(this);
 
-			// Remove selected class from all rows
-			$row.removeClass(isSelected);
-		}
-	});
-}
-
-/**
- * Update select button based on select elements
- */
-function updateSelect() {
-	$submit = $('.js-submit');
-
-	if ($('.js-element-row').filter('.sel').length > 0) {
-		$submit.removeClass(isDisabled);
-	} else {
-		$submit.addClass(isDisabled);
+					// If the row does not contain the text phrase hide it
+					if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
+						$this.hide();
+					} else {
+						// Show the row if the phrase matches
+						$this.show();
+					}
+				});
+			}, 300);
+		});
 	}
-}
 
-/**
- * Sort elements
- */
-function dragSort() {
-	if (values.length > 1) {
-		scope.sorter = new Garnish.DragSort($('.js-element.removable'));
-	}
-}
-
-/**
- * Search through elements
- */
-function searchElements() {
-	$('.js-element-search').on('keyup', function() {
-		var $this = $(this);
-
-		// Clear the timer if one is set
-		if (scope.filterSearchTimer) {
-			clearTimeout(scope.filterSearchTimer);
-		}
-
-		scope.filterSearchTimer = setTimeout(function() {
-			// Retrieve the input field text
-			var filter = $this.val();
-
-			// Loop through the labels
-			$('.js-element-row').each(function() {
-				var $this = $(this);
-
-				// If the label does not contain the text phrase hide it
-				if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
-					$this.hide();
-				} else {
-					// Show the label if the phrase matches
-					$this.show();
-				}
-			});
-		}, 300);
-	});
-}
-
-
-/**
- * Instantiate functions
- */
-modal();
-removeElement();
-dragSort();
-searchElements();
+	modal();
+	removeElement();
+	dragSort();
+	searchElements();
+})();
