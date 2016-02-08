@@ -291,15 +291,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$data = json_decode($jsonData, true);
 
-		if ($page) {
-			foreach ($data as $val) {
-				$data[] = $val;
-			}
-		} else {
-			$data = $data;
-			$page = 1;
-		}
-
 		if (count($data) === 100) {
 			$this->getApiData($endpoint, $params, $page + 1);
 		}
