@@ -60,7 +60,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		foreach ($hashedIds as $hashedId) {
 			$cacheKey = 'wistia_video_' . $hashedId;
 
-			// // Get embed code
+			// Get embed code
 			$embed = $this->getSuperEmbed($hashedId, $params);
 
 			$cachedVideo = craft()->cache->get($cacheKey);
