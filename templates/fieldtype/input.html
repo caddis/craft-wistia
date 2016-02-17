@@ -1,14 +1,19 @@
-<input type="hidden" name="{{ name }}" value="" class="js-elements-value" data-value="{{ value }}">
+<input type="hidden" name="{{ name }}" value="">
 
-<div id="{{ name }}" class="elementselect">
+<div
+	id="{{ name }}"
+	class="elementselect js-element-select"
+	data-max="{{ settings.max }}"
+>
 	<div class="elements js-elements">
 		{% for value in values %}
-			<div
-				class="element small hasstatus js-element removable"
-				data-id="{{ value.id }}"
-			>
-				<input name="{{ name }}[]" type="hidden" value="{{ value.id }}">
-				<a class="delete icon js-remove-element"></a>
+			<div class="element small hasstatus removable">
+				<input
+					name="{{ name }}[]"
+					type="hidden"
+					value="{{ value.id }}"
+				>
+				<a class="delete icon"></a>
 				<span class="status live"></span>
 				<div class="label">
 					<span class="title">{{ value.title }}</span>
@@ -16,12 +21,8 @@
 			</div>
 		{% endfor %}
 	</div>
-
-	<div
-		class="btn add icon dashed js-open-modal{% if values|length >= settings.max %} disabled{% endif %}"
-		data-max="{{ settings.max }}"
-	>
-		Add a video
+	<div class="btn-wrapper">
+		<div class="btn add icon dashed js-add{% if settings.max and values|length >= settings.max %} disabled{% endif %}">Add a video</div>
 	</div>
 </div>
 
@@ -70,7 +71,7 @@
 									>
 										<td>
 											<div
-												class="element small hasstatus js-element"
+												class="element small hasstatus"
 												data-id="{{ key }}"
 											>
 												<span class="status live"></span>
