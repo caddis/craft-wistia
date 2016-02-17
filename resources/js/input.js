@@ -42,30 +42,33 @@
 		$('.js-add').on('click', function() {
 			if (! $(this).hasClass(scope.isDisabled)) {
 				if (! scope.modal) {
-					scope.modal = new Garnish.Modal($('.js-modal'), {
-						onShow: function() {
-							updateSelectableElements();
-						}
-					});
-
-					scope.selector = new Garnish.Select($('.js-element-body'),
-						$('.js-element-row:not(.disabled)'), {
-							onSelectionChange: function() {
-								updateSelectBtn();
+					// TODO: get projects ids from js-element-select
+					$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: $('.js-element-select').data('projects')}), function(data) {
+						scope.modal = new Garnish.Modal($(data), {
+							onShow: function() {
+								updateSelectableElements();
 							}
 						});
 
-					updateSelectBtn();
+						scope.modal.addListener('.js-close-modal', 'click', 'hide');
 
-					submitSelections();
+						scope.selector = new Garnish.Select($('.js-element-body'),
+							$('.js-element-row:not(.disabled)'), {
+								onSelectionChange: function() {
+									updateSelectBtn();
+								}
+							});
+
+						searchElements();
+
+						updateSelectBtn();
+
+						submitSelections();
+					});
 				} else {
 					scope.modal.show();
 				}
 			}
-		});
-
-		$('.js-close-modal').on('click', function() {
-			scope.modal.hide();
 		});
 	}
 
@@ -84,7 +87,7 @@
 						newElement = $el.find($('.element'))
 							.clone()
 							.addClass('removable')
-							.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
+							.prepend('<input name="fields[' + $('.js-element-select').data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
 								'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
 
 					// Add new elements to selection list
@@ -172,5 +175,4 @@
 
 	init();
 	modal();
-	searchElements();
 })();
