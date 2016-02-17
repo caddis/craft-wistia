@@ -3,7 +3,9 @@
 <div
 	class="elementselect js-element-select"
 	id="{{ name }}"
+	data-name="{{ name }}"
 	data-max="{{ settings.max }}"
+	data-projects="[{{ settings.projects|join(',') }}]"
 >
 	<div class="elements">
 		{% for value in values %}
@@ -25,77 +27,8 @@
 		{% endfor %}
 	</div>
 	<div class="btn-wrapper">
-		<div class="btn add icon dashed js-add{% if settings.max and values|length >= settings.max %} disabled{% endif %}">Add a video</div>
-	</div>
-</div>
-
-<div
-	class="modal elementselectormodal js-modal"
-	style="display: none"
->
-	<div class="body">
-		<div class="content">
-			<div class="main">
-				<div class="toolbar">
-					<table class="inputs fullwidth">
-						<tbody>
-							<tr>
-								<td>
-									<div class="texticon search icon clearable">
-										<input
-											autocomplete="off"
-											class="text nicetext fullwidth js-element-search"
-											placeholder="Search"
-											type="text"
-										>
-										<div class="clear hidden" title="Clear"></div>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="spinner hidden"></div>
-				</div>
-				<div class="elements">
-					<div class="tableview">
-						<table class="data fullwidth">
-							<thead>
-								<tr>
-									<th>Title</th>
-								</tr>
-							</thead>
-							<tbody class="js-element-body">
-								{% for key, video in videos %}
-									<tr
-										class="js-element-row"
-										data-id="{{ key }}"
-										data-title="{{ video }}"
-										data-name="{{ name }}"
-									>
-										<td>
-											<div
-												class="element small hasstatus"
-												data-id="{{ key }}"
-											>
-												<span class="status live"></span>
-												<div class="label">
-													<span class="title">{{ video }}</span>
-												</div>
-											</div>
-										</td>
-									</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="footer">
-		<div class="buttons right">
-			<div class="btn js-close-modal">Cancel</div>
-			<div class="btn disabled submit js-submit">Select</div>
+		<div class="btn add icon dashed js-add{% if settings.max and values|length >= settings.max %} disabled{% endif %}">
+			Add a video
 		</div>
 	</div>
 </div>
