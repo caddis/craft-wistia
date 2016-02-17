@@ -60,13 +60,13 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$template = 'wistia/fieldtype/input';
 
-			$values = [];
+			$videos = [];
 
 			$selVideos = craft()->wistia_videos->getVideosByHashedId($value);
 
 			if ($selVideos) {
 				foreach ($selVideos as $selVideo) {
-					$values[] = [
+					$videos[] = [
 						'id' => $selVideo['hashed_id'],
 						'title' => $selVideo['name']
 					];
@@ -76,7 +76,8 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 			$params = [
 				'settings' => $this->getSettings(),
 				'name'  => $name,
-				'values' => $values,
+				'value' => $value,
+				'videos' => $videos,
 				'projects' => $this->getSettings()->projects
 			];
 		} else {

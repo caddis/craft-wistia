@@ -1,33 +1,33 @@
-<input type="hidden" name="{{ name }}" value="">
+<input type="hidden" name="{{ name }}" value="{{ value }}">
 
 <div
 	class="elementselect js-element-select"
 	id="{{ name }}"
 	data-name="{{ name }}"
 	data-max="{{ settings.max }}"
-	data-projects="[{{ settings.projects|join(',') }}]"
+	data-projects="{{ settings.projects|join(',') }}"
 >
 	<div class="elements">
-		{% for value in values %}
+		{% for video in videos %}
 			<div
 				class="element small hasstatus removable"
-				data-id="{{ value.id }}"
+				data-id="{{ video.id }}"
 			>
 				<input
 					name="{{ name }}[]"
 					type="hidden"
-					value="{{ value.id }}"
+					value="{{ video.id }}"
 				>
 				<a class="delete icon"></a>
 				<span class="status live"></span>
 				<div class="label">
-					<span class="title">{{ value.title }}</span>
+					<span class="title">{{ video.title }}</span>
 				</div>
 			</div>
 		{% endfor %}
 	</div>
 	<div class="btn-wrapper">
-		<div class="btn add icon dashed js-add{% if settings.max and values|length >= settings.max %} disabled{% endif %}">
+		<div class="btn add icon dashed js-add{% if settings.max and videos|length >= settings.max %} disabled{% endif %}">
 			Add a video
 		</div>
 	</div>
