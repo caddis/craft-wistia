@@ -42,7 +42,6 @@
 		$('.js-add').on('click', function() {
 			if (! $(this).hasClass(scope.isDisabled)) {
 				if (! scope.modal) {
-					// TODO: get projects ids from js-element-select
 					$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: $('.js-element-select').data('projects')}), function(data) {
 						scope.modal = new Garnish.Modal($(data), {
 							onShow: function() {
