@@ -100,7 +100,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @throws Exception if unable to get a list of projects from the API.
 	 * @throws Exception if unable to get a list of videos for a project.
 	 *
-	 * @access private
+	 * @param array $projects
 	 * @return array
 	 */
 	public function getVideos($projects)
