@@ -1,15 +1,53 @@
 (function() {
 	var scope = {
+		elements: {},
+		selector: {},
+		values: [],
 		isDisabled: 'disabled',
-		isSelected: 'sel',
-		values: $('.js-elements-value').data('value')
+		isSelected: 'sel'
 	};
+
+	/**
+	 * Init element selector
+	 */
+	function init() {
+		var $elementSelect = $('.js-element-select');
+
+		scope.elements = new Craft.BaseElementSelectInput({
+			id: $elementSelect.attr('id'),
+			limit: $elementSelect.data('max'),
+			onRemoveElements: function() {
+				updateValues();
+				updateAddBtn();
+			}
+		});
+
+		updateValues();
+	}
+
+	/**
+	 * Update values
+	 */
+	function updateValues() {
+		scope.values = scope.elements.getSelectedElementIds(scope.elements);
+	}
+
+	function updateAddBtn() {
+		var $add = $('.js-add');
+
+		// Hide add more elements button if element max is met
+		if (scope.values.length >= $('.js-element-select').data('max')) {
+			$add.addClass(scope.isDisabled);
+		} else {
+			$add.removeClass(scope.isDisabled);
+		}
+	}
 
 	/**
 	 * Open and close modal
 	 */
 	function modal() {
-		$('.js-open-modal').on('click', function() {
+		$('.js-add').on('click', function() {
 			if (! $(this).hasClass(scope.isDisabled)) {
 				if (! scope.modal) {
 					scope.modal = new Garnish.Modal($('.js-modal'), {
@@ -19,7 +57,11 @@
 						}
 					});
 
-					selectModalElement();
+					scope.selector = new Garnish.Select($('.js-element-body'), $('.js-element-row').filter(':not(.disabled)'), {
+							onSelectionChange: function() {
+								updateSelectBtn();
+							}
+						});
 
 					submitSelections();
 				} else {
@@ -34,90 +76,32 @@
 	}
 
 	/**
-	 * Remove selected element from final list
-	 */
-	function removeElement() {
-		var $open = $('.js-open-modal');
-
-		$('.js-elements').on('click', '.js-remove-element', function() {
-			$parent = $(this).parent();
-
-			$parent.remove();
-
-			scope.values.splice(scope.values.indexOf($parent.data('id')), 1);
-
-			if (scope.values.length >= 1) {
-				scope.sorter.removeItems($parent);
-			}
-
-			if (scope.values.length < $open.data('max')) {
-				$open.removeClass(scope.isDisabled);
-			}
-		});
-	}
-
-	/**
-	 * Select modal element row
-	 */
-	function selectModalElement() {
-		var $row = $('.js-element-row');
-
-		$row.on('click', function() {
-			var $el = $(this);
-
-			if (! $el.hasClass(scope.isDisabled)) {
-				if (! $el.hasClass(scope.isSelected)) {
-					$row.removeClass(scope.isSelected);
-
-					$el.addClass(scope.isSelected);
-				} else {
-					$el.removeClass(scope.isSelected);
-				}
-			} else {
-				$row.removeClass(scope.isSelected);
-			}
-
-			updateSelectBtn();
-		});
-	}
-
-	/**
 	 * Add selected modal elements to final list
 	 */
 	function submitSelections() {
-		var $open = $('.js-open-modal');
-
 		$('.js-submit').on('click', function() {
 			var $this = $(this),
-				$row = $('.js-element-row');
+				$selector = scope.selector,
+				$items = $selector.getSelectedItems();
 
 			if (! $this.hasClass(scope.isDisabled)) {
-				$row.filter('.sel').each(function(e, el) {
+				$items.each(function(e, el) {
 					var $el = $(el),
-						newElement = $el.find($('.js-element'))
+						newElement = $el.find($('.element'))
 							.clone()
-							.addClass('removable fresh')
+							.addClass('removable')
 							.prepend('<input name="fields[' + $el.data('name') + '][]" type="hidden" value="' + $el.data('id') + '">' +
-								'<a class="delete icon js-remove-element"></a>');
+								'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
 
 					// Add new elements to selection list
-					$('.js-elements').append(newElement);
+					scope.elements.appendElement(newElement);
 
-					// Push newly added elements into main values array
-					scope.values.push($el.data('id'));
+					// Update elements object
+					scope.elements.addElements(newElement);
 
-					// Update drag and sort
-					if (scope.sorter) {
-						scope.sorter.addItems(newElement);
-					} else {
-						dragSort();
-					}
+					updateValues();
+					updateAddBtn();
 				});
-
-				// Hide add more elements button if element max is met
-				if (scope.values.length >= $open.data('max')) {
-					$open.addClass(scope.isDisabled);
-				}
 
 				// Hide the modal
 				scope.modal.hide();
@@ -125,8 +109,8 @@
 				// Add disabled class to select button
 				$this.addClass(scope.isDisabled);
 
-				// Remove selected class from all rows
-				$row.removeClass(scope.isSelected);
+				// Remove selected class from all items
+				$selector.deselectAll($items);
 			}
 		});
 	}
@@ -162,15 +146,6 @@
 	}
 
 	/**
-	 * Drag and sort elements
-	 */
-	function dragSort() {
-		if (scope.values.length > 1) {
-			scope.sorter = new Garnish.DragSort($('.js-element.removable'));
-		}
-	}
-
-	/**
 	 * Search through elements
 	 */
 	function searchElements() {
@@ -202,8 +177,7 @@
 		});
 	}
 
+	init();
 	modal();
-	removeElement();
-	dragSort();
 	searchElements();
 })();
