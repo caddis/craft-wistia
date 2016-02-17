@@ -1,13 +1,16 @@
 <input type="hidden" name="{{ name }}" value="">
 
 <div
-	id="{{ name }}"
 	class="elementselect js-element-select"
+	id="{{ name }}"
 	data-max="{{ settings.max }}"
 >
-	<div class="elements js-elements">
+	<div class="elements">
 		{% for value in values %}
-			<div class="element small hasstatus removable">
+			<div
+				class="element small hasstatus removable"
+				data-id="{{ value.id }}"
+			>
 				<input
 					name="{{ name }}[]"
 					type="hidden"

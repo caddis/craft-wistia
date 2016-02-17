@@ -2,7 +2,6 @@
 	var scope = {
 		elements: {},
 		selector: {},
-		values: [],
 		isDisabled: 'disabled',
 		isSelected: 'sel'
 	};
@@ -17,26 +16,19 @@
 			id: $elementSelect.attr('id'),
 			limit: $elementSelect.data('max'),
 			onRemoveElements: function() {
-				updateValues();
 				updateAddBtn();
 			}
 		});
-
-		updateValues();
 	}
 
 	/**
-	 * Update values
+	 * Update add video button
 	 */
-	function updateValues() {
-		scope.values = scope.elements.getSelectedElementIds(scope.elements);
-	}
-
 	function updateAddBtn() {
 		var $add = $('.js-add');
 
 		// Hide add more elements button if element max is met
-		if (scope.values.length >= $('.js-element-select').data('max')) {
+		if ($(scope.elements.getSelectedElementIds()).length >= $('.js-element-select').data('max')) {
 			$add.addClass(scope.isDisabled);
 		} else {
 			$add.removeClass(scope.isDisabled);
@@ -52,16 +44,18 @@
 				if (! scope.modal) {
 					scope.modal = new Garnish.Modal($('.js-modal'), {
 						onShow: function() {
-							updateSelectBtn();
 							updateSelectableElements();
 						}
 					});
 
-					scope.selector = new Garnish.Select($('.js-element-body'), $('.js-element-row').filter(':not(.disabled)'), {
+					scope.selector = new Garnish.Select($('.js-element-body'),
+						$('.js-element-row:not(.disabled)'), {
 							onSelectionChange: function() {
 								updateSelectBtn();
 							}
 						});
+
+					updateSelectBtn();
 
 					submitSelections();
 				} else {
@@ -99,7 +93,6 @@
 					// Update elements object
 					scope.elements.addElements(newElement);
 
-					updateValues();
 					updateAddBtn();
 				});
 
@@ -124,7 +117,7 @@
 
 			$el.removeClass(scope.isDisabled);
 
-			$(scope.values).each(function(i, val) {
+			$(scope.elements.getSelectedElementIds()).each(function(i, val) {
 				if ($el.data('id') === val) {
 					$el.addClass(scope.isDisabled);
 				}
@@ -138,7 +131,7 @@
 	function updateSelectBtn() {
 		$submit = $('.js-submit');
 
-		if ($('.js-element-row').filter('.sel').length > 0) {
+		if (scope.selector.getTotalSelected() > 0) {
 			$submit.removeClass(scope.isDisabled);
 		} else {
 			$submit.addClass(scope.isDisabled);
