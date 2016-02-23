@@ -56,8 +56,6 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		$params = [];
 
 		if ($this->apiKey) {
-    		craft()->templates->includeJsResource('wistia/js/input.min.js');
-
 			$template = 'wistia/fieldtype/input';
 
 			$videos = [];
@@ -75,6 +73,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$params = [
 				'settings' => $this->getSettings(),
+				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
 				'value' => $value,
 				'videos' => $videos,
