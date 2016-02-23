@@ -1,12 +1,6 @@
 <input type="hidden" name="{{ name }}" value="{{ value }}">
 
-<div
-	class="elementselect js-element-select"
-	id="{{ name }}"
-	data-name="{{ name }}"
-	data-max="{{ settings.max }}"
-	data-projects="{{ settings.projects|join(',') }}"
->
+<div class="elementselect" id="{{ name }}">
 	<div class="elements">
 		{% for video in videos %}
 			<div
@@ -35,6 +29,7 @@
 
 {% set jsSettings = {
 	id: id|namespaceInputId,
+	name: name|namespaceInputName,
 	max: settings.max,
 	projectIds: settings.projects|join(',')
 } %}
@@ -42,5 +37,5 @@
 {% includeJsResource('wistia/js/input.js') %}
 
 {% includejs %}
-	Wistia.init({{ jsSettings|json_encode|raw }});
+	new Wistia.Videos({{ jsSettings|json_encode|raw }});
 {% endincludejs %}
