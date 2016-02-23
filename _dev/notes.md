@@ -2,6 +2,7 @@
 
 ## Feature Enhancements Wishlist
 
+- Create modal html with js and pull in JSON data instead of raw html to fill modal
 - Sidebar filtering by project on modal
 - Add thumbnails to element rows
 - Ordering in modal
