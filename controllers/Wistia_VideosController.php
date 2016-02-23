@@ -7,8 +7,12 @@ class Wistia_VideosController extends BaseController
 	{
 		$this->requireAjaxRequest();
 
+		if ($projectIds != '*') {
+			$projectIds = explode(',', $projectIds);
+		}
+
 		return $this->renderTemplate('wistia/fieldtype/modal', [
-			'videos' => craft()->wistia_videos->getVideos(explode(',', $projectIds))
+			'videos' => craft()->wistia_videos->getVideos($projectIds)
 		]);
 	}
 }
