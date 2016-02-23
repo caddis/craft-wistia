@@ -18,8 +18,6 @@
 			});
 
 			this.toggleModal();
-
-			console.log(this);
 		},
 
 		/**
@@ -30,7 +28,7 @@
 
 			scope.openModalBtn.filter(':not(.' + scope.isDisabled + ')').on('click', function() {
 				if (! scope.modal) {
-					$.get(scope.getActionUrl('wistia/videos/getModal', {projectIds: scope.settings.projectIds}), function(data) {
+					$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: scope.settings.projectIds}), function(data) {
 						scope.modal = new Garnish.Modal($(data)[0]);
 
 						scope.$modalCancel = scope.modal.$container.find('.btn:not(.submit)');
@@ -49,8 +47,7 @@
 
 						scope.updateSelectableElements();
 
-						// TODO: Still working to get these setup
-						// searchElements();
+						scope.searchElements();
 
 						// updateSelectBtn();
 
@@ -92,6 +89,40 @@
 			} else {
 				this.$modalSubmit.addClass(this.isDisabled);
 			}
+		},
+
+		/**
+		 * Search through elements
+		 */
+		searchElements: function() {
+			var scope = this;
+
+			scope.modal.$container.find('.search input').on('keyup', function() {
+				var $this = $(this);
+
+				// Clear the timer if one is set
+				if (scope.filterSearchTimer) {
+					clearTimeout(scope.filterSearchTimer);
+				}
+
+				scope.filterSearchTimer = setTimeout(function() {
+					// Retrieve the input field text
+					var filter = $this.val();
+
+					// Loop through the rows
+					scope.$elementRow.each(function() {
+						var $this = $(this);
+
+						// If the row does not contain the text phrase hide it
+						if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
+							$this.hide();
+						} else {
+							// Show the row if the phrase matches
+							$this.show();
+						}
+					});
+				}, 300);
+			});
 		}
 	};
 
@@ -145,38 +176,6 @@
 				// Remove selected class from all items
 				$selector.deselectAll($items);
 			}
-		});
-	}
-
-	/**
-	 * Search through elements
-	 */
-	function searchElements() {
-		$('.js-element-search').on('keyup', function() {
-			var $this = $(this);
-
-			// Clear the timer if one is set
-			if (scope.filterSearchTimer) {
-				clearTimeout(scope.filterSearchTimer);
-			}
-
-			scope.filterSearchTimer = setTimeout(function() {
-				// Retrieve the input field text
-				var filter = $this.val();
-
-				// Loop through the rows
-				$('.js-element-row').each(function() {
-					var $this = $(this);
-
-					// If the row does not contain the text phrase hide it
-					if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
-						$this.hide();
-					} else {
-						// Show the row if the phrase matches
-						$this.show();
-					}
-				});
-			}, 300);
 		});
 	}
 })(jQuery);
