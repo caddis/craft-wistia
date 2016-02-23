@@ -30,10 +30,9 @@
 									<th>Title</th>
 								</tr>
 							</thead>
-							<tbody class="js-element-body">
+							<tbody>
 								{% for id, video in videos %}
 									<tr
-										class="js-element-row"
 										data-id="{{ id }}"
 										data-title="{{ video }}"
 									>
@@ -59,8 +58,8 @@
 	</div>
 	<div class="footer">
 		<div class="buttons right">
-			<div class="btn js-close-modal">Cancel</div>
-			<div class="btn disabled submit js-submit">Select</div>
+			<div class="btn">Cancel</div>
+			<div class="btn submit disabled">Select</div>
 		</div>
 	</div>
 </div>
