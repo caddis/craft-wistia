@@ -23,7 +23,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 	/**
 	 * Get videos from API or cache
 	 *
-	 * @param string $hashedIds
 	 * @param array $params
 	 * @return array
 	 */
