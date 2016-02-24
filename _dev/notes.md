@@ -11,12 +11,10 @@
 - Add ability to select multiple items on the popup
 - Add spinner when searching through items
 - Add "No items found" message when search returns not results
+- Auto create thumbnail image directory
+- Add sorting and orderby params
 
 ## Outstanding Tasks
 
 - Add params to front end output
-	- limit
 	- offset
-	- sort
-	- orderby
-- Pull down video thumbnail
