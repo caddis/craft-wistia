@@ -13,89 +13,74 @@ Wistia.Videos = Garnish.Base.extend({
 		scope.settings.max = parseInt(scope.settings.max);
 		scope.elementSelectContainer = $('#' + scope.settings.id);
 		scope.$addElementBtn = scope.elementSelectContainer.find('.add');
-		scope.isDisabled = 'disabled';
 
 		scope.elements = new Craft.BaseElementSelectInput({
 			id: scope.settings.id,
 			limit: scope.settings.max,
 			onRemoveElements: function() {
-				scope.updateAddBtn();
+				scope.updateAddBtnState();
 			}
 		});
 
-		scope.updateAddBtn();
-
-		if (scope.$addElementBtn && scope.settings.max === 1) {
-			scope.$addElementBtn
-				.css('position', 'absolute')
-				.css('top', 0)
-				.css(Craft.left, 0);
-		}
-
+		scope.initAddBtn();
+		scope.updateAddBtnState();
 		scope.toggleModal();
 	},
 
 	/**
-	 * Update add video button
+	 * Add video button
 	 */
-	updateAddBtn: function() {
+	initAddBtn: function() {
+		if (this.$addElementBtn && this.settings.max === 1) {
+			this.$addElementBtn
+				.css('position', 'absolute')
+				.css('top', 0)
+				.css(Craft.left, 0);
+		}
+	},
+
+	updateAddBtnState: function() {
 		if (this.elements.canAddMoreElements()) {
-			this.$addElementBtn.removeClass(this.isDisabled);
-
-			if (this.settings.max === 1) {
-				if (this.elements._initialized) {
-					this.$addElementBtn.velocity('fadeIn', Craft.BaseElementSelectInput.REMOVE_FX_DURATION);
-				} else {
-					this.$addElementBtn.show();
-				}
-			}
+			this.disabledAddBtn();
 		} else {
-			this.$addElementBtn.addClass(this.isDisabled);
+			this.enableAddBtn();
+		}
+	},
 
-			if (this.settings.max === 1) {
-				if (this.elements._initialized) {
-					this.$addElementBtn.velocity('fadeOut', Craft.BaseElementSelectInput.ADD_FX_DURATION);
-				} else {
-					this.$addElementBtn.hide();
-				}
+	disabledAddBtn: function() {
+		this.$addElementBtn.removeClass('disabled');
+
+		if (this.settings.max === 1) {
+			if (this.elements._initialized) {
+				this.$addElementBtn.velocity('fadeIn', Craft.BaseElementSelectInput.REMOVE_FX_DURATION);
+			} else {
+				this.$addElementBtn.show();
+			}
+		}
+	},
+
+	enableAddBtn: function() {
+		this.$addElementBtn.addClass('disabled');
+
+		if (this.settings.max === 1) {
+			if (this.elements._initialized) {
+				this.$addElementBtn.velocity('fadeOut', Craft.BaseElementSelectInput.ADD_FX_DURATION);
+			} else {
+				this.$addElementBtn.hide();
 			}
 		}
 	},
 
 	/**
-	 * Open and close modal
+	 * Video modal
 	 */
 	toggleModal: function() {
 		var scope = this;
 
 		scope.$addElementBtn.on('click', function() {
-			if (! $(this).hasClass(scope.isDisabled)) {
+			if (! $(this).hasClass('disabled')) {
 				if (! scope.modal) {
-					$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: scope.settings.projectIds}), function(data) {
-						scope.modal = new Garnish.Modal($(data)[0]);
-
-						scope.$modalCancel = scope.modal.$container.find('.btn:not(.submit)');
-						scope.$modalSubmit = scope.modal.$container.find('.btn.submit');
-						scope.$elementRowContainer = scope.modal.$container.find('.data tbody');
-						scope.$elementRow = scope.$elementRowContainer.children();
-
-						scope.modal.addListener(scope.$modalCancel, 'click', 'hide');
-
-						scope.updateSelectableElements();
-
-						scope.selector = new Garnish.Select(scope.$elementRowContainer,
-							scope.$elementRow.filter(':not(.disabled)'), {
-								onSelectionChange: function() {
-									scope.updateSelectBtn();
-								}
-							});
-
-						scope.updateSelectBtn();
-
-						scope.searchElements();
-
-						scope.submitSelections();
-					});
+					scope.getModalData();
 				} else {
 					scope.updateSelectableElements();
 
@@ -107,20 +92,65 @@ Wistia.Videos = Garnish.Base.extend({
 		});
 	},
 
+	getModalData: function() {
+		var	scope = this;
+
+		$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: scope.settings.projectIds}), function(data) {
+			scope.initModal(data);
+		});
+	},
+
+	initModal: function(data) {
+		this.modal = new Garnish.Modal($(data)[0]);
+
+		// Define modal structure
+		this.$modalCancel = this.modal.$container.find('.btn:not(.submit)');
+		this.$modalSubmit = this.modal.$container.find('.btn.submit');
+		this.$elementRowContainer = this.modal.$container.find('.data tbody');
+		this.$elementRow = this.$elementRowContainer.children();
+
+		this.modal.addListener(this.$modalCancel, 'click', 'hide');
+
+		this.updateSelectableElements();
+
+		this.initModalSelector();
+
+		this.updateSelectBtn();
+
+		this.searchElements();
+
+		this.submitSelections();
+	},
+
+	/**
+	 * Init modal selector
+	 */
+	initModalSelector: function() {
+		var	scope = this;
+
+		scope.selector = new Garnish.Select(scope.$elementRowContainer,
+			scope.$elementRow.filter(':not(.disabled)'), {
+				onSelectionChange: function() {
+					scope.updateSelectBtn();
+				}
+			});
+	},
+
 	/**
 	 * Update which modal elements are selectable
 	 */
 	updateSelectableElements: function() {
-		var scope = this;
+		var scope = this,
+			isDisabled = 'disabled';
 
 		scope.$elementRow.each(function(e, el) {
 			var $el = $(el);
 
-			$el.removeClass(scope.isDisabled);
+			$el.removeClass(isDisabled);
 
 			$(scope.elements.getSelectedElementIds()).each(function(i, val) {
 				if ($el.data('id') === val) {
-					$el.addClass(scope.isDisabled);
+					$el.addClass(isDisabled);
 				}
 			});
 		});
@@ -130,10 +160,12 @@ Wistia.Videos = Garnish.Base.extend({
 	 * Update select button based on which modal elements are selected
 	 */
 	updateSelectBtn: function() {
+		var	isDisabled = 'disabled';
+
 		if (this.selector.getTotalSelected()) {
-			this.$modalSubmit.removeClass(this.isDisabled);
+			this.$modalSubmit.removeClass(isDisabled);
 		} else {
-			this.$modalSubmit.addClass(this.isDisabled);
+			this.$modalSubmit.addClass(isDisabled);
 		}
 	},
 
@@ -175,12 +207,13 @@ Wistia.Videos = Garnish.Base.extend({
 	 * Add selected modal elements to final list
 	 */
 	submitSelections: function() {
-		var scope = this;
+		var scope = this,
+			isDisabled = 'disabled';
 
 		scope.$modalSubmit.on('click', function() {
 			var $this = $(this);
 
-			if (! $this.hasClass(scope.isDisabled)) {
+			if (! $this.hasClass(isDisabled)) {
 				scope.selector.getSelectedItems().each(function(e, el) {
 					var $el = $(el),
 						newElement = $el.find($('.element'))
@@ -195,12 +228,12 @@ Wistia.Videos = Garnish.Base.extend({
 					// Update elements object
 					scope.elements.addElements(newElement);
 
-					scope.updateAddBtn();
+					scope.updateAddBtnState();
 				});
 
 				scope.modal.hide();
 
-				$this.addClass(scope.isDisabled);
+				$this.addClass(isDisabled);
 
 				// Clear out selection
 				scope.selector.deselectAll();
