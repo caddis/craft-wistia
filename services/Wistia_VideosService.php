@@ -25,13 +25,19 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @param array $params
 	 * @return array
 	 */
-	public function getVideosByHashedId($hashedIds, $params = [])
+	public function getVideosByHashedId($params)
 	{
-		if (! $hashedIds) {
+		if (! isset($params['hashedIds'])) {
 			return false;
 		}
 
-		$hashedIds = json_decode($hashedIds);
+		$hashedIds = json_decode($params['hashedIds']);
+
+		// Remove hashed ids from params array
+		unset($params['hashedIds']);
+
+		// Determine if video should be responsive
+		$responsive = isset($params['width']) ? 'default' : 'true';
 
 		// Set default parameters
 		$defaultParams = [
@@ -51,9 +57,9 @@ class Wistia_VideosService extends BaseApplicationComponent
 			'width' => 640
 		];
 
-		// Compare defaults with input parameters
+		// Merge defaults with input parameters
 		$params = array_merge($defaultParams, $params);
-		$params['videoFoam'] = true; // TODO: needs to update based on $params input
+		$params['videoFoam'] = $responsive;
 
 		$videos = [];
 

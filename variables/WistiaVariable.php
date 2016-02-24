@@ -3,8 +3,8 @@ namespace Craft;
 
 class WistiaVariable
 {
-	public function videos($wistiaIds, $params = [])
+	public function videos($params = [])
 	{
-		return craft()->wistia_videos->getVideosByHashedId($wistiaIds, $params);
+		return craft()->wistia_videos->getVideosByHashedId($params);
 	}
 }
