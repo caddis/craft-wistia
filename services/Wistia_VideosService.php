@@ -28,7 +28,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 */
 	public function getVideosByHashedId($params)
 	{
-		if (! isset($params['hashedIds'])) {
+		if (! isset($params['hashedIds']) || ! $params['hashedIds']) {
 			return false;
 		}
 
