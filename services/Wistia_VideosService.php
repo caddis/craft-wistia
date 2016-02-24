@@ -93,13 +93,14 @@ class Wistia_VideosService extends BaseApplicationComponent
 					->plugins
 					->getPlugin('wistia')
 					->getSettings()
-					->cacheDuration * 60 * 60;
+					->cacheDuration * 3600;
 
 				craft()->cache->set($cacheKey, $video, $duration);
 			}
 
-			// Add embed after caching video data
+			// Add embed and thumbnail after caching video data
 			$video['embed'] = $embed;
+			$video['preview'] = $this->getThumbnail($video);
 
 			$videos[] = $video;
 		}
@@ -259,6 +260,61 @@ class Wistia_VideosService extends BaseApplicationComponent
 		craft()->path->setTemplatesPath($oldPath);
 
 		return TemplateHelper::getRaw($html);
+	}
+
+	public function getThumbnail($video, $dimensions = array())
+	{
+		// Cast dimensions as (int)
+		$dimensions = array_map('intval', $dimensions);
+
+		if (! $dimensions) {
+			$dimensions = [
+				'width' => 1280,
+				'height' => 720
+			];
+		}
+
+		// Set the base filename
+		$filename = $this->getValue('hashed_id', $video);
+
+		// Extract the thumbnail URL from the video data
+		$thumbnail = strtok($this->getValue('url', $this->getValue('thumbnail', $video)), '?');
+
+		// Get width parameter
+		if (isset($dimensions['width'])) {
+			$filename .= '_' . $dimensions['width'];
+		}
+
+		// Get height parameter
+		if (isset($dimensions['height'])) {
+			$filename .= '_' . $dimensions['height'];
+		}
+
+		$filename .= '.jpg';
+
+		$cachePath = craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath;
+		$cacheFile = $_SERVER['DOCUMENT_ROOT'] . $cachePath . $filename;
+
+		// Check for cached/current thumbnail before retrieving
+		if (! file_exists($cacheFile) ||
+			(filemtime($cacheFile) < (time() - (int) craft()->plugins->getPlugin('wistia')->getSettings()->cacheDuration * 3600)) ||
+			! filesize($cacheFile))
+		{
+			if (isset($dimensions['height']) && isset($dimensions['width'])) {
+				$thumbnail .= '?image_crop_resized=' . $dimensions['width'] . 'x' . $dimensions['height'];
+			} else if (isset($dimensions['width'])) {
+				$thumbnail .= '?image_resize=' . $dimensions['width'];
+			}
+
+			copy($thumbnail, $cacheFile);
+
+			if (! filesize($cacheFile)) {
+				unlink($cacheFile);
+			}
+		}
+
+		// Return local path
+		return $cachePath . $filename;
 	}
 
 	/**
