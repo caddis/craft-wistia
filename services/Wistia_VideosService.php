@@ -37,7 +37,13 @@ class Wistia_VideosService extends BaseApplicationComponent
 		unset($params['hashedIds']);
 
 		// Determine if video should be responsive
-		$responsive = isset($params['width']) ? 'default' : 'true';
+		if (isset($params['responsive'])) {
+			$responsive = $params['responsive'];
+		} else if (isset($params['width'])) {
+			$responsive = 'default';
+		} else {
+			$responsive = 'true';
+		}
 
 		// Set default parameters
 		$defaultParams = [
@@ -49,7 +55,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			'height' => 360,
 			'playbar' => 'true',
 			'playButton' => 'true',
-			'playerColor' => 'default', // TODO: add from config
+			'playerColor' => craft()->config->get('wistiaPlayerColor') != null ? craft()->config->get('wistiaPlayerColor') : 'default',
 			'smallPlayButton' => 'true',
 			'stillUrl' => 'default',
 			'time' => 'default',
