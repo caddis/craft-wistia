@@ -33,6 +33,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		}
 
 		$hashedIds = json_decode($params['hashedIds']);
+		$limit = isset($params['limit']) ? $params['limit'] : '';
 
 		// Remove hashed ids from params array
 		unset($params['hashedIds']);
@@ -103,6 +104,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 			$video['preview'] = $this->getThumbnail($video);
 
 			$videos[] = $video;
+		}
+
+		if ($limit) {
+			$videos = array_slice($videos, 0, $limit);
 		}
 
 		return $videos;
