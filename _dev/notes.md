@@ -2,7 +2,7 @@
 
 ## Feature Enhancements Wishlist
 
-- Create modal html with js and pull in JSON data instead of raw html to fill modal
+- Create modal html with js
 - Sidebar filtering by project on modal
 - Add thumbnails to element rows
 - Ordering in modal
@@ -14,10 +14,9 @@
 
 ## Outstanding Tasks
 
-- Update curl request to guzzle
-- Pull down video thumbnail
 - Add params to front end output
 	- limit
 	- offset
 	- sort
 	- orderby
+- Pull down video thumbnail

@@ -77,29 +77,31 @@ Wistia.Videos = Garnish.Base.extend({
 						scope.$modalCancel = scope.modal.$container.find('.btn:not(.submit)');
 						scope.$modalSubmit = scope.modal.$container.find('.btn.submit');
 						scope.$elementRowContainer = scope.modal.$container.find('.data tbody');
-						scope.$elementRow = scope.$elementRowContainer.find('tr');
+						scope.$elementRow = scope.$elementRowContainer.children();
 
 						scope.modal.addListener(scope.$modalCancel, 'click', 'hide');
 
-						scope.selector = new Garnish.Select(scope.elementRowContainer,
-							scope.$elementRow.filter(':not(.' + scope.isDisabled + ')'), {
+						scope.updateSelectableElements();
+
+						scope.selector = new Garnish.Select(scope.$elementRowContainer,
+							scope.$elementRow.filter(':not(.disabled)'), {
 								onSelectionChange: function() {
 									scope.updateSelectBtn();
 								}
 							});
 
-						scope.updateSelectableElements();
+						scope.updateSelectBtn();
 
 						scope.searchElements();
-
-						scope.updateSelectBtn();
 
 						scope.submitSelections();
 					});
 				} else {
-					scope.modal.show();
-
 					scope.updateSelectableElements();
+
+					scope.selector.addItems(scope.$elementRow.filter(':not(.disabled)'));
+
+					scope.modal.show();
 				}
 			}
 		});
@@ -128,7 +130,7 @@ Wistia.Videos = Garnish.Base.extend({
 	 * Update select button based on which modal elements are selected
 	 */
 	updateSelectBtn: function() {
-		if (this.selector.getTotalSelected() > 0) {
+		if (this.selector.getTotalSelected()) {
 			this.$modalSubmit.removeClass(this.isDisabled);
 		} else {
 			this.$modalSubmit.addClass(this.isDisabled);
@@ -196,14 +198,13 @@ Wistia.Videos = Garnish.Base.extend({
 					scope.updateAddBtn();
 				});
 
-				// Hide the modal
 				scope.modal.hide();
 
-				// Add disabled class to select button
 				$this.addClass(scope.isDisabled);
 
-				// Remove selected class from all items
-				scope.selector.deselectAll(scope.selector.getSelectedItems());
+				// Clear out selection
+				scope.selector.deselectAll();
+				scope.selector.removeAllItems();
 			}
 		});
 	}
