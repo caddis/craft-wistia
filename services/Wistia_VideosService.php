@@ -380,6 +380,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$data = $client->get($url)
 			->setAuth('api', $this->apiKey)
+			->setHeader('Accept', 'application/json')
 			->send()
 			->json();
 
