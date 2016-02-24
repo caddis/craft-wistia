@@ -15,13 +15,9 @@
 ## Outstanding Tasks
 
 - Update curl request to guzzle
+- Pull down video thumbnail
 - Add params to front end output
 	- limit
 	- offset
 	- sort
 	- orderby
-	- width
-	- height
-	- responsive
-	- pull player color from global config
-- Add all twig tags from EE add-on
