@@ -1,6 +1,8 @@
 <?php
 namespace Craft;
 
+use \Guzzle\Http\Client;
+
 class Wistia_VideosService extends BaseApplicationComponent
 {
 	private $apiKey;
@@ -294,14 +296,11 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$baseUrl .= $endpoint . $url_params;
 
-		// Return JSON-decoded stream
-		$jsonData = $this->send($baseUrl);
+		$data = $this->send($baseUrl);
 
-		if ($jsonData === false) {
+		if ($data === false) {
 			throw new Exception(lang('error_remote_file') . $baseUrl, 3);
 		}
-
-		$data = json_decode($jsonData, true);
 
 		if (count($data) === 100) {
 			$this->getApiData($endpoint, $params, $page + 1);
@@ -317,21 +316,14 @@ class Wistia_VideosService extends BaseApplicationComponent
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		$ch = curl_init();
+		$client = new Client();
 
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_USERPWD, 'api:' . $this->apiKey);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		$data = $client->get($url)
+			->setAuth('api', $this->apiKey)
+			->send()
+			->json();
 
-		$result = curl_exec($ch);
-
-		curl_close($ch);
-
-		return $result;
+		return $data;
 	}
 
 	/**
