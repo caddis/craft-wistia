@@ -2,6 +2,7 @@
 namespace Craft;
 
 use \Guzzle\Http\Client;
+require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
 class Wistia_VideosService extends BaseApplicationComponent
 {
@@ -77,6 +78,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		$params['videoFoam'] = $responsive;
 
 		$videos = [];
+		$thumbnail = array();
 
 		foreach ($hashedIds as $hashedId) {
 			$cacheKey = 'wistia_video_' . $hashedId;
@@ -95,6 +97,14 @@ class Wistia_VideosService extends BaseApplicationComponent
 					])
 				);
 
+				// Remove old school embed code that'll never be used
+				unset($video['embedCode']);
+
+				// TODO: Remove assets until functionality
+				// to pull these assets is programmed. Just trying
+				// to clean up the array for now
+				unset($video['assets']);
+
 				$video['name'] = htmlspecialchars_decode($video['name']);
 
 				$duration = (int) craft()
@@ -106,9 +116,17 @@ class Wistia_VideosService extends BaseApplicationComponent
 				craft()->cache->set($cacheKey, $video, $duration);
 			}
 
-			// Add embed and thumbnail after caching video data
+			$thumbnail = array(
+				'hashedId' => $hashedId,
+				'url' => $video['thumbnail']['url']
+			);
+
+			// Add preview and embed after caching video data
+			$video['preview'] = new Wistia_ThumbnailsModel($thumbnail);
 			$video['embed'] = $embed;
-			$video['preview'] = $this->getThumbnail($video);
+
+			// Remove original thumbnail
+			unset($video['thumbnail']);
 
 			$videos[] = $video;
 		}
@@ -180,8 +198,8 @@ class Wistia_VideosService extends BaseApplicationComponent
 				}
 
 				foreach ($data as $video) {
-					$hashedId = $this->getValue('hashed_id', $video);
-					$name = htmlspecialchars_decode($this->getValue('name', $video));
+					$hashedId = WistiaHelper::getValue('hashed_id', $video);
+					$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
 
 					$videos[$hashedId] = $name;
 				}
@@ -190,8 +208,8 @@ class Wistia_VideosService extends BaseApplicationComponent
 			$data = $this->getApiData('medias.json', []);
 
 			foreach ($data as $video) {
-				$hashedId = $this->getValue('hashed_id', $video);
-				$name = htmlspecialchars_decode($this->getValue('name', $video));
+				$hashedId = WistiaHelper::getValue('hashed_id', $video);
+				$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
 
 				$videos[$hashedId] = $name;
 			}
@@ -236,7 +254,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		// Add each project
 		foreach ($data as $project) {
-			$projects[$this->getValue('id', $project)] = $this->getValue('name', $project);
+			$projects[WistiaHelper::getValue('id', $project)] = WistiaHelper::getValue('name', $project);
 		}
 
 		craft()->httpSession->add('projects', $projects);
@@ -278,61 +296,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 		craft()->path->setTemplatesPath($oldPath);
 
 		return TemplateHelper::getRaw($html);
-	}
-
-	public function getThumbnail($video, $dimensions = array())
-	{
-		// Cast dimensions as (int)
-		$dimensions = array_map('intval', $dimensions);
-
-		if (! $dimensions) {
-			$dimensions = [
-				'width' => 1280,
-				'height' => 720
-			];
-		}
-
-		// Set the base filename
-		$filename = $this->getValue('hashed_id', $video);
-
-		// Extract the thumbnail URL from the video data
-		$thumbnail = strtok($this->getValue('url', $this->getValue('thumbnail', $video)), '?');
-
-		// Get width parameter
-		if (isset($dimensions['width'])) {
-			$filename .= '_' . $dimensions['width'];
-		}
-
-		// Get height parameter
-		if (isset($dimensions['height'])) {
-			$filename .= '_' . $dimensions['height'];
-		}
-
-		$filename .= '.jpg';
-
-		$cachePath = craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath;
-		$cacheFile = $_SERVER['DOCUMENT_ROOT'] . $cachePath . $filename;
-
-		// Check for cached/current thumbnail before retrieving
-		if (! file_exists($cacheFile) ||
-			(filemtime($cacheFile) < (time() - (int) craft()->plugins->getPlugin('wistia')->getSettings()->cacheDuration * 3600)) ||
-			! filesize($cacheFile))
-		{
-			if (isset($dimensions['height']) && isset($dimensions['width'])) {
-				$thumbnail .= '?image_crop_resized=' . $dimensions['width'] . 'x' . $dimensions['height'];
-			} else if (isset($dimensions['width'])) {
-				$thumbnail .= '?image_resize=' . $dimensions['width'];
-			}
-
-			copy($thumbnail, $cacheFile);
-
-			if (! filesize($cacheFile)) {
-				unlink($cacheFile);
-			}
-		}
-
-		// Return local path
-		return $cachePath . $filename;
 	}
 
 	/**
@@ -398,18 +361,5 @@ class Wistia_VideosService extends BaseApplicationComponent
 			->json();
 
 		return $data;
-	}
-
-	/**
-	 * Function to safely return the value of an array
-	 *
-	 * @param string $needle   The value to look for.
-	 * @param array  $haystack The array to search in.
-	 *
-	 * @return mixed False on failure, or the array at position $needle.
-	 */
-	private function getValue($needle, $haystack)
-	{
-		return array_key_exists($needle, $haystack) ? $haystack[$needle] : false;
 	}
 }
