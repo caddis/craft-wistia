@@ -16,5 +16,4 @@
 
 ## Outstanding Tasks
 
-- Add params to front end output
-	- offset
+- Ability to resize thumbnails
