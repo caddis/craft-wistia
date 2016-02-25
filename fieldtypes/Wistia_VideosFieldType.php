@@ -56,7 +56,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	{
 		$value = json_decode($value);
 
-		return new Wistia_VideosModel($value);
+		return craft()->wistia_videos->getVideos($value);
 	}
 
 	/**
@@ -75,7 +75,8 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$videos = [];
 
-			$selVideos = craft()->wistia_videos->getVideosByHashedId($value['value']);
+			$selVideos = craft()->wistia_videos
+				->getVideosByHashedId($value['value']);
 
 			if ($selVideos) {
 				foreach ($selVideos as $selVideo) {

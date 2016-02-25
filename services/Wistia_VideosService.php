@@ -21,6 +21,16 @@ class Wistia_VideosService extends BaseApplicationComponent
 	}
 
 	/**
+	 * Get videos from model to output on front end and in cp
+	 *
+	 * @param array $value
+	 */
+	public function getVideos($value)
+	{
+		return new Wistia_VideosModel($value);
+	}
+
+	/**
 	 * Get videos from API or cache
 	 *
 	 * @param array $hashedIds
