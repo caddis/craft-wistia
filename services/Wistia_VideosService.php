@@ -33,6 +33,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			return false;
 		}
 
+		$offset = isset($params['offset']) ? $params['offset'] : '';
 		$limit = isset($params['limit']) ? $params['limit'] : '';
 
 		// Determine if video should be responsive
@@ -101,6 +102,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 			$video['preview'] = $this->getThumbnail($video);
 
 			$videos[] = $video;
+		}
+
+		if ($offset) {
+			$videos = array_slice($videos, $offset);
 		}
 
 		if ($limit) {
