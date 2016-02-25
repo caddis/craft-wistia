@@ -39,6 +39,8 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
 {
 	width: 640px
 	height: 360px
+	limit: 150
+	offset: 0
 	autoPlay: false
 	controlsVisibleOnLoad: true
 	fullscreenButton: true
@@ -50,6 +52,11 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
 	responsive: true
 }
 ```
+#### limit
+Limits results. Default: `150`.
+
+#### offset
+Skip over the specified results. For example, if the tag returns 5 videos and you set an offset of two, the first two results are skipped and numbers 3, 4, and 5 are shown.
 
 #### width
 Width of the embed. If a width is applied, the responsive parameter (see below) will default to "false" unless you specify otherwise. Default: `640px`.

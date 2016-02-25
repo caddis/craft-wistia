@@ -34,7 +34,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 		}
 
 		$offset = isset($params['offset']) ? $params['offset'] : '';
-		$limit = isset($params['limit']) ? $params['limit'] : '';
 
 		// Determine if video should be responsive
 		if (isset($params['responsive'])) {
@@ -108,8 +107,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 			$videos = array_slice($videos, $offset);
 		}
 
-		if ($limit) {
-			$videos = array_slice($videos, 0, $limit);
+		if (isset($params['limit'])) {
+			$videos = array_slice($videos, 0, $params['limit']);
+		} else {
+			$videos = array_slice($videos, 0, '150');
 		}
 
 		return $videos;
