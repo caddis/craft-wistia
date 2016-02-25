@@ -64,7 +64,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			'height' => 360,
 			'playbar' => 'true',
 			'playButton' => 'true',
-			'playerColor' => craft()->config->get('wistiaPlayerColor') != null ? craft()->config->get('wistiaPlayerColor') : 'default',
+			'playerColor' => craft()->config->get('playerColor', 'wistia'),
 			'smallPlayButton' => 'true',
 			'stillUrl' => 'default',
 			'time' => 'default',

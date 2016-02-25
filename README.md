@@ -37,8 +37,8 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
 
 ```
 {
-	width: 640px
-	height: 360px
+	width: '640px'
+	height: '360px'
 	limit: 150
 	offset: 0
 	autoPlay: false
@@ -48,7 +48,7 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
 	playButton: true
 	volumeControl: true
 	smallPlayButton: true
-	playerColor: default
+	playerColor: '#7B796A'
 	responsive: true
 }
 ```
@@ -74,19 +74,29 @@ Determines if the video embed controls are visible on load. Default: `true`.
 Determines if the full screen button appears on load. Default: `true`.
 
 #### playbar
-Determines if the play bar appears on load. Defaults: `true`.
+Determines if the play bar appears on load. Default: `true`.
 
 #### playButton
-Determines if the play button appears on load. Defaults: `true`.
+Determines if the play button appears on load. Default: `true`.
 
 #### volumeControl
-Determines if the volume control appears on load. Defaults: `true`.
+Determines if the volume control appears on load. Default: `true`.
 
 #### smallPlayButton
-Determines if the small play button appears on load. Defaults: `true`.
+Determines if the small play button appears on load. Default: `true`.
 
 #### playerColor
 Enter a valid hex color to change the player color.
+
+You can also override the default player color for all your videos site-wide. Add a `wistia.php` file to your main config directory and enter your desired color.
+
+```
+<?php
+
+return array(
+	'playerColor' => '#ff00ff',
+);
+```
 
 #### responsive
 Determines if video embed is responds to screen width. Default: `true`.

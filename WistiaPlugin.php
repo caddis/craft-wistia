@@ -15,7 +15,7 @@ class WistiaPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.1.3';
+		return '0.1.3.1';
 	}
 
 	public function getDeveloper()
