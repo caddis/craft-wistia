@@ -8,34 +8,48 @@ After downloading and decompressing, put the wistia directory in your plugins fo
 To access the plugin settings, navigate to the Craft settings page and click on "Wistia" under the "Plugins" heading.
 
 ### API Key
-You will need to enter your Wistia API key in this field to use the plugin with your Wistia account and access your projects.
+Enter your Wistia API key to use the plugin with your Wistia account and access your projects.
 
 ### Cache Duration
-When first installed, this defaults to 24 hours. If you do not plan on changing this data very often you can safely increase the cache time here.
+Defaults to `24 hours`. If you don't plan on changing your video data often, you can safely increase the cache time here.
 
 ### Thumnail Cache Path
-When first installed, this defaults to /images/videos/. Regardless of whether you use the default or specify your own, you will need to make sure that the specified path exists on the server and is writable by Craft.
+Defaults to `/images/videos/`. Regardless of whether you use the default or specify your own, you will need to make sure that the specified path exists on the server and is writable by Craft. The plugin will not create the directory for you.
 
-## craft.wistia.videos
-To output videos on the front end, use the `craft.wistia.videos` tag. Please note that this tag does not output an ElementCriteriaModel object. You'll need to use the included parameters described below.
+## getVideos()
+To output videos on the front end, use your fieldtype's handle and add `getVideos`. You can apply a variety of parameters that are described in the next section.
 
 ```
 {% set params = {
-    hashedIds: '["0qwi28b5bp","0qwi28b5bp"]',
-    autoPlay: true,
+    width: 720,
     height: 420,
-    width: 720
+    autoPlay: true
 } %}
 
-{% for video in craft.wistia.videos(params) %}
+{% for video in entry.videos.getVideos(params) %}
     <h3>{{ video.name }}</h3>
     {{ video.embed }}
 {% endfor %}
 ```
-### Parameters
+## Parameters
 
-#### hashedIds
-HashedIds are unique identifiers Wistia uses to output video data including the embed. You must pass them as a valid JSON string even if there is only one id. While you are free to hardcode the hashedIds, most of the time you'll include them via a template tag e.g. `entry.videos` which outputs your selection in the fieldtype.
+### Parameters Quick Reference
+
+```
+{
+	width: 640px
+	height: 360px
+	autoPlay: false
+	controlsVisibleOnLoad: true
+	fullscreenButton: true
+	playbar: true
+	playButton: true
+	volumeControl: true
+	smallPlayButton: true
+	playerColor: default
+	responsive: true
+}
+```
 
 #### width
 Width of the embed. If a width is applied, the responsive parameter (see below) will default to "false" unless you specify otherwise. Default: `640px`.
@@ -72,41 +86,59 @@ Determines if video embed is responds to screen width. Default: `true`.
 
 ## Tags
 
-### id
+### Tags Quick Reference
+
+```
+{{ video.id }}
+{{ video.name }}
+{{ video.type }}
+{{ video.created }}
+{{ video.updated }}
+{{ video.duration }}
+{{ video.hashed_id }}
+{{ video.description }}
+{{ video.project.id }}
+{{ video.project.name }}
+{{ video.project.hashed_id }}
+{{ video.preview }}
+{{ video.embed }}
+```
+
+#### id
 The Wisita ID of the video.
 
-### name
+#### name
 The name assigned to the video in the Wistia admin.
 
-### type
+#### type
 The type of video.
 
-### created
+#### created
 Date the video was created in Wistia.
 
-### updated
+#### updated
 Date the video was last updated in Wistia.
 
-### duration
+#### duration
 The duration of the video in seconds.
 
-### hashed_id
+#### hashed_id
 Unique indentifier of the video.
 
-### description
+#### description
 A description of the video added in the Wistia admin.
 
-### project.id
+#### project.id
 The ID of the video’s project on Wistia.
 
-### project.name
+#### project.name
 The name of the video’s project on Wistia.
 
-### project.hashed_id
+#### project.hashed_id
 The hashed id of the video’s project on Wistia.
 
-### preview
+#### preview
 Default thumbnail size is 1280 by 720.
 
-### embed
+#### embed
 The formatted embed code of the video.
