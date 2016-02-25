@@ -34,14 +34,29 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Modify stored data
+	 * Modify data before it is stored
+	 *
+	 * @param array $value
+	 * @return string
+	 */
+	public function prepValueFromPost($value)
+	{
+		$value = json_encode($value);
+
+		return $value;
+	}
+
+	/**
+	 * Modify stored data for output
 	 *
 	 * @param array $value
 	 * @return string
 	 */
 	public function prepValue($value)
 	{
-		return $value;
+		$value = json_decode($value);
+
+		return new Wistia_VideosModel($value);
 	}
 
 	/**
@@ -60,9 +75,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$videos = [];
 
-			$selVideos = craft()->wistia_videos->getVideosByHashedId([
-				'hashedIds' => $value
-			]);
+			$selVideos = craft()->wistia_videos->getVideosByHashedId($value['value']);
 
 			if ($selVideos) {
 				foreach ($selVideos as $selVideo) {
@@ -89,7 +102,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Returns the label for the Options setting.
+	 * Returns the label for the Options setting
 	 *
 	 * @access protected
 	 * @return string
@@ -100,7 +113,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Define the settings
+	 * Define field settings
 	 *
 	 * @access protected
 	 * @return array
@@ -121,7 +134,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Display the field settings
+	 * Render field settings
 	 *
 	 * @return array
 	 */
@@ -144,7 +157,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Sanitize the settings
+	 * Sanitize field settings
 	 *
 	 * @param array $settings
 	 * @return array
