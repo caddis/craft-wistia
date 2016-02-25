@@ -23,20 +23,17 @@ class Wistia_VideosService extends BaseApplicationComponent
 	/**
 	 * Get videos from API or cache
 	 *
+	 * @param array $hashedIds
 	 * @param array $params
 	 * @return array
 	 */
-	public function getVideosByHashedId($params)
+	public function getVideosByHashedId($hashedIds, $params = [])
 	{
-		if (! isset($params['hashedIds']) || ! $params['hashedIds']) {
+		if (! $hashedIds) {
 			return false;
 		}
 
-		$hashedIds = json_decode($params['hashedIds']);
 		$limit = isset($params['limit']) ? $params['limit'] : '';
-
-		// Remove hashed ids from params array
-		unset($params['hashedIds']);
 
 		// Determine if video should be responsive
 		if (isset($params['responsive'])) {
