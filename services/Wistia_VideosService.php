@@ -125,7 +125,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @param array $projects
 	 * @return array
 	 */
-	public function getVideos($projects)
+	public function getVideosByProjectId($projects)
 	{
 		$cacheString = is_array($projects) ? implode('_', $projects) : '_' . $projects;
 

@@ -12,7 +12,7 @@ class Wistia_VideosController extends BaseController
 		}
 
 		return $this->renderTemplate('wistia/fieldtype/modal', [
-			'videos' => craft()->wistia_videos->getVideos($projectIds)
+			'videos' => craft()->wistia_videos->getVideosByProjectId($projectIds)
 		]);
 	}
 }
