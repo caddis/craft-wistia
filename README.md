@@ -106,6 +106,8 @@ Determines if the video embed responds to the browser screen width. Default: `tr
 ### Tags Quick Reference
 
 ```
+{{ video.embed }}
+{{ video.preview.getUrl }}
 {{ video.id }}
 {{ video.name }}
 {{ video.type }}
@@ -117,8 +119,22 @@ Determines if the video embed responds to the browser screen width. Default: `tr
 {{ video.project.id }}
 {{ video.project.name }}
 {{ video.project.hashed_id }}
-{{ video.preview.getUrl }}
-{{ video.embed }}
+```
+#### embed
+The formatted embed code of the video.
+
+#### preview.getUrl
+The default video screenshot. Default size: `1280px by 720px`.
+
+You can specify a width and/or height to resize the preview image. The image will be center cropped based on the size you specify. The width parameter is required for the transform to work, otherwise, the image will output the default size.
+
+```
+{% set previewSize = {
+	width: 503,
+	height: 273
+} %}
+
+{{ video.preview.getUrl(previewSize) }}
 ```
 
 #### id
@@ -153,20 +169,3 @@ The name of the video’s project.
 
 #### project.hashed_id
 The hashed ID of the video’s project.
-
-#### preview.getUrl
-The default video screenshot. Default size: `1280px by 720px`.
-
-You can specify a width and/or height to resize the preview image. The image will be center cropped based on the size you specify. The width parameter is required for the transform to work, otherwise, the image will output the default size.
-
-```
-{% set previewSize = {
-	width: 503,
-	height: 273
-} %}
-
-{{ video.preview.getUrl(previewSize) }}
-```
-
-#### embed
-The formatted embed code of the video.
