@@ -2,180 +2,155 @@
 
 Wistia = {};
 
-Wistia.Videos = Garnish.Base.extend({
-	/**
-	 * Init element selector
-	 */
-	init: function(settings) {
-		var scope = this;
+Wistia.VideosIndex = Craft.BaseElementIndex.extend({
+	init: function(elementType, $container, settings) {
+		this.base(elementType, $container, settings);
+	}
+});
 
-		scope.settings = settings;
-		scope.settings.max = parseInt(scope.settings.max);
-		scope.elementSelectContainer = $('#' + scope.settings.id);
-		scope.$addElementBtn = scope.elementSelectContainer.find('.add');
+Wistia.VideosElementSelectorInput = Craft.BaseElementSelectInput.extend({
+	init: function() {
+		this.settings = arguments;
 
-		scope.elements = new Craft.BaseElementSelectInput({
-			id: scope.settings.id,
-			limit: scope.settings.max,
-			onRemoveElements: function() {
-				scope.updateAddBtnState();
-			}
-		});
-
-		scope.initAddBtn();
-		scope.updateAddBtnState();
-		scope.toggleModal();
+		this.base.apply(this, this.settings);
 	},
 
-	/**
-	 * Add video button
-	 */
-	initAddBtn: function() {
-		if (this.$addElementBtn && this.settings.max === 1) {
-			this.$addElementBtn
-				.css('position', 'absolute')
-				.css('top', 0)
-				.css(Craft.left, 0);
+	removeElements: function($elements)
+	{
+		if (this.settings.selectable)
+		{
+			this.elementSelect.removeItems($elements);
 		}
+
+		// Disable the hidden input in case the form is submitted before this element gets removed from the DOM
+		$elements.children('input').prop('disabled', true);
+
+		this.$elements = this.$elements.not($elements);
+		this.updateAddElementsBtn();
+
+		this.onRemoveElements();
 	},
 
-	updateAddBtnState: function() {
-		if (this.elements.canAddMoreElements()) {
-			this.disabledAddBtn();
-		} else {
-			this.enableAddBtn();
-		}
+	createModal: function() {
+		return new Wistia.Modal(this, this.settings);
 	},
 
-	disabledAddBtn: function() {
-		this.$addElementBtn.removeClass('disabled');
-
-		if (this.settings.max === 1) {
-			if (this.elements._initialized) {
-				this.$addElementBtn.velocity('fadeIn', Craft.BaseElementSelectInput.REMOVE_FX_DURATION);
-			} else {
-				this.$addElementBtn.show();
-			}
-		}
-	},
-
-	enableAddBtn: function() {
-		this.$addElementBtn.addClass('disabled');
-
-		if (this.settings.max === 1) {
-			if (this.elements._initialized) {
-				this.$addElementBtn.velocity('fadeOut', Craft.BaseElementSelectInput.ADD_FX_DURATION);
-			} else {
-				this.$addElementBtn.hide();
-			}
-		}
-	},
-
-	/**
-	 * Video modal
-	 */
-	toggleModal: function() {
-		var scope = this;
-
-		scope.$addElementBtn.on('click', function() {
-			if (! $(this).hasClass('disabled')) {
-				if (! scope.modal) {
-					scope.getModalData();
-				} else {
-					scope.updateSelectableElements();
-
-					scope.selector.addItems(scope.$elementRow.filter(':not(.disabled)'));
-
-					scope.modal.show();
-				}
-			}
-		});
-	},
-
-	getModalData: function() {
-		var	scope = this;
-
-		$.get(Craft.getActionUrl('wistia/videos/getModal', {projectIds: scope.settings.projectIds}), function(data) {
-			scope.initModal(data);
-		});
-	},
-
-	initModal: function(data) {
-		this.modal = new Garnish.Modal($(data)[0]);
-
-		// Define modal structure
-		this.$modalCancel = this.modal.$container.find('.btn:not(.submit)');
-		this.$modalSubmit = this.modal.$container.find('.btn.submit');
-		this.$elementRowContainer = this.modal.$container.find('.data tbody');
-		this.$elementRow = this.$elementRowContainer.children();
-
-		this.modal.addListener(this.$modalCancel, 'click', 'hide');
-
-		this.updateSelectableElements();
-
-		this.initModalSelector();
-
-		this.updateSelectBtn();
-
-		this.searchElements();
-
-		this.submitSelections();
-	},
-
-	/**
-	 * Init modal selector
-	 */
-	initModalSelector: function() {
-		var	scope = this;
-
-		scope.selector = new Garnish.Select(scope.$elementRowContainer,
-			scope.$elementRow.filter(':not(.disabled)'), {
-				onSelectionChange: function() {
-					scope.updateSelectBtn();
-				}
-			});
-	},
-
-	/**
-	 * Update which modal elements are selectable
-	 */
 	updateSelectableElements: function() {
 		var scope = this,
 			isDisabled = 'disabled';
 
-		scope.$elementRow.each(function(e, el) {
+		scope.modal.$body.find('.data tbody tr').each(function(e, el) {
 			var $el = $(el);
 
 			$el.removeClass(isDisabled);
 
-			$(scope.elements.getSelectedElementIds()).each(function(i, val) {
+			Wistia.scope.getSelectedElementIds().each(function(i, val) {
 				if ($el.data('id') === val) {
 					$el.addClass(isDisabled);
 				}
 			});
 		});
+	}
+});
+
+Wistia.Modal = Craft.BaseElementSelectorModal.extend({
+	init: function(ElementSelectInput, settings) {
+		this.ElementSelectInput = ElementSelectInput;
+		this.settings = settings;
+
+		this.base(null, settings);
 	},
 
-	/**
-	 * Update select button based on which modal elements are selected
-	 */
-	updateSelectBtn: function() {
-		var	isDisabled = 'disabled';
+	onFadeIn: function() {
+		if (this.videoDataLoaded) {
+			this.elementSelector.addItems(this.$elementRow.filter(':not(.disabled)'));
+		}
 
-		if (this.selector.getTotalSelected()) {
-			this.$modalSubmit.removeClass(isDisabled);
-		} else {
-			this.$modalSubmit.addClass(isDisabled);
+		this.base();
+	},
+
+	updateSelectBtnState: function() {
+		if (this.$selectBtn) {
+			if (this.elementSelector.getTotalSelected()) {
+				this.enableSelectBtn();
+			} else {
+				this.disableSelectBtn();
+			}
 		}
 	},
 
-	/**
-	 * Search through elements
-	 */
-	searchElements: function() {
+	selectElements: function() {
+		var scope = this,
+			isDisabled = 'disabled';
+
+		if (! this.$selectBtn.hasClass(isDisabled)) {
+			this.elementSelector.getSelectedItems().each($.proxy(function(e, el) {
+				var $el = $(el),
+					newElement = $el.find($('.element'))
+						.clone()
+						.addClass('removable')
+						.prepend('<input name="' + this.settings.name + '[]" type="hidden" value="' + $el.data('id') + '">' +
+							'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
+
+				// Add new elements to selection list
+				this.ElementSelectInput.appendElement(newElement);
+
+				// Update elements object
+				this.ElementSelectInput.addElements(newElement);
+
+				// this.updateAddBtnState();
+			}, this));
+
+			this.hide();
+
+			// Clear out selection
+			this.elementSelector.deselectAll();
+			this.elementSelector.removeAllItems();
+		}
+	},
+
+	_createElementIndex: function() {
+		// Get the modal body HTML based on the settings
+		var data = {
+			projectIds: this.settings.projectIds
+		};
+
+		Craft.postActionRequest(Craft.getActionUrl('wistia/videos/getModal'), data, $.proxy(function(response, textStatus) {
+			if (textStatus == 'success') {
+				// Add video data to modal
+				this.$body.html(response);
+
+				this.elementIndex = new Wistia.VideosIndex(null, this.$container, null);
+
+				console.log(this.elementIndex);
+
+				this._createElementSelector();
+
+				this._createElementSearch();
+
+				this.videoDataLoaded = true;
+			}
+		}, this));
+	},
+
+	_createElementSelector: function() {
+		if (! this.elementSelectorCreated) {
+			var $container = this.$body.find('.data tbody');
+				$elements = this.$body.find('.data tbody tr');
+
+			this.$elementRow = $elements;
+
+			this.elementSelector = new Garnish.Select($container, $elements.filter(':not(.disabled)'), {
+					filter: ':not(.disabled)',
+					onSelectionChange: $.proxy(this, 'updateSelectBtnState')
+				});
+		}
+	},
+
+	_createElementSearch: function() {
 		var scope = this;
 
-		scope.modal.$container.find('.search input').on('keyup', function() {
+		scope.$body.find('.search input').on('keyup', function() {
 			var $this = $(this);
 
 			// Clear the timer if one is set
@@ -188,57 +163,18 @@ Wistia.Videos = Garnish.Base.extend({
 				var filter = $this.val();
 
 				// Loop through the rows
-				scope.$elementRow.each(function() {
-					var $this = $(this);
+				scope.$elementRow.each(function(e, el) {
+					var $el = $(el);
 
 					// If the row does not contain the text phrase hide it
-					if ($this.data('title').search(new RegExp(filter, 'i')) < 0) {
-						$this.hide();
+					if ($el.data('title').search(new RegExp(filter, 'i')) < 0) {
+						$el.hide();
 					} else {
 						// Show the row if the phrase matches
-						$this.show();
+						$el.show();
 					}
 				});
 			}, 300);
-		});
-	},
-
-	/**
-	 * Add selected modal elements to final list
-	 */
-	submitSelections: function() {
-		var scope = this,
-			isDisabled = 'disabled';
-
-		scope.$modalSubmit.on('click', function() {
-			var $this = $(this);
-
-			if (! $this.hasClass(isDisabled)) {
-				scope.selector.getSelectedItems().each(function(e, el) {
-					var $el = $(el),
-						newElement = $el.find($('.element'))
-							.clone()
-							.addClass('removable')
-							.prepend('<input name="' + scope.settings.name + '[]" type="hidden" value="' + $el.data('id') + '">' +
-								'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
-
-					// Add new elements to selection list
-					scope.elements.appendElement(newElement);
-
-					// Update elements object
-					scope.elements.addElements(newElement);
-
-					scope.updateAddBtnState();
-				});
-
-				scope.modal.hide();
-
-				$this.addClass(isDisabled);
-
-				// Clear out selection
-				scope.selector.deselectAll();
-				scope.selector.removeAllItems();
-			}
 		});
 	}
 });
