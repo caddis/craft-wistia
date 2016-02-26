@@ -38,7 +38,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @param array $params
 	 * @return array
 	 */
-	public function getVideosByHashedId($hashedIds, $params = [])
+	public function getVideosByHashedId($hashedIds, $params = array())
 	{
 		if (! $hashedIds) {
 			return false;
@@ -56,7 +56,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		}
 
 		// Set default parameters
-		$defaultParams = [
+		$defaultParams = array(
 			'autoPlay' => 'default',
 			'controlsVisibleOnLoad' => 'true',
 			'email' => 'default',
@@ -71,13 +71,13 @@ class Wistia_VideosService extends BaseApplicationComponent
 			'time' => 'default',
 			'volumeControl' => 'true',
 			'width' => 640
-		];
+		);
 
 		// Merge defaults with input parameters
 		$params = array_merge($defaultParams, $params);
 		$params['videoFoam'] = $responsive;
 
-		$videos = [];
+		$videos = array();
 		$thumbnail = array();
 
 		foreach ($hashedIds as $hashedId) {
@@ -92,9 +92,9 @@ class Wistia_VideosService extends BaseApplicationComponent
 			if ($cachedVideo) {
 				$video = $cachedVideo;
 			} else {
-				$video = current($this->getApiData('medias.json', [
+				$video = current($this->getApiData('medias.json', array(
 						'hashed_id' => $hashedId
-					])
+					))
 				);
 
 				// Remove old school embed code that'll never be used
@@ -161,7 +161,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			return $videos;
 		}
 
-		$videos = [];
+		$videos = array();
 
 		// Add videos from each project
 		if (is_array($projects)) {
@@ -177,13 +177,13 @@ class Wistia_VideosService extends BaseApplicationComponent
 				return false;
 			}
 
-			$data = [];
+			$data = array();
 
 			foreach ($projects as $project) {
-				$params = [
+				$params = array(
 					'sort_by' => 'name',
 					'project_id' => $project
-				];
+				);
 
 				// Try to get a list of videos for this project
 				try {
@@ -205,7 +205,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 				}
 			}
 		} else {
-			$data = $this->getApiData('medias.json', []);
+			$data = $this->getApiData('medias.json', array());
 
 			foreach ($data as $video) {
 				$hashedId = WistiaHelper::getValue('hashed_id', $video);
@@ -241,10 +241,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 			return $projects;
 		}
 
-		$projects = [];
-		$params = [
+		$projects = array();
+		$params = array(
 			'sort_by' => 'name'
-		];
+		);
 
 		try {
 			$data = $this->getApiData('projects', $params);
@@ -285,13 +285,13 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		craft()->path->setTemplatesPath($newPath);
 
-		$html = craft()->templates->render('fieldtype/embed', [
+		$html = craft()->templates->render('fieldtype/embed', array(
 			'embedUrl' => self::WISTIA_EMBED_URL,
 			'settings' => $settings,
 			'hashedId' => $hashedId,
 			'width' => $params['width'],
 			'height' => $params['height']
-		]);
+		));
 
 		craft()->path->setTemplatesPath($oldPath);
 
@@ -311,7 +311,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @access private
 	 * @return string The formatted URL.
 	 */
-	private function getApiData($endpoint, $params = [], $page = false)
+	private function getApiData($endpoint, $params = array(), $page = false)
 	{
 		// Set the base URL from the global settings
 		$baseUrl = self::WISTIA_API_URL;

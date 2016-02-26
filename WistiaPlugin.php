@@ -42,21 +42,21 @@ class WistiaPlugin extends BasePlugin
 	{
 		return array(
 			'apiKey' => AttributeType::String,
-			'cacheDuration' => [
+			'cacheDuration' => array(
 				AttributeType::Number,
 				'default' => 24
-			],
-			'thumbnailPath' => [
+			),
+			'thumbnailPath' => array(
 				AttributeType::String,
 				'default' => '/images/videos/'
-			]
+			)
 		);
 	}
 
 	public function getSettingsHtml()
 	{
-		return craft()->templates->render('wistia/plugin/settings', [
+		return craft()->templates->render('wistia/plugin/settings', array(
 			'settings' => $this->getSettings()
-		]);
+		));
 	}
 }
