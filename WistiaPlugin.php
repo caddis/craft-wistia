@@ -59,4 +59,11 @@ class WistiaPlugin extends BasePlugin
 			'settings' => $this->getSettings()
 		));
 	}
+
+	public function registerCachePaths()
+	{
+		return array(
+			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath => Craft::t('Wistia Preview Images')
+		);
+	}
 }
