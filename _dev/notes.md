@@ -17,5 +17,6 @@
 
 ## Outstanding Tasks
 
+- Add spinner to modal as videos are loading
 - Conditional to see if resized preview image already exists and is has not expire
 - Update default image conditional logic to use Craft's IOHelper methods
