@@ -5,49 +5,40 @@ require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
 class Wistia_ThumbnailsService extends BaseApplicationComponent
 {
-	public function getThumbnail($thumbData, $dimensions = array())
-	{
-		// Cast dimensions as (int)
-		$dimensions = array_map('intval', $dimensions);
+	public $relativeCachePath;
 
-		if (! $dimensions) {
-			$dimensions = [
-				'width' => 1280,
-				'height' => 720
-			];
-		}
+	public function __construct()
+	{
+		$this->relativeCachePath = craft()->plugins
+			->getPlugin('wistia')
+			->getSettings()
+			->thumbnailPath;
+	}
+
+	public function getThumbnail($thumbData, $transform)
+	{
+		// Set default size
+		$defaultWidth = '1280';
+		$defaultHeight = '720';
 
 		// Set the base filename
-		$filename = WistiaHelper::getValue('hashedId', $thumbData);
+		$hashedId = WistiaHelper::getValue('hashedId', $thumbData);
+		$filename = $hashedId;
 
 		// Extract the thumbnail URL from the video data
 		$thumbnail = strtok(WistiaHelper::getValue('url', $thumbData), '?');
 
-		// Get width parameter
-		if (isset($dimensions['width'])) {
-			$filename .= '_' . $dimensions['width'];
-		}
+		$filename .= '_' . $defaultWidth . '_' . $defaultHeight . '.jpg';
 
-		// Get height parameter
-		if (isset($dimensions['height'])) {
-			$filename .= '_' . $dimensions['height'];
-		}
-
-		$filename .= '.jpg';
-
-		$cachePath = craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath;
-		$cacheFile = $_SERVER['DOCUMENT_ROOT'] . $cachePath . $filename;
+		$fullCachePath = $_SERVER['DOCUMENT_ROOT'] . $this->relativeCachePath;
+		$cacheFile = $fullCachePath . $filename;
 
 		// Check for cached/current thumbnail before retrieving
 		if (! file_exists($cacheFile) ||
 			(filemtime($cacheFile) < (time() - (int) craft()->plugins->getPlugin('wistia')->getSettings()->cacheDuration * 3600)) ||
 			! filesize($cacheFile))
 		{
-			if (isset($dimensions['height']) && isset($dimensions['width'])) {
-				$thumbnail .= '?image_crop_resized=' . $dimensions['width'] . 'x' . $dimensions['height'];
-			} else if (isset($dimensions['width'])) {
-				$thumbnail .= '?image_resize=' . $dimensions['width'];
-			}
+			$thumbnail .= '?image_crop_resized=' . $defaultWidth . 'x' . $defaultHeight;
 
 			copy($thumbnail, $cacheFile);
 
@@ -56,17 +47,32 @@ class Wistia_ThumbnailsService extends BaseApplicationComponent
 			}
 		}
 
-		// Return local path
-		return $cachePath . $filename;
+		if (WistiaHelper::getValue('width', $transform)) {
+			$url = $this->transformThumbnail($fullCachePath, $cacheFile, $hashedId, $transform);
+		} else {
+			$url = $this->relativeCachePath . $filename;
+		}
+
+		return $url;
 	}
 
-	public function resizeThumbnail() {
-		$imgClass = new Image;
+	public function transformThumbnail($fullCachePath, $cacheFile, $hashedId, $transform) {
+		$width = WistiaHelper::getValue('width', $transform);
+		$height = WistiaHelper::getValue('height', $transform);
 
-		$imgClass->loadImage($cacheFile);
+		// Get the image
+		$image = craft()->images->loadImage($cacheFile);
 
-		$imgClass->resize(200, 300);
+		// Transform the image
+		$image->scaleAndCrop($width, $height);
 
-		$imgClass->saveAs($_SERVER['DOCUMENT_ROOT'] . craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath);
+		// Rename the image
+		$newName = $hashedId . '_' . $width . '_' . $height . '.jpg';
+		$newFullCachePath = $fullCachePath . $newName;
+
+		// Save the image
+		$image->saveAs($newFullCachePath);
+
+		return $this->relativeCachePath . $newName;
 	}
 }

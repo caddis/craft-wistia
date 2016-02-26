@@ -9,8 +9,8 @@ class Wistia_ThumbnailsModel extends BaseModel
 		$this->_thumbnail = $thumbnail;
 	}
 
-	public function getUrl()
+	public function getUrl($transform = [])
 	{
-		return craft()->wistia_thumbnails->getThumbnail($this->_thumbnail);
+		return craft()->wistia_thumbnails->getThumbnail($this->_thumbnail, $transform);
 	}
 }

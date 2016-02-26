@@ -116,13 +116,13 @@ class Wistia_VideosService extends BaseApplicationComponent
 				craft()->cache->set($cacheKey, $video, $duration);
 			}
 
-			$thumbnail = array(
+			$thumbData = array(
 				'hashedId' => $hashedId,
 				'url' => $video['thumbnail']['url']
 			);
 
 			// Add preview and embed after caching video data
-			$video['preview'] = new Wistia_ThumbnailsModel($thumbnail);
+			$video['preview'] = new Wistia_ThumbnailsModel($thumbData);
 			$video['embed'] = $embed;
 
 			// Remove original thumbnail

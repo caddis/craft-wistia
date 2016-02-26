@@ -155,7 +155,18 @@ The name of the video’s project.
 The hashed ID of the video’s project.
 
 #### preview.getUrl
-The default video screenshot. Default: `1280px by 720px`.
+The default video screenshot. Default size: `1280px by 720px`.
+
+You can specify a width and/or height to resize the preview image. The image will be center cropped based on the size you specify. The width parameter is required for the transform to work, otherwise, the image will output the default size.
+
+```
+{% set previewSize = {
+	width: 503,
+	height: 273
+} %}
+
+{{ video.preview.getUrl(previewSize) }}
+```
 
 #### embed
 The formatted embed code of the video.

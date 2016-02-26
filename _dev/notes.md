@@ -13,7 +13,9 @@
 - Add "No items found" message when search returns not results
 - Auto create thumbnail image directory
 - Add sorting and orderby params
+- Revert to old array syntax (array())
 
 ## Outstanding Tasks
 
-- Ability to resize thumbnails
+- Conditional to see if resized preview image already exists and is has not expire
+- Update default image conditional logic to use Craft's IOHelper methods
