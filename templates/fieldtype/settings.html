@@ -11,7 +11,8 @@
 	})
 }}
 
-{{
+{# TODO: Add minimum selection functionality and change limit to "Maximum Selections" #}
+{# {{
 	form.textField({
 		label: 'Minimum selections'|t,
 		id: 'min',
@@ -19,11 +20,12 @@
 		value: settings.min,
 		size: 2
 	})
-}}
+}} #}
 
 {{
 	form.textField({
-		label: 'Maximum selections'|t,
+		label: 'Limit'|t,
+		instructions: "Limit the number of selectable videos."|t,
 		id: 'max',
 		name: 'max',
 		value: settings.max,
