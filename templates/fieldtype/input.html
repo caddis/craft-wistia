@@ -20,22 +20,25 @@
 			</div>
 		{% endfor %}
 	</div>
-	<div class="btn-wrapper">
-		<div class="btn add icon dashed{% if settings.max and videos|length >= settings.max %} disabled{% endif %}">
-			Add a video
-		</div>
+	<div
+		class="btn add icon dashed{% if settings.max and videos|length >= settings.max %} disabled{% endif %}"
+		{% if settings.max == '1' and videos|length %}
+			style="display: none"
+		{% endif %}
+	>
+		Add a video
 	</div>
 </div>
 
 {% set jsSettings = {
 	id: id|namespaceInputId,
 	name: name|namespaceInputName,
-	max: settings.max,
+	limit: settings.max,
 	projectIds: settings.projects|join(',')
 } %}
 
-{% includeJsResource('wistia/js/input.js') %}
+{% includeJsResource('wistia/js/input.min.js') %}
 
 {% includejs %}
-	new Wistia.Videos({{ jsSettings|json_encode|raw }});
+	new Wistia.VideoSelectInput({{ jsSettings|json_encode|raw }});
 {% endincludejs %}
