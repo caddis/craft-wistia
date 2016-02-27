@@ -2,13 +2,7 @@
 
 Wistia = {};
 
-Wistia.VideosIndex = Craft.BaseElementIndex.extend({
-	init: function(elementType, $container, settings) {
-		this.base(elementType, $container, settings);
-	}
-});
-
-Wistia.VideosElementSelectorInput = Craft.BaseElementSelectInput.extend({
+Wistia.VideoSelectInput = Craft.BaseElementSelectInput.extend({
 	init: function() {
 		this.settings = arguments;
 
@@ -17,9 +11,15 @@ Wistia.VideosElementSelectorInput = Craft.BaseElementSelectInput.extend({
 
 	removeElements: function($elements)
 	{
-		if (this.settings.selectable)
-		{
+		if (this.settings.selectable) {
 			this.elementSelect.removeItems($elements);
+		}
+
+		if (this.modal) {
+			var $item = this.modal.$body.find('.data tbody').children('[data-id="' + $elements.data('id') + '"]:first');
+
+			$item.removeClass('disabled');
+			this.modal.elementSelector.addItems($item);
 		}
 
 		// Disable the hidden input in case the form is submitted before this element gets removed from the DOM
@@ -32,41 +32,22 @@ Wistia.VideosElementSelectorInput = Craft.BaseElementSelectInput.extend({
 	},
 
 	createModal: function() {
-		return new Wistia.Modal(this, this.settings);
-	},
-
-	updateSelectableElements: function() {
-		var scope = this,
-			isDisabled = 'disabled';
-
-		scope.modal.$body.find('.data tbody tr').each(function(e, el) {
-			var $el = $(el);
-
-			$el.removeClass(isDisabled);
-
-			Wistia.scope.getSelectedElementIds().each(function(i, val) {
-				if ($el.data('id') === val) {
-					$el.addClass(isDisabled);
-				}
-			});
-		});
+		return new Wistia.VideoSelectorModal(this, this.settings);
 	}
 });
 
-Wistia.Modal = Craft.BaseElementSelectorModal.extend({
-	init: function(ElementSelectInput, settings) {
-		this.ElementSelectInput = ElementSelectInput;
+Wistia.VideoSelectorModal = Craft.BaseElementSelectorModal.extend({
+	init: function(elementSelectInput, settings) {
+		this.elementSelectInput = elementSelectInput;
 		this.settings = settings;
 
-		this.base(null, settings);
+		this.base(null, this.settings);
 	},
 
 	onFadeIn: function() {
-		if (this.videoDataLoaded) {
-			this.elementSelector.addItems(this.$elementRow.filter(':not(.disabled)'));
+		if (! this.videoDataLoaded) {
+			this._createElementIndex();
 		}
-
-		this.base();
 	},
 
 	updateSelectBtnState: function() {
@@ -80,10 +61,9 @@ Wistia.Modal = Craft.BaseElementSelectorModal.extend({
 	},
 
 	selectElements: function() {
-		var scope = this,
-			isDisabled = 'disabled';
+		var isDisabled = 'disabled';
 
-		if (! this.$selectBtn.hasClass(isDisabled)) {
+		if (this.elementSelector.getTotalSelected()) {
 			this.elementSelector.getSelectedItems().each($.proxy(function(e, el) {
 				var $el = $(el),
 					newElement = $el.find($('.element'))
@@ -92,37 +72,31 @@ Wistia.Modal = Craft.BaseElementSelectorModal.extend({
 						.prepend('<input name="' + this.settings.name + '[]" type="hidden" value="' + $el.data('id') + '">' +
 							'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
 
-				// Add new elements to selection list
-				this.ElementSelectInput.appendElement(newElement);
+				// Disable items from being selected twice
+				$el.addClass(isDisabled);
+				this.elementSelector.removeItems($el);
 
-				// Update elements object
-				this.ElementSelectInput.addElements(newElement);
-
-				// this.updateAddBtnState();
+				// Add the new element to selected list
+				this.elementSelectInput.appendElement(newElement);
+				this.elementSelectInput.animateElementIntoPlace($el, newElement);
+				this.elementSelectInput.addElements(newElement);
 			}, this));
 
 			this.hide();
 
 			// Clear out selection
 			this.elementSelector.deselectAll();
-			this.elementSelector.removeAllItems();
 		}
 	},
 
 	_createElementIndex: function() {
-		// Get the modal body HTML based on the settings
 		var data = {
 			projectIds: this.settings.projectIds
 		};
 
 		Craft.postActionRequest(Craft.getActionUrl('wistia/videos/getModal'), data, $.proxy(function(response, textStatus) {
 			if (textStatus == 'success') {
-				// Add video data to modal
 				this.$body.html(response);
-
-				this.elementIndex = new Wistia.VideosIndex(null, this.$container, null);
-
-				console.log(this.elementIndex);
 
 				this._createElementSelector();
 
@@ -135,12 +109,25 @@ Wistia.Modal = Craft.BaseElementSelectorModal.extend({
 
 	_createElementSelector: function() {
 		if (! this.elementSelectorCreated) {
-			var $container = this.$body.find('.data tbody');
-				$elements = this.$body.find('.data tbody tr');
+			var $container = this.$body.find('.data tbody'),
+				disabledIds = this.elementSelectInput.getDisabledElementIds();
 
-			this.$elementRow = $elements;
+			this.$elementRow = this.$body.find('.data tbody tr');
 
-			this.elementSelector = new Garnish.Select($container, $elements.filter(':not(.disabled)'), {
+			if (disabledIds.length) {
+				this.$elementRow.each($.proxy(function(e, el) {
+					var $el = $(el);
+
+					$(disabledIds).each(function(i, key) {
+						if ($(el).data('id') === key) {
+							$el.addClass('disabled');
+						}
+					});
+				}, this));
+			}
+
+			this.elementSelector = new Garnish.Select($container,
+				this.$elementRow.filter(':not(.disabled)'), {
 					filter: ':not(.disabled)',
 					onSelectionChange: $.proxy(this, 'updateSelectBtnState')
 				});
