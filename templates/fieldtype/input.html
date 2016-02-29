@@ -37,8 +37,6 @@
 	projectIds: settings.projects|join(',')
 } %}
 
-{% includeJsResource('wistia/js/input.min.js') %}
-
 {% includejs %}
 	new Wistia.VideoSelectInput({{ jsSettings|json_encode|raw }});
 {% endincludejs %}

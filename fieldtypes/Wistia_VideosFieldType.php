@@ -75,6 +75,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$videos = array();
 
+			// Build selected video output
 			$selVideos = craft()->wistia_videos
 				->getVideosByHashedId($value['value']);
 
@@ -86,6 +87,9 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 					);
 				}
 			}
+
+			// Include Javascript
+			craft()->templates->includeJsResource('wistia/js/input.min.js');
 
 			$params = array(
 				'settings' => $this->getSettings(),
