@@ -13,7 +13,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 	public function __construct()
 	{
-		// Set the API key from the global settings
 		$this->apiKey = craft()
 			->plugins
 			->getPlugin('wistia')
@@ -22,9 +21,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Get videos from model to output on front end and in cp
+	 * Pass video data to the model
 	 *
 	 * @param array $value
+	 * @return array
 	 */
 	public function getVideos($value)
 	{
@@ -301,8 +301,8 @@ class Wistia_VideosService extends BaseApplicationComponent
 	/**
 	 * Function to return an API URL
 	 *
-	 * @param string $endpoint	 The Wistia API endpoint to query.
-	 * @param array  $params Additional parameters to append to the request.
+	 * @param string $endpoint The Wistia API endpoint to query.
+	 * @param array $params Additional parameters to append to the request.
 	 *
 	 * @throws Exception If no API key is defined.
 	 * @throws Exception If video data is requested with an id that is blank or 0.
