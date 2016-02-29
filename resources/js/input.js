@@ -16,7 +16,9 @@ Wistia.VideoSelectInput = Craft.BaseElementSelectInput.extend({
 		}
 
 		if (this.modal) {
-			var $item = this.modal.$body.find('.data tbody').children('[data-id="' + $elements.data('id') + '"]:first');
+			var $item = this.modal.$body
+				.find('.js-element-tbody')
+				.children('[data-id="' + $elements.data('id') + '"]:first');
 
 			$item.removeClass('disabled');
 			this.modal.elementSelector.addItems($item);
@@ -66,7 +68,7 @@ Wistia.VideoSelectorModal = Craft.BaseElementSelectorModal.extend({
 		if (this.elementSelector.getTotalSelected()) {
 			this.elementSelector.getSelectedItems().each($.proxy(function(e, el) {
 				var $el = $(el),
-					newElement = $el.find($('.element'))
+					newElement = $el.find('.element')
 						.clone()
 						.addClass('removable')
 						.prepend('<input name="' + this.settings.name + '[]" type="hidden" value="' + $el.data('id') + '">' +
@@ -109,10 +111,10 @@ Wistia.VideoSelectorModal = Craft.BaseElementSelectorModal.extend({
 
 	_createElementSelector: function() {
 		if (! this.elementSelectorCreated) {
-			var $container = this.$body.find('.data tbody'),
+			var $container = this.$body.find('.js-element-tbody'),
 				disabledIds = this.elementSelectInput.getDisabledElementIds();
 
-			this.$elementRow = this.$body.find('.data tbody tr');
+			this.$elementRow = this.$body.find('.js-element-tr');
 
 			if (disabledIds.length) {
 				this.$elementRow.each($.proxy(function(e, el) {

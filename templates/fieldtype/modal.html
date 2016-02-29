@@ -28,9 +28,10 @@
 							<th>Title</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody class="js-element-tbody">
 						{% for id, video in videos %}
 							<tr
+								class="js-element-tr"
 								data-id="{{ id }}"
 								data-title="{{ video }}"
 							>
