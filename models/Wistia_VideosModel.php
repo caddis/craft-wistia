@@ -9,7 +9,7 @@ class Wistia_VideosModel extends BaseModel
 		$this->value = $value;
 	}
 
-	public function getVideos($params = [])
+	public function getVideos($params = array())
 	{
 		return craft()->wistia_videos->getVideosByHashedId($this->value, $params);
 	}

@@ -68,33 +68,33 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$params = [];
+		$params = array();
 
 		if ($this->apiKey) {
 			$template = 'wistia/fieldtype/input';
 
-			$videos = [];
+			$videos = array();
 
 			$selVideos = craft()->wistia_videos
 				->getVideosByHashedId($value['value']);
 
 			if ($selVideos) {
 				foreach ($selVideos as $selVideo) {
-					$videos[] = [
+					$videos[] = array(
 						'id' => $selVideo['hashed_id'],
 						'title' => $selVideo['name']
-					];
+					);
 				}
 			}
 
-			$params = [
+			$params = array(
 				'settings' => $this->getSettings(),
 				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
 				'value' => $value,
 				'videos' => $videos,
 				'projects' => $this->getSettings()->projects
-			];
+			);
 		} else {
 			$template = 'wistia/fieldtype/errors';
 		}
@@ -131,7 +131,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'default' => 0
 			],
 			'max' => AttributeType::Number
-		];
+		);
 	}
 
 	/**
@@ -141,15 +141,15 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		$params = [];
+		$params = array();
 
 		if ($this->apiKey) {
 			$template = 'wistia/fieldtype/settings';
 
-			$params = [
+			$params = array(
 				'settings' => $this->getSettings(),
 				'projects' => craft()->wistia_videos->getProjects()
-			];
+			);
 		} else {
 			$template = 'wistia/fieldtype/errors';
 		}
