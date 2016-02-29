@@ -1,0 +1,108 @@
+<?php
+namespace Craft;
+
+require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
+
+class Wistia_ThumbnailsService extends BaseApplicationComponent
+{
+	public $cacheDuration;
+	public $relativeCachePath;
+	public $absoluteCachePath;
+
+	public function __construct()
+	{
+		$this->cacheDuration = craft()->plugins
+			->getPlugin('wistia')
+			->getSettings()
+			->cacheDuration . 'hours';
+
+		$this->relativeCachePath = craft()->plugins
+			->getPlugin('wistia')
+			->getSettings()
+			->thumbnailPath;
+
+		$this->absoluteCachePath = $_SERVER['DOCUMENT_ROOT'] . $this->relativeCachePath;
+	}
+
+	/**
+	 * Pass the thumbnail data to the model
+	 *
+	 * @param array $thumbData
+	 * @return array
+	 */
+	public function getThumbnail($thumbData)
+	{
+		return new Wistia_ThumbnailsModel($thumbData);
+	}
+
+	/**
+	 * Get the new downloaded thumbnail url
+	 *
+	 * @param array $thumbData
+	 * @param array $transform
+	 * @return string
+	 */
+	public function getThumbnailUrl($thumbData, $transform)
+	{
+		// Set default size
+		$defaultWidth = '1280';
+		$defaultHeight = '720';
+
+		// Set the base filename
+		$hashedId = WistiaHelper::getValue('hashedId', $thumbData);
+		$filename = $hashedId;
+
+		// Extract the thumbnail URL from the video data
+		$thumbnail = strtok(WistiaHelper::getValue('url', $thumbData), '?') . '?image_crop_resized=' . $defaultWidth . 'x' . $defaultHeight;
+
+		// Update filename with default width and height
+		$filename .= '_' . $defaultWidth . '_' . $defaultHeight . '.jpg';
+
+		$cachedFile = $this->absoluteCachePath . $filename;
+
+		$url = '';
+
+		// Check if absolute cache path exists
+		if (IOHelper::folderExists($this->absoluteCachePath)) {
+			// Check whether thumbnail exists and/or has not expired
+			if (! DateTimeHelper::wasWithinLast($this->cacheDuration, IOHelper::getLastTimeModified($cachedFile))) {
+				copy($thumbnail, $cachedFile);
+			}
+
+			// Check if transform is defined
+			if (WistiaHelper::getValue('width', $transform)) {
+				$url = $this->transformThumbnail($cachedFile, $hashedId, $transform);
+			} else {
+				$url = $this->relativeCachePath . $filename;
+			}
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Transform the thumbnail
+	 *
+	 * @param string $cachedFile
+	 * @param string $hashedId
+	 * @param array $transform
+	 * @return string
+	 */
+	public function transformThumbnail($originalCachedFile, $hashedId, $transform) {
+		$width = WistiaHelper::getValue('width', $transform);
+		$height = WistiaHelper::getValue('height', $transform);
+
+		$newFilename = $hashedId . '_' . $width . '_' . $height . '.jpg';
+		$newCachedFile = $this->absoluteCachePath . $newFilename;
+
+		// Check whether thumbnail exists and/or has not expired
+		if (! DateTimeHelper::wasWithinLast($this->cacheDuration, IOHelper::getLastTimeModified($newCachedFile))) {
+			$image = craft()->images->loadImage($originalCachedFile);
+
+			$image->scaleAndCrop($width, $height)
+				->saveAs($newCachedFile);
+		}
+
+		return $this->relativeCachePath . $newFilename;
+	}
+}

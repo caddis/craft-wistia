@@ -1,0 +1,42 @@
+<input type="hidden" name="{{ name }}" value="">
+
+<div class="elementselect" id="{{ name }}">
+	<div class="elements">
+		{% for video in videos %}
+			<div
+				class="element small hasstatus removable"
+				data-id="{{ video.id }}"
+			>
+				<input
+					name="{{ name }}[]"
+					type="hidden"
+					value="{{ video.id }}"
+				>
+				<a class="delete icon"></a>
+				<span class="status live"></span>
+				<div class="label">
+					<span class="title">{{ video.title }}</span>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	<div
+		class="btn add icon dashed{% if settings.max and videos|length >= settings.max %} disabled{% endif %}"
+		{% if settings.max == '1' and videos|length %}
+			style="display: none"
+		{% endif %}
+	>
+		Add a video
+	</div>
+</div>
+
+{% set jsSettings = {
+	id: id|namespaceInputId,
+	name: name|namespaceInputName,
+	limit: settings.max,
+	projectIds: settings.projects|join(',')
+} %}
+
+{% includejs %}
+	new Wistia.VideoSelectInput({{ jsSettings|json_encode|raw }});
+{% endincludejs %}

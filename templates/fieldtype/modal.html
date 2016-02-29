@@ -1,0 +1,56 @@
+<div class="content">
+	<div class="main">
+		<div class="toolbar">
+			<table class="inputs fullwidth">
+				<tbody>
+					<tr>
+						<td>
+							<div class="texticon search icon clearable">
+								<input
+									autocomplete="off"
+									class="text nicetext fullwidth"
+									placeholder="Search"
+									type="text"
+								>
+								<div class="clear hidden" title="Clear"></div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="spinner hidden"></div>
+		</div>
+		<div class="elements">
+			<div class="tableview">
+				<table class="data fullwidth">
+					<thead>
+						<tr>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody class="js-element-tbody">
+						{% for id, video in videos %}
+							<tr
+								class="js-element-tr"
+								data-id="{{ id }}"
+								data-title="{{ video }}"
+							>
+								<td>
+									<div
+										class="element small hasstatus"
+										data-id="{{ id }}"
+									>
+										<span class="status live"></span>
+										<div class="label">
+											<span class="title">{{ video }}</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

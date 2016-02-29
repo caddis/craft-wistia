@@ -15,7 +15,7 @@ class WistiaPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.1.0';
+		return '0.1.7';
 	}
 
 	public function getDeveloper()
@@ -38,24 +38,17 @@ class WistiaPlugin extends BasePlugin
 		return '1.0.0';
 	}
 
-	public function hasCpSection()
-	{
-		return true;
-	}
-
 	protected function defineSettings()
 	{
 		return array(
-			'apiKey' => array(
-				AttributeType::String
-			),
+			'apiKey' => AttributeType::String,
 			'cacheDuration' => array(
 				AttributeType::Number,
-				24
+				'default' => 24
 			),
 			'thumbnailPath' => array(
 				AttributeType::String,
-				'/images/videos/'
+				'default' => '/images/videos/'
 			)
 		);
 	}
@@ -65,5 +58,15 @@ class WistiaPlugin extends BasePlugin
 		return craft()->templates->render('wistia/plugin/settings', array(
 			'settings' => $this->getSettings()
 		));
+	}
+
+	public function registerCachePaths()
+	{
+		return array(
+			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins
+				->getPlugin('wistia')
+				->getSettings()
+				->thumbnailPath => Craft::t('Wistia preview Images')
+		);
 	}
 }

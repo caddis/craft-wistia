@@ -1,0 +1,35 @@
+{% import '_includes/forms' as form %}
+
+{{
+	form.checkboxSelectField({
+		label: "Projects"|t,
+		instructions: "Which projects do you want to display in your field?"|t,
+		id: 'projects',
+		name: 'projects',
+		options: projects,
+		values: settings.projects
+	})
+}}
+
+{# TODO: Add minimum selection functionality and change limit to "Maximum Selections" #}
+{# {{
+{{
+	form.textField({
+		label: 'Minimum selections'|t,
+		id: 'min',
+		name: 'min',
+		value: settings.min,
+		size: 2
+	})
+}} #}
+
+{{
+	form.textField({
+		label: 'Limit'|t,
+		instructions: "Limit the number of selectable videos."|t,
+		id: 'max',
+		name: 'max',
+		value: settings.max,
+		size: 2
+	})
+}}
