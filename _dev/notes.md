@@ -3,6 +3,7 @@
 ## Feature Enhancements Wishlist
 
 ### Front End
+- Error message if image cache directory is not added
 - Sorting and order-by params
 - Video asset downloads and info
 
