@@ -63,7 +63,7 @@ class WistiaPlugin extends BasePlugin
 	public function registerCachePaths()
 	{
 		return array(
-			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath => Craft::t('Wistia Preview Images')
+			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins->getPlugin('wistia')->getSettings()->thumbnailPath => Craft::t('Wistia preview Images')
 		);
 	}
 }

@@ -122,7 +122,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			);
 
 			// Add preview and embed after caching video data
-			$video['preview'] = new Wistia_ThumbnailsModel($thumbData);
+			$video['preview'] = craft()->wistia_thumbnails->getThumbnail($thumbData);
 			$video['embed'] = $embed;
 
 			// Remove original thumbnail
