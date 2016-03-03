@@ -78,7 +78,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			// Build selected video output
 			$selVideos = craft()->wistia_videos
-				->getVideosByHashedId($value['value']);
+				->getVideosByHashedId($value['ids']);
 
 			if ($selVideos) {
 				foreach ($selVideos as $selVideo) {

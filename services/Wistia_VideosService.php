@@ -304,26 +304,27 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @access private
 	 * @return array
 	 */
-	private function getApiData($endpoint, $params = array(), $page = false)
+	private function getApiData($endpoint, $params = array(), $page = 1)
 	{
-		// Set the base URL from the global settings
 		$baseUrl = self::WISTIA_API_URL;
 
+		$perPageDefault = 10;
+
 		$apiParams = array(
-			'per_page=100'
+			'per_page=' . $perPageDefault
 		);
 
 		if ($page) {
-			$apiParams[] = '&page=' . $page;
+			$apiParams[] = 'page=' . $page;
 		}
 
 		foreach ($params as $key => $value) {
 			$apiParams[] = "$key=$value";
 		}
 
-		$url_params = '?' . implode('&', $apiParams);
+		$urlParams = '?' . implode('&', $apiParams);
 
-		$baseUrl .= $endpoint . $url_params;
+		$baseUrl .= $endpoint . $urlParams;
 
 		$data = $this->send($baseUrl);
 
@@ -331,8 +332,8 @@ class Wistia_VideosService extends BaseApplicationComponent
 			throw new Exception(lang('error_remote_file') . $baseUrl, 3);
 		}
 
-		if (count($data) === 100) {
-			$data .= $this->getApiData($endpoint, $params, $page + 1);
+		if (count($data) === $perPageDefault) {
+			$data = array_merge($data, $this->getApiData($endpoint, $params, $page + 1));
 		}
 
 		return $data;
