@@ -3,14 +3,14 @@ namespace Craft;
 
 class Wistia_VideosModel extends BaseModel
 {
-	public $ids;
+	private $value;
 
 	public function __construct($value) {
-		$this->ids = $value;
+		$this->value = $value;
 	}
 
 	public function getVideos($params = array())
 	{
-		return craft()->wistia_videos->getVideosByHashedId($this->ids, $params);
+		return craft()->wistia_videos->getVideosByHashedId($this->value, $params);
 	}
 }

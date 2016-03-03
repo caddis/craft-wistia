@@ -10,12 +10,12 @@
 				<input
 					name="{{ name }}[]"
 					type="hidden"
-					value="{{ video.id }}"
+					value="{{ video.hashed_id }}"
 				>
 				<a class="delete icon"></a>
 				<span class="status live"></span>
 				<div class="label">
-					<span class="title">{{ video.title }}</span>
+					<span class="title">{{ video.name }}</span>
 				</div>
 			</div>
 		{% endfor %}
