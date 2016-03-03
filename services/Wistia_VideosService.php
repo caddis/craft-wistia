@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-use \Guzzle\Http\Client;
+use Guzzle\Http\Client;
 require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
 class Wistia_VideosService extends BaseApplicationComponent
@@ -13,8 +13,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 	public function __construct()
 	{
-		$this->apiKey = craft()
-			->plugins
+		$this->apiKey = craft()->plugins
 			->getPlugin('wistia')
 			->getSettings()
 			->apiKey;
@@ -35,7 +34,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * Get videos from API or cache
 	 *
 	 * @param array $hashedIds
-	 * @param array $params
+	 * @param {array} $params
 	 * @return array
 	 */
 	public function getVideosByHashedId($hashedIds, $params = array())
@@ -83,8 +82,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		foreach ($hashedIds as $hashedId) {
 			$cacheKey = 'wistia_video_' . $hashedId;
 
-			// Get embed code
-			$embed = $this->getSuperEmbed($hashedId, $params);
+			$embed = $this->getEmbed($hashedId, $params);
 
 			$cachedVideo = craft()->cache->get($cacheKey);
 
@@ -93,11 +91,10 @@ class Wistia_VideosService extends BaseApplicationComponent
 				$video = $cachedVideo;
 			} else {
 				$video = current($this->getApiData('medias.json', array(
-						'hashed_id' => $hashedId
-					))
-				);
+					'hashed_id' => $hashedId
+				)));
 
-				// Remove old school embed code that'll never be used
+				// Remove old embed code from array
 				unset($video['embedCode']);
 
 				// TODO: Remove assets until functionality
@@ -107,8 +104,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 				$video['name'] = htmlspecialchars_decode($video['name']);
 
-				$duration = (int) craft()
-					->plugins
+				$duration = (int) craft()->plugins
 					->getPlugin('wistia')
 					->getSettings()
 					->cacheDuration * 3600;
@@ -137,8 +133,6 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		if (isset($params['limit'])) {
 			$videos = array_slice($videos, 0, $params['limit']);
-		} else {
-			$videos = array_slice($videos, 0, '150');
 		}
 
 		return $videos;
@@ -155,9 +149,9 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 */
 	public function getVideosByProjectId($projects)
 	{
-		$cacheString = is_array($projects) ? implode('_', $projects) : '_' . $projects;
+		$cacheString = is_array($projects) ? implode('-', $projects) : '-' . $projects;
 
-		if (($videos = craft()->httpSession->get('project_videos' . $cacheString, false)) !== false) {
+		if (($videos = craft()->httpSession->get('wistiaProjectVideos' . $cacheString, false)) !== false) {
 			return $videos;
 		}
 
@@ -217,7 +211,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		ksort($videos);
 
-		craft()->httpSession->add('project_videos' . $cacheString, $videos);
+		craft()->httpSession->add('wistiaProjectVideos' . $cacheString, $videos);
 
 		return $videos;
 	}
@@ -232,12 +226,11 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 */
 	public function getProjects()
 	{
-		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
-		if ($projects = craft()->httpSession->get('projects', false)) {
+		if ($projects = craft()->httpSession->get('wistiaProjects', false)) {
 			return $projects;
 		}
 
@@ -271,7 +264,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @access private
 	 * @return string
 	 */
-	private function getSuperEmbed($hashedId, $params)
+	private function getEmbed($hashedId, $params)
 	{
 		$params = array_filter($params, function($val) {
 			return $val !== 'default';
@@ -281,16 +274,16 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 		$oldPath = craft()->path->getTemplatesPath();
 
-		$newPath = craft()->path->getPluginsPath().'wistia/templates';
+		$newPath = craft()->path->getPluginsPath() . 'wistia/templates';
 
 		craft()->path->setTemplatesPath($newPath);
 
 		$html = craft()->templates->render('fieldtype/embed', array(
 			'embedUrl' => self::WISTIA_EMBED_URL,
-			'settings' => $settings,
 			'hashedId' => $hashedId,
-			'width' => $params['width'],
-			'height' => $params['height']
+			'height' => $params['height'],
+			'settings' => $settings,
+			'width' => $params['width']
 		));
 
 		craft()->path->setTemplatesPath($oldPath);
@@ -309,7 +302,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 * @throws Exception If unable to download the JSON data from the API provider.
 	 *
 	 * @access private
-	 * @return string The formatted URL.
+	 * @return array
 	 */
 	private function getApiData($endpoint, $params = array(), $page = false)
 	{
@@ -339,7 +332,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 		}
 
 		if (count($data) === 100) {
-			$this->getApiData($endpoint, $params, $page + 1);
+			$data .= $this->getApiData($endpoint, $params, $page + 1);
 		}
 
 		return $data;
@@ -347,19 +340,16 @@ class Wistia_VideosService extends BaseApplicationComponent
 
 	private function send($url)
 	{
-		// Fail if no API key defined
 		if ($this->apiKey === false) {
 			throw new Exception(lang('error_no_api_key'), 0);
 		}
 
 		$client = new Client();
 
-		$data = $client->get($url)
+		return $client->get($url)
 			->setAuth('api', $this->apiKey)
 			->setHeader('Accept', 'application/json')
 			->send()
 			->json();
-
-		return $data;
 	}
 }

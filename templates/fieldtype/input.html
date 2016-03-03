@@ -1,4 +1,4 @@
-<input type="hidden" name="{{ name }}" value="">
+<input type="hidden" name="{{ name }}">
 
 <div class="elementselect" id="{{ name }}">
 	<div class="elements">
@@ -32,8 +32,8 @@
 
 {% set jsSettings = {
 	id: id|namespaceInputId,
-	name: name|namespaceInputName,
 	limit: settings.max,
+	name: name|namespaceInputName,
 	projectIds: settings.projects|join(',')
 } %}
 

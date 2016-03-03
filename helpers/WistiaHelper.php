@@ -6,7 +6,7 @@ class WistiaHelper
 	/**
 	 * Function to safely return the value of an array
 	 *
-	 * @param string $needle   The value to look for.
+	 * @param string $needle The value to look for.
 	 * @param array  $haystack The array to search in.
 	 *
 	 * @return mixed False on failure, or the array at position $needle.

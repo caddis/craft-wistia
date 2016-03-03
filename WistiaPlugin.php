@@ -66,7 +66,7 @@ class WistiaPlugin extends BasePlugin
 			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins
 				->getPlugin('wistia')
 				->getSettings()
-				->thumbnailPath => Craft::t('Wistia preview Images')
+				->thumbnailPath => Craft::t('Wistia preview images')
 		);
 	}
 }

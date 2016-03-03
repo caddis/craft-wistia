@@ -20,13 +20,13 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getName()
 	{
-		return Craft::t('Wistia');
+		return 'Wistia';
 	}
 
 	/**
 	 * Define database column
 	 *
-	 * @return AttributeType::String
+	 * @return array
 	 */
 	public function defineContentAttribute()
 	{
@@ -68,9 +68,10 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getInputHtml($name, $value)
 	{
-		$params = array();
-
 		if ($this->apiKey) {
+			// Include JavaScript
+			craft()->templates->includeJsResource('wistia/js/input.min.js');
+
 			$template = 'wistia/fieldtype/input';
 
 			$videos = array();
@@ -88,16 +89,13 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				}
 			}
 
-			// Include Javascript
-			craft()->templates->includeJsResource('wistia/js/input.min.js');
-
 			$params = array(
-				'settings' => $this->getSettings(),
 				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
+				'projects' => $this->getSettings()->projects,
+				'settings' => $this->getSettings(),
 				'value' => $value,
-				'videos' => $videos,
-				'projects' => $this->getSettings()->projects
+				'videos' => $videos
 			);
 		} else {
 			$template = 'wistia/fieldtype/errors';
@@ -114,7 +112,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	protected function getOptionsSettingsLabel()
 	{
-		return Craft::t('Wistia Options');
+		return 'Wistia ' . Craft::t('Options');
 	}
 
 	/**
@@ -145,8 +143,6 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		$params = array();
-
 		if ($this->apiKey) {
 			$template = 'wistia/fieldtype/settings';
 

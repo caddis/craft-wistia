@@ -3,10 +3,10 @@ namespace Craft;
 
 class Wistia_ThumbnailsModel extends BaseModel
 {
-	public $_thumbnail;
+	private $thumbnail;
 
 	public function __construct($thumbnail) {
-		$this->_thumbnail = $thumbnail;
+		$this->thumbnail = $thumbnail;
 	}
 
 	/**
@@ -17,6 +17,6 @@ class Wistia_ThumbnailsModel extends BaseModel
 	 */
 	public function getUrl($transform = array())
 	{
-		return craft()->wistia_thumbnails->getThumbnailUrl($this->_thumbnail, $transform);
+		return craft()->wistia_thumbnails->getThumbnailUrl($this->thumbnail, $transform);
 	}
 }

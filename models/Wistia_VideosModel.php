@@ -3,7 +3,7 @@ namespace Craft;
 
 class Wistia_VideosModel extends BaseModel
 {
-	public $value;
+	private $value;
 
 	public function __construct($value) {
 		$this->value = $value;
