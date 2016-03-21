@@ -41,9 +41,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function prepValueFromPost($value)
 	{
-		$value = json_encode($value);
-
-		return $value;
+		return json_encode($value);
 	}
 
 	/**
@@ -54,9 +52,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function prepValue($value)
 	{
-		$value = json_decode($value);
-
-		return craft()->wistia_videos->getVideos($value);
+		return craft()->wistia_videos->getVideos(json_decode($value));
 	}
 
 	/**
@@ -77,7 +73,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
 				'settings' => $this->getSettings(),
-				'videos' => $value->getVideos()
+				'videos' => $value ? $value->getVideos() : null
 			);
 		} else {
 			$template = 'wistia/fieldtype/errors';
