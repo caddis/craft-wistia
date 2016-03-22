@@ -97,7 +97,7 @@
 				projectIds: this.settings.projectIds
 			};
 
-			Craft.postActionRequest(Craft.getActionUrl('wistia/videos/getModal'), data, $.proxy(function(response, textStatus) {
+			Craft.postActionRequest(Craft.getActionUrl('wistia/video/getModal'), data, $.proxy(function(response, textStatus) {
 				if (textStatus === 'success') {
 					this.$body.html(response);
 
