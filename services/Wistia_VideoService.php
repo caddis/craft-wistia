@@ -79,13 +79,13 @@ class Wistia_VideoService extends BaseApplicationComponent
 		$videos = array();
 
 		foreach ($hashedIds as $hashedId) {
-			$cacheKey = 'wistia_video_' . $hashedId;
+			$cacheKey = 'wistia-video-' . $hashedId;
 
 			$embed = $this->getEmbed($hashedId, $params);
 
 			$cachedVideo = craft()->cache->get($cacheKey);
 
-			// Cache Wistia API data
+			// Cache Wistia api data
 			if ($cachedVideo) {
 				$video = $cachedVideo;
 			} else {
@@ -93,12 +93,10 @@ class Wistia_VideoService extends BaseApplicationComponent
 					'hashed_id' => $hashedId
 				)));
 
-				// Remove old embed code from array
+				// Remove old embed code
 				unset($video['embedCode']);
 
-				$assets = $video['assets'];
-
-				foreach ($assets as $asset) {
+				foreach ($video['assets'] as $asset) {
 					$type = $asset['type'];
 					$url = str_replace('.bin', '/' . $hashedId . '.mp4', $asset['url']);
 					$width = $asset['width'];
@@ -112,24 +110,38 @@ class Wistia_VideoService extends BaseApplicationComponent
 							'height' => $height,
 							'filesize' => $filesize
 						);
+					} elseif ($type === 'HdMp4VideoFile') {
+						$video['high'] = array(
+							'url' => $url,
+							'width' => $width,
+							'height' => $height,
+							'filesize' => $filesize
+						);
+					} elseif ($type === 'IphoneVideoFile') {
+						$video['low'] = array(
+							'url' => $url,
+							'width' => $width,
+							'height' => $height,
+							'filesize' => $filesize
+						);
 					}
 				}
 
 				$video['name'] = htmlspecialchars_decode($video['name']);
 
-				$duration = (int) craft()->plugins
-					->getPlugin('wistia')
-					->getSettings()
-					->cacheDuration * 3600;
-
-//				craft()->cache->set($cacheKey, $video, $duration);
+				craft()->cache
+					->set($cacheKey, $video, (int) craft()->plugins
+						->getPlugin('wistia')
+						->getSettings()
+						->cacheDuration * 3600
+					);
 			}
 
-			// Add preview and embed after caching video data
+			// Add preview and embed
 			$video['preview'] = craft()->wistia_thumbnail->getThumbnail(array(
-					'hashedId' => $hashedId,
-					'url' => $video['thumbnail']['url']
-				));
+				'hashedId' => $hashedId,
+				'url' => $video['thumbnail']['url']
+			));
 			$video['embed'] = $embed;
 
 			// Remove original thumbnail

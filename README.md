@@ -55,6 +55,7 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
 	responsive: true
 }
 ```
+
 #### limit
 Limits results. Default: `150`.
 
@@ -62,7 +63,7 @@ Limits results. Default: `150`.
 Skips over the specified results. For example, if the tag returns 5 videos and you set an offset of two, the first two results are skipped and results 3, 4, and 5 are shown.
 
 #### width
-Width of the embed. If a width is applied, the responsive parameter (see below) will default to "false" unless you specify otherwise. Default: `640px`.
+Width of the embed. Default: `640px`.
 
 #### height
 Height of the embed. Default: `360px`.
@@ -122,6 +123,18 @@ Determines if the video embed responds to the browser screen width. Default: `tr
 {{ video.project.id }}
 {{ video.project.name }}
 {{ video.project.hashed_id }}
+{{ video.original.url }}
+{{ video.original.width }}
+{{ video.original.height }}
+{{ video.original.filesize }}
+{{ video.high.url }}
+{{ video.high.width }}
+{{ video.high.height }}
+{{ video.high.filesize }}
+{{ video.low.url }}
+{{ video.low.width }}
+{{ video.low.height }}
+{{ video.low.filesize }}
 ```
 
 #### embed
@@ -173,3 +186,39 @@ Name of the video’s project.
 
 #### project.hashed_id
 Hashed ID of the video’s project.
+
+#### original.url
+URL to the original video file.
+
+#### original.width
+Width of the original video file.
+
+#### original.height
+Height of the original video file.
+
+#### original.filesize
+File size in bytes of the original video file.
+
+#### high.url
+URL to the high quality MP4 video file.
+
+#### high.width
+Width of the high quality MP4 video file.
+
+#### high.height
+Height of the high quality MP4 video file.
+
+#### high.filesize
+File size in bytes of the high quality MP4 video file.
+
+#### low.url
+URL to the low quality MP4 video file.
+
+#### low.width
+Width of the low quality MP4 video file.
+
+#### low.height
+Height of the low quality MP4 video file.
+
+#### low.filesize
+File size in bytes of the low quality MP4 video file.
