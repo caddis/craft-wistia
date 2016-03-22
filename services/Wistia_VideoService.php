@@ -4,7 +4,7 @@ namespace Craft;
 use Guzzle\Http\Client;
 require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
-class Wistia_VideosService extends BaseApplicationComponent
+class Wistia_VideoService extends BaseApplicationComponent
 {
 	private $apiKey;
 
@@ -118,7 +118,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 			);
 
 			// Add preview and embed after caching video data
-			$video['preview'] = craft()->wistia_thumbnails->getThumbnail($thumbData);
+			$video['preview'] = craft()->wistia_thumbnail->getThumbnail($thumbData);
 			$video['embed'] = $embed;
 
 			// Remove original thumbnail

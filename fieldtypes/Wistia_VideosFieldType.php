@@ -52,7 +52,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function prepValue($value)
 	{
-		return craft()->wistia_videos->getVideos(json_decode($value));
+		return craft()->wistia_video->getVideos(json_decode($value));
 	}
 
 	/**
@@ -126,7 +126,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$params = array(
 				'settings' => $this->getSettings(),
-				'projects' => craft()->wistia_videos->getProjects()
+				'projects' => craft()->wistia_video->getProjects()
 			);
 		} else {
 			$template = 'wistia/fieldtype/errors';

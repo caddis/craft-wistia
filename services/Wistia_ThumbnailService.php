@@ -3,7 +3,7 @@ namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
-class Wistia_ThumbnailsService extends BaseApplicationComponent
+class Wistia_ThumbnailService extends BaseApplicationComponent
 {
 	private $cacheDuration;
 	private $relativeCachePath;
