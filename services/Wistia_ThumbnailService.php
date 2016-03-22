@@ -28,7 +28,7 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	 * Pass the thumbnail data to the model
 	 *
 	 * @param array $thumbData
-	 * @return array
+	 * @return Wistia_ThumbnailModel
 	 */
 	public function getThumbnail($thumbData)
 	{
@@ -36,7 +36,7 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Get the new downloaded thumbnail url
+	 * Download video screenshot and return local url
 	 *
 	 * @param array $thumbData
 	 * @param array $transform
@@ -79,9 +79,9 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Transform the thumbnail
+	 * Transform the thumbnail and return new url
 	 *
-	 * @param string $cachedFile
+	 * @param string $originalCachedFile
 	 * @param string $hashedId
 	 * @param array $transform
 	 * @return string
@@ -94,7 +94,7 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 		$cachedFile = $this->absoluteCachePath . $filename;
 
 		// Check whether thumbnail exists and/or has not expired
-		if (! DateTimeHelper::wasWithinLast(
+		if (IOHelper::fileExists($originalCachedFile) && ! DateTimeHelper::wasWithinLast(
 				$this->cacheDuration,
 				IOHelper::getLastTimeModified($cachedFile))
 			) {
