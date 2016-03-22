@@ -1,8 +1,14 @@
 <?php
 namespace Craft;
 
-class Wistia_VideosController extends BaseController
+class Wistia_VideoController extends BaseController
 {
+	/**
+	 * Output video data to separate template for use in ajax request
+	 *
+	 * @param string $projectIds
+	 * @return mixed
+	 */
 	public function actionGetModal($projectIds = '*')
 	{
 		$this->requireAjaxRequest();
