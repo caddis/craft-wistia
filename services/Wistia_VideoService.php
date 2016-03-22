@@ -7,9 +7,8 @@ require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 class Wistia_VideoService extends BaseApplicationComponent
 {
 	private $apiKey;
-
-	const WISTIA_API_URL = 'https://api.wistia.com/v1/';
-	const WISTIA_EMBED_URL = 'https://fast.wistia.com/assets/external/E-v1.js';
+	private $apiUrl;
+	private $embedUrl;
 
 	public function __construct()
 	{
@@ -17,13 +16,17 @@ class Wistia_VideoService extends BaseApplicationComponent
 			->getPlugin('wistia')
 			->getSettings()
 			->apiKey;
+
+		$this->apiUrl = 'https://api.wistia.com/v1/';
+
+		$this->embedUrl = 'https://fast.wistia.com/assets/external/E-v1.js';
 	}
 
 	/**
 	 * Pass video data to the model
 	 *
 	 * @param array $value
-	 * @return array
+	 * @return Wistia_VideoModel
 	 */
 	public function getVideos($value)
 	{
@@ -31,11 +34,12 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Get videos from API or cache
+	 * Get videos by hashed id
 	 *
 	 * @param array $hashedIds
-	 * @param {array} $params
-	 * @return array
+	 * @param array $params (optional)
+	 * @return array|bool
+	 * @throws Exception
 	 */
 	public function getVideosByHashedId($hashedIds, $params = array())
 	{
@@ -43,16 +47,8 @@ class Wistia_VideoService extends BaseApplicationComponent
 			return false;
 		}
 
-		$offset = isset($params['offset']) ? $params['offset'] : '';
-
-		// Determine if video should be responsive
-		if (isset($params['responsive'])) {
-			$responsive = $params['responsive'];
-		} else if (isset($params['width'])) {
-			$responsive = 'default';
-		} else {
-			$responsive = 'true';
-		}
+		$offset = WistiaHelper::getValue('offset', $params);
+		$limit = WistiaHelper::getValue('limit', $params);
 
 		// Set default parameters
 		$defaultParams = array(
@@ -72,12 +68,15 @@ class Wistia_VideoService extends BaseApplicationComponent
 			'width' => 640
 		);
 
+		// Remove parameters not specific to the embed
+		unset($params['offset']);
+		unset($params['limit']);
+
 		// Merge defaults with input parameters
 		$params = array_merge($defaultParams, $params);
-		$params['videoFoam'] = $responsive;
+		$params['videoFoam'] = isset($params['responsive']) ? $params['responsive'] : true;
 
 		$videos = array();
-		$thumbnail = array();
 
 		foreach ($hashedIds as $hashedId) {
 			$cacheKey = 'wistia_video_' . $hashedId;
@@ -97,10 +96,24 @@ class Wistia_VideoService extends BaseApplicationComponent
 				// Remove old embed code from array
 				unset($video['embedCode']);
 
-				// TODO: Remove assets until functionality
-				// to pull these assets is programmed. Just trying
-				// to clean up the array for now
-				unset($video['assets']);
+				$assets = $video['assets'];
+
+				foreach ($assets as $asset) {
+					$type = $asset['type'];
+					$url = str_replace('.bin', '/' . $hashedId . '.mp4', $asset['url']);
+					$width = $asset['width'];
+					$height = $asset['height'];
+					$filesize = $asset['fileSize'];
+
+					if ($type === 'OriginalFile') {
+						$video['original'] = array(
+							'url' => $url,
+							'width' => $width,
+							'height' => $height,
+							'filesize' => $filesize
+						);
+					}
+				}
 
 				$video['name'] = htmlspecialchars_decode($video['name']);
 
@@ -109,16 +122,14 @@ class Wistia_VideoService extends BaseApplicationComponent
 					->getSettings()
 					->cacheDuration * 3600;
 
-				craft()->cache->set($cacheKey, $video, $duration);
+//				craft()->cache->set($cacheKey, $video, $duration);
 			}
 
-			$thumbData = array(
-				'hashedId' => $hashedId,
-				'url' => $video['thumbnail']['url']
-			);
-
 			// Add preview and embed after caching video data
-			$video['preview'] = craft()->wistia_thumbnail->getThumbnail($thumbData);
+			$video['preview'] = craft()->wistia_thumbnail->getThumbnail(array(
+					'hashedId' => $hashedId,
+					'url' => $video['thumbnail']['url']
+				));
 			$video['embed'] = $embed;
 
 			// Remove original thumbnail
@@ -131,21 +142,19 @@ class Wistia_VideoService extends BaseApplicationComponent
 			$videos = array_slice($videos, $offset);
 		}
 
-		if (isset($params['limit'])) {
-			$videos = array_slice($videos, 0, $params['limit']);
+		if ($limit) {
+			$videos = array_slice($videos, 0, $limit);
 		}
 
 		return $videos;
 	}
 
 	/**
-	 * Function to get an array of available videos given API key and project list.
+	 * Get videos by project id
 	 *
-	 * @throws Exception if unable to get a list of projects from the API.
-	 * @throws Exception if unable to get a list of videos for a project.
-	 *
-	 * @param array $projects
-	 * @return array
+	 * @param $projects
+	 * @return array|bool
+	 * @throws Exception
 	 */
 	public function getVideosByProjectId($projects)
 	{
@@ -217,12 +226,10 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Function to get an array of available projects given an API key.
+	 * Get projects
 	 *
-	 * @throws Exception If unable to retrieve a list of projects from the API.
-	 *
-	 * @access private
 	 * @return array
+	 * @throws Exception
 	 */
 	public function getProjects()
 	{
@@ -256,13 +263,11 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Embeds the video as a JS API embed
+	 * Get js video embed
 	 *
-	 * @param string $hashedId
-	 * @param array $params
-	 *
-	 * @access private
-	 * @return string
+	 * @param $hashedId
+	 * @param $params
+	 * @return mixed
 	 */
 	private function getEmbed($hashedId, $params)
 	{
@@ -279,7 +284,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 		craft()->path->setTemplatesPath($newPath);
 
 		$html = craft()->templates->render('fieldtype/embed', array(
-			'embedUrl' => self::WISTIA_EMBED_URL,
+			'embedUrl' => $this->embedUrl,
 			'hashedId' => $hashedId,
 			'height' => $params['height'],
 			'settings' => $settings,
@@ -292,22 +297,16 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Function to return an API URL
+	 * Return api url
 	 *
-	 * @param string $endpoint The Wistia API endpoint to query.
-	 * @param array $params Additional parameters to append to the request.
-	 *
-	 * @throws Exception If no API key is defined.
-	 * @throws Exception If video data is requested with an id that is blank or 0.
-	 * @throws Exception If unable to download the JSON data from the API provider.
-	 *
-	 * @access private
-	 * @return array
+	 * @param $endpoint
+	 * @param array $params
+	 * @param int $page
+	 * @return mixed
+	 * @throws Exception
 	 */
 	private function getApiData($endpoint, $params = array(), $page = 1)
 	{
-		$baseUrl = self::WISTIA_API_URL;
-
 		$perPageDefault = 10;
 
 		$apiParams = array(
@@ -324,12 +323,12 @@ class Wistia_VideoService extends BaseApplicationComponent
 
 		$urlParams = '?' . implode('&', $apiParams);
 
-		$baseUrl .= $endpoint . $urlParams;
+		$this->apiUrl .= $endpoint . $urlParams;
 
-		$data = $this->send($baseUrl);
+		$data = $this->send($this->apiUrl);
 
 		if ($data === false) {
-			throw new Exception(lang('error_remote_file') . $baseUrl, 3);
+			throw new Exception(lang('error_remote_file') . $this->apiUrl, 3);
 		}
 
 		if (count($data) === $perPageDefault) {
@@ -339,6 +338,13 @@ class Wistia_VideoService extends BaseApplicationComponent
 		return $data;
 	}
 
+	/**
+	 * Send data request to Wistia endpoint
+	 *
+	 * @param $url
+	 * @return mixed
+	 * @throws Exception
+	 */
 	private function send($url)
 	{
 		if ($this->apiKey === false) {
