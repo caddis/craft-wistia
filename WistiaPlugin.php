@@ -30,7 +30,7 @@ class WistiaPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '0.1.7';
+		return '0.1.8';
 	}
 
 	/**
