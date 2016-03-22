@@ -6,7 +6,7 @@ class Wistia_VideoController extends BaseController
 	/**
 	 * Output video data to separate template for use in ajax request
 	 *
-	 * @param string $projectIds
+	 * @param string $projectIds (optional)
 	 * @return mixed
 	 */
 	public function actionGetModal($projectIds = '*')
