@@ -13,7 +13,7 @@ class Wistia_VideoController extends BaseController
 	{
 		$this->requireAjaxRequest();
 
-		if ($projectIds != '*') {
+		if ($projectIds !== '*') {
 			$projectIds = explode(',', $projectIds);
 		}
 
