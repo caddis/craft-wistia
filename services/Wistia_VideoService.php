@@ -164,7 +164,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 	/**
 	 * Get videos by project id
 	 *
-	 * @param $projects
+	 * @param array $projects
 	 * @return array|bool
 	 * @throws Exception
 	 */
@@ -277,9 +277,9 @@ class Wistia_VideoService extends BaseApplicationComponent
 	/**
 	 * Get js video embed
 	 *
-	 * @param $hashedId
-	 * @param $params
-	 * @return mixed
+	 * @param string $hashedId
+	 * @param array $params
+	 * @return string
 	 */
 	private function getEmbed($hashedId, $params)
 	{
@@ -311,15 +311,15 @@ class Wistia_VideoService extends BaseApplicationComponent
 	/**
 	 * Return api url
 	 *
-	 * @param $endpoint
+	 * @param string $endpoint
 	 * @param array $params
 	 * @param int $page
-	 * @return mixed
+	 * @return string
 	 * @throws Exception
 	 */
 	private function getApiData($endpoint, $params = array(), $page = 1)
 	{
-		$perPageDefault = 10;
+		$perPageDefault = 100;
 
 		$apiParams = array(
 			'per_page=' . $perPageDefault
@@ -353,8 +353,8 @@ class Wistia_VideoService extends BaseApplicationComponent
 	/**
 	 * Send data request to Wistia endpoint
 	 *
-	 * @param $url
-	 * @return mixed
+	 * @param string $url
+	 * @return array
 	 * @throws Exception
 	 */
 	private function send($url)
