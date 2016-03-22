@@ -3,41 +3,81 @@ namespace Craft;
 
 class WistiaPlugin extends BasePlugin
 {
+	/**
+	 * Name
+	 *
+	 * @return string
+	 */
 	public function getName()
 	{
 		return 'Wistia';
 	}
 
+	/**
+	 * Description
+	 *
+	 * @return string
+	 */
 	public function getDescription()
 	{
 		return 'Manage videos and output data using the Wistia API.';
 	}
 
+	/**
+	 * Version
+	 *
+	 * @return string
+	 */
 	public function getVersion()
 	{
 		return '0.1.7';
 	}
 
-	public function getDeveloper()
-	{
-		return 'Caddis';
-	}
-
-	public function getDeveloperUrl()
-	{
-		return 'https://www.caddis.co';
-	}
-
-	public function getDocumentationUrl()
-	{
-		return 'https://www.caddis.co/software/craft/wistia';
-	}
-
+	/**
+	 * Schema version
+	 *
+	 * @return string
+	 */
 	public function getSchemaVersion()
 	{
 		return '1.0.0';
 	}
 
+	/**
+	 * Developer
+	 *
+	 * @return string
+	 */
+	public function getDeveloper()
+	{
+		return 'Caddis';
+	}
+
+	/**
+	 * Developer url
+	 *
+	 * @return string
+	 */
+	public function getDeveloperUrl()
+	{
+		return 'https://www.caddis.co';
+	}
+
+	/**
+	 * Documentation url
+	 *
+	 * @return string
+	 */
+	public function getDocumentationUrl()
+	{
+		return 'https://www.caddis.co/software/craft/wistia';
+	}
+
+	/**
+	 * Define plugin settings
+	 *
+	 * @return array
+	 */
 	protected function defineSettings()
 	{
 		return array(
@@ -53,6 +93,11 @@ class WistiaPlugin extends BasePlugin
 		);
 	}
 
+	/**
+	 * Output settings into template
+	 *
+	 * @return mixed
+	 */
 	public function getSettingsHtml()
 	{
 		return craft()->templates->render('wistia/plugin/settings', array(
@@ -60,6 +105,11 @@ class WistiaPlugin extends BasePlugin
 		));
 	}
 
+	/**
+	 * Clear plugin image cache
+	 *
+	 * @return array
+	 */
 	public function registerCachePaths()
 	{
 		return array(
