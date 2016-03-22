@@ -116,17 +116,11 @@
 
 				this.$elementRow = this.$body.find('.js-element-tr');
 
-				if (disabledIds.length) {
-					this.$elementRow.each($.proxy(function(e, el) {
-						var $el = $(el);
+				var sel = $.map(disabledIds, function(key) {
+					return '[data-id=' + key + ']';
+				});
 
-						disabledIds.forEach(function(key) {
-							if ($el.data('id') === key) {
-								$el.addClass('disabled');
-							}
-						});
-					}, this));
-				}
+				this.$elementRow.filter(sel.join(',')).addClass('disabled');
 
 				this.elementSelector = new Garnish.Select($container,
 					this.$elementRow.filter(':not(.disabled)'), {
@@ -138,24 +132,47 @@
 		},
 
 		_createElementSearch: function() {
-			var scope = this;
+			var scope = this,
+				$input = scope.$body.find('.search input'),
+				isHidden = 'hidden';
 
-			scope.$body.find('.search input').on('keyup', function() {
-				var $this = $(this);
+			$input.on('keyup', function() {
+				var $this = $(this),
+					filter = $this.val(),
+					$clear = $this.siblings();
+
+				if (filter.length) {
+					$clear.removeClass(isHidden);
+				} else {
+					$clear.addClass(isHidden);
+				}
 
 				if (scope.filterSearchTimer) {
 					clearTimeout(scope.filterSearchTimer);
 				}
 
 				scope.filterSearchTimer = setTimeout(function() {
-					var filter = $this.val();
-
 					scope.$elementRow.each(function(e, el) {
-						var $el = $(el);
+						var $row = $(el);
 
-						$el.toggle($el.data('title').search(new RegExp(filter, 'i')) < 0);
+						// If the row does not contain the text phrase hide it
+						if ($row.data('title').search(new RegExp(filter, 'i')) < 0) {
+							$row.hide();
+						} else {
+							// Show the row if the phrase matches
+							$row.show();
+						}
 					});
 				}, 300);
+			});
+
+			// Clear out text in search input
+			$input.siblings('.clear').on('click', function() {
+				$(this).addClass(isHidden)
+					.siblings('input')
+					.val('');
+
+				scope.$elementRow.show();
 			});
 		}
 	});
