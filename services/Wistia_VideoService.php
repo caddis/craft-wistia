@@ -192,8 +192,6 @@ class Wistia_VideoService extends BaseApplicationComponent
 				return false;
 			}
 
-			$data = array();
-
 			foreach ($projects as $project) {
 				$params = array(
 					'sort_by' => 'name',
@@ -212,22 +210,10 @@ class Wistia_VideoService extends BaseApplicationComponent
 					continue;
 				}
 
-				foreach ($data as $video) {
-					$hashedId = WistiaHelper::getValue('hashed_id', $video);
-					$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
-
-					$videos[$hashedId] = $name;
-				}
+				$videos = $this->getVideoEssentials($data);
 			}
 		} else {
-			$data = $this->getApiData('medias.json', array());
-
-			foreach ($data as $video) {
-				$hashedId = WistiaHelper::getValue('hashed_id', $video);
-				$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
-
-				$videos[$hashedId] = $name;
-			}
+			$videos = $this->getVideoEssentials($this->getApiData('medias.json'));
 		}
 
 		ksort($videos);
@@ -235,6 +221,27 @@ class Wistia_VideoService extends BaseApplicationComponent
 		craft()->httpSession->add('wistiaProjectVideos' . $cacheString, $videos);
 
 		return $videos;
+	}
+
+	/**
+	 * Get the video hashed id and name
+	 *
+	 * @access private
+	 * @param array $videoData
+	 * @return array
+	 */
+	private function getVideoEssentials($videoData)
+	{
+		$essentials = array();
+
+		foreach ($videoData as $video) {
+			$hashedId = WistiaHelper::getValue('hashed_id', $video);
+			$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
+
+			$essentials[$hashedId] = $name;
+		}
+
+		return $essentials;
 	}
 
 	/**
@@ -319,6 +326,8 @@ class Wistia_VideoService extends BaseApplicationComponent
 	 */
 	private function getApiData($endpoint, $params = array(), $page = 1)
 	{
+		$apiUrl = $this->apiUrl;
+
 		$perPageDefault = 100;
 
 		$apiParams = array(
@@ -335,12 +344,12 @@ class Wistia_VideoService extends BaseApplicationComponent
 
 		$urlParams = '?' . implode('&', $apiParams);
 
-		$this->apiUrl .= $endpoint . $urlParams;
+		$apiUrl .= $endpoint . $urlParams;
 
-		$data = $this->send($this->apiUrl);
+		$data = $this->send($apiUrl);
 
 		if ($data === false) {
-			throw new Exception(lang('error_remote_file') . $this->apiUrl, 3);
+			throw new Exception(lang('error_remote_file') . $apiUrl, 3);
 		}
 
 		if (count($data) === $perPageDefault) {

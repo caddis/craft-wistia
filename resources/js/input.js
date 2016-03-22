@@ -93,11 +93,9 @@
 		},
 
 		_createElementIndex: function() {
-			var data = {
-				projectIds: this.settings.projectIds
-			};
+			var $url = Craft.getActionUrl('wistia/video/getModal', {projectIds: this.settings.projectIds});
 
-			Craft.postActionRequest(Craft.getActionUrl('wistia/video/getModal'), data, $.proxy(function(response, textStatus) {
+			Craft.postActionRequest($url, $.proxy(function(response, textStatus) {
 				if (textStatus === 'success') {
 					this.$body.html(response);
 
