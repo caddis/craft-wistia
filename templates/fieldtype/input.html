@@ -1,21 +1,21 @@
-<input type="hidden" name="{{ name }}" value="">
+<input type="hidden" name="{{ name }}">
 
 <div class="elementselect" id="{{ name }}">
 	<div class="elements">
 		{% for video in videos %}
 			<div
 				class="element small hasstatus removable"
-				data-id="{{ video.id }}"
+				data-id="{{ video.hashed_id }}"
 			>
 				<input
 					name="{{ name }}[]"
 					type="hidden"
-					value="{{ video.id }}"
+					value="{{ video.hashed_id }}"
 				>
 				<a class="delete icon"></a>
 				<span class="status live"></span>
 				<div class="label">
-					<span class="title">{{ video.title }}</span>
+					<span class="title">{{ video.name }}</span>
 				</div>
 			</div>
 		{% endfor %}
@@ -26,14 +26,14 @@
 			style="display: none"
 		{% endif %}
 	>
-		Add a video
+		{{ 'Add a video'|t }}
 	</div>
 </div>
 
 {% set jsSettings = {
 	id: id|namespaceInputId,
-	name: name|namespaceInputName,
 	limit: settings.max,
+	name: name|namespaceInputName,
 	projectIds: settings.projects|join(',')
 } %}
 

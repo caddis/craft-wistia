@@ -2,7 +2,7 @@
 The Craft Wistia plugin allows you to output Wistia videos on your site.
 
 ## Install
-After downloading and decompressing, put the wistia directory in your plugins folder. Install the module from the Craft plugins admin page.
+After downloading and decompressing, place the wistia directory in your plugins folder and install the module from the Craft plugins admin page.
 
 ## Settings
 To access the plugin settings, navigate to the Craft settings page and click on "Wistia" under the "Plugins" heading.
@@ -11,13 +11,15 @@ To access the plugin settings, navigate to the Craft settings page and click on 
 Enter your Wistia API key to use the plugin with your Wistia account and access your projects.
 
 ### Cache Duration
-Defaults to `24 hours`. If you don't plan on changing your video data often, you can safely increase the cache time here.
+Determines how long the Wistia api data is cached. If you don't plan on changing your video data often, you can safely increase the cache time here. Default: `24 hours`.
 
-### Thumnail Cache Path
-Defaults to `/images/videos/`. Regardless of whether you use the default or specify your own, you will need to make sure that the specified path exists on the server and is writable by Craft. The plugin will not create the directory for you.
+### Thumbnail Cache Path
+Regardless of whether you use the default or specify your own, you will need to make sure that the specified path exists on the server and is writable by Craft. The plugin will not create the directory for you. Default: `/images/videos/`.
 
 ## getVideos()
 To output videos on the front end, use your fieldtype's handle and add `getVideos`. You can apply a variety of parameters described in the next section.
+
+**Example Code**
 
 ```
 {% set params = {
@@ -31,6 +33,7 @@ To output videos on the front end, use your fieldtype's handle and add `getVideo
     {{ video.embed }}
 {% endfor %}
 ```
+
 ## Parameters
 
 ### Parameters Quick Reference
@@ -94,7 +97,7 @@ You can also override the default player color for all your videos site-wide. Ad
 <?php
 
 return array(
-	'playerColor' => '#ff00ff',
+	'playerColor' => '#ff00ff'
 );
 ```
 
@@ -120,13 +123,14 @@ Determines if the video embed responds to the browser screen width. Default: `tr
 {{ video.project.name }}
 {{ video.project.hashed_id }}
 ```
+
 #### embed
-The formatted embed code of the video.
+Formatted embed code of the video.
 
 #### preview.getUrl
-The default video screenshot. Default size: `1280px by 720px`.
+Video screenshot. Default size: `1280px by 720px`.
 
-You can specify a width and/or height to resize the preview image. The image will be center cropped based on the size you specify. The width parameter is required for the transform to work, otherwise, the image will output the default size.
+You can specify a width and/or height to resize the preview image. The image will be center cropped based on the size you specify. The width parameter is required to transform the image, otherwise, the image will output the default size.
 
 ```
 {% set previewSize = {
@@ -138,34 +142,34 @@ You can specify a width and/or height to resize the preview image. The image wil
 ```
 
 #### id
-The Wisita ID of the video.
+Wisita ID of the video.
 
 #### name
-The name assigned to the video in Wistia.
+Name assigned to the video in Wistia.
 
 #### type
-The type of video.
+Type of video.
 
 #### created
-The ISO 8601 date the video was created in Wistia. e.g. `2013-01-30T16:01:05+00:00`.
+ISO 8601 date the video was created in Wistia. e.g. `2013-01-30T16:01:05+00:00`.
 
 #### updated
-The ISO 8601 date the video was last updated in Wistia. e.g. `2016-02-25T20:19:17+00:00`.
+ISO 8601 date the video was last updated in Wistia. e.g. `2016-02-25T20:19:17+00:00`.
 
 #### duration
-The duration of the video in seconds.
+Duration of the video in seconds.
 
 #### hashed_id
-The hashed ID of the video.
+Hashed ID of the video.
 
 #### description
-A description of the video added in the Wistia.
+Description of the video added in Wistia.
 
 #### project.id
-The Wistia ID of the video’s project.
+Wistia ID of the video’s project.
 
 #### project.name
-The name of the video’s project.
+Name of the video’s project.
 
 #### project.hashed_id
-The hashed ID of the video’s project.
+Hashed ID of the video’s project.

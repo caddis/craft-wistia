@@ -20,13 +20,13 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 */
 	public function getName()
 	{
-		return Craft::t('Wistia');
+		return 'Wistia';
 	}
 
 	/**
 	 * Define database column
 	 *
-	 * @return AttributeType::String
+	 * @return array
 	 */
 	public function defineContentAttribute()
 	{
@@ -34,36 +34,32 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Modify data before it is stored
+	 * Modify data before it's stored
 	 *
 	 * @param array $value
 	 * @return string
 	 */
 	public function prepValueFromPost($value)
 	{
-		$value = json_encode($value);
-
-		return $value;
+		return json_encode($value);
 	}
 
 	/**
 	 * Modify stored data for output
 	 *
-	 * @param array $value
-	 * @return string
+	 * @param string $value
+	 * @return object
 	 */
 	public function prepValue($value)
 	{
-		$value = json_decode($value);
-
-		return craft()->wistia_videos->getVideos($value);
+		return craft()->wistia_video->getVideos(json_decode($value));
 	}
 
 	/**
 	 * Render fieldtype
 	 *
 	 * @param string $name
-	 * @param string $value
+	 * @param object $value
 	 * @return string
 	 */
 	public function getInputHtml($name, $value)
@@ -71,33 +67,15 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 		$params = array();
 
 		if ($this->apiKey) {
-			$template = 'wistia/fieldtype/input';
-
-			$videos = array();
-
-			// Build selected video output
-			$selVideos = craft()->wistia_videos
-				->getVideosByHashedId($value['value']);
-
-			if ($selVideos) {
-				foreach ($selVideos as $selVideo) {
-					$videos[] = array(
-						'id' => $selVideo['hashed_id'],
-						'title' => $selVideo['name']
-					);
-				}
-			}
-
-			// Include Javascript
 			craft()->templates->includeJsResource('wistia/js/input.min.js');
 
+			$template = 'wistia/fieldtype/input';
+
 			$params = array(
-				'settings' => $this->getSettings(),
 				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
-				'value' => $value,
-				'videos' => $videos,
-				'projects' => $this->getSettings()->projects
+				'settings' => $this->getSettings(),
+				'videos' => $value ? $value->getVideos() : null
 			);
 		} else {
 			$template = 'wistia/fieldtype/errors';
@@ -107,14 +85,14 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Returns the label for the Options setting
+	 * Returns the label for the options setting.
 	 *
 	 * @access protected
 	 * @return string
 	 */
 	protected function getOptionsSettingsLabel()
 	{
-		return Craft::t('Wistia Options');
+		return 'Wistia ' . Craft::t('Options');
 	}
 
 	/**
@@ -152,7 +130,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 
 			$params = array(
 				'settings' => $this->getSettings(),
-				'projects' => craft()->wistia_videos->getProjects()
+				'projects' => craft()->wistia_video->getProjects()
 			);
 		} else {
 			$template = 'wistia/fieldtype/errors';

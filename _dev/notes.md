@@ -1,5 +1,8 @@
 # Developer Notes
 
+## Outstanding Tasks
+- Error message if image cache directory is not added
+
 ## Feature Enhancements Wishlist
 
 ### Front End
