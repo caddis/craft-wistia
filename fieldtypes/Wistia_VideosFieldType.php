@@ -34,7 +34,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Modify data before it is stored
+	 * Modify data before it's stored
 	 *
 	 * @param array $value
 	 * @return string
@@ -47,8 +47,8 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	/**
 	 * Modify stored data for output
 	 *
-	 * @param array $value
-	 * @return string
+	 * @param string $value
+	 * @return object
 	 */
 	public function prepValue($value)
 	{
@@ -59,7 +59,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	 * Render fieldtype
 	 *
 	 * @param string $name
-	 * @param string $value
+	 * @param object $value
 	 * @return string
 	 */
 	public function getInputHtml($name, $value)
@@ -83,7 +83,7 @@ class Wistia_VideosFieldType extends BaseOptionsFieldType
 	}
 
 	/**
-	 * Returns the label for the Options setting
+	 * Returns the label for the options setting.
 	 *
 	 * @access protected
 	 * @return string
