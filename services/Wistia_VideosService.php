@@ -27,7 +27,7 @@ class Wistia_VideosService extends BaseApplicationComponent
 	 */
 	public function getVideos($value)
 	{
-		return new Wistia_VideosModel($value);
+		return new Wistia_VideoModel($value);
 	}
 
 	/**

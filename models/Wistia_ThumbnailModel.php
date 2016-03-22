@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_ThumbnailsModel extends BaseModel
+class Wistia_ThumbnailModel extends BaseModel
 {
 	private $thumbnail;
 
@@ -12,7 +12,7 @@ class Wistia_ThumbnailsModel extends BaseModel
 	/**
 	 * Get thumbnail url
 	 *
-	 * @param array $transform
+	 * @param array $transform (optional)
 	 * @return string
 	 */
 	public function getUrl($transform = array())

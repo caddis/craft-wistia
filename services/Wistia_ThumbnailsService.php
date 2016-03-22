@@ -32,7 +32,7 @@ class Wistia_ThumbnailsService extends BaseApplicationComponent
 	 */
 	public function getThumbnail($thumbData)
 	{
-		return new Wistia_ThumbnailsModel($thumbData);
+		return new Wistia_ThumbnailModel($thumbData);
 	}
 
 	/**

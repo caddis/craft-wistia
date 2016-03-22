@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_VideosModel extends BaseModel
+class Wistia_VideoModel extends BaseModel
 {
 	private $value;
 
@@ -9,6 +9,12 @@ class Wistia_VideosModel extends BaseModel
 		$this->value = $value;
 	}
 
+	/**
+	 * Get video data
+	 *
+	 * @param array $params (optional)
+	 * @return array
+	 */
 	public function getVideos($params = array())
 	{
 		return craft()->wistia_videos->getVideosByHashedId($this->value, $params);
