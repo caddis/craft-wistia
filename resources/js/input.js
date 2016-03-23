@@ -19,7 +19,7 @@
 					.find('.js-element-tbody')
 					.children('[data-id="' + $elements.data('id') + '"]:first');
 
-				$item.removeClass('disabled');
+				$item.enable();
 				this.modal.elementSelector.addItems($item);
 			}
 
@@ -64,8 +64,6 @@
 		},
 
 		selectElements: function() {
-			var isDisabled = 'disabled';
-
 			if (this.elementSelector.getTotalSelected()) {
 				this.elementSelector.getSelectedItems().each($.proxy(function(e, el) {
 					var $el = $(el),
@@ -76,7 +74,7 @@
 								'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
 
 					// Disable items from being selected twice
-					$el.addClass(isDisabled);
+					$el.disable();
 					this.elementSelector.removeItems($el);
 
 					// Add the new element to selected list
@@ -118,7 +116,7 @@
 					return '[data-id=' + key + ']';
 				});
 
-				this.$elementRow.filter(sel.join(',')).addClass('disabled');
+				this.$elementRow.filter(sel.join(',')).disable();
 
 				this.elementSelector = new Garnish.Select($container,
 					this.$elementRow.filter(':not(.disabled)'), {
