@@ -22,11 +22,11 @@
 	</div>
 	<div
 		class="btn add icon dashed{% if settings.max and videos|length >= settings.max %} disabled{% endif %}"
-		{% if settings.max == '1' and videos|length %}
+		{% if settings.max == "1" and videos|length %}
 			style="display: none"
 		{% endif %}
 	>
-		{{ 'Add a video'|t }}
+		{{ "Add a video"|t }}
 	</div>
 </div>
 
@@ -34,7 +34,7 @@
 	id: id|namespaceInputId,
 	limit: settings.max,
 	name: name|namespaceInputName,
-	projectIds: settings.projects|join(',')
+	projectIds: settings.projects|join(",")
 } %}
 
 {% includejs %}
