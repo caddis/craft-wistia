@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class Wistia_VideosFieldType extends BaseOptionsFieldType
+class Wistia_VideosFieldType extends BaseFieldType
 {
 	private $apiKey;
 
