@@ -8,8 +8,7 @@
 			this.base.apply(this, this.settings);
 		},
 
-		removeElements: function($elements)
-		{
+		removeElements: function($elements) {
 			if (this.settings.selectable) {
 				this.elementSelect.removeItems($elements);
 			}
@@ -29,8 +28,8 @@
 				.prop('disabled', true);
 
 			this.$elements = this.$elements.not($elements);
-			this.updateAddElementsBtn();
 
+			this.updateAddElementsBtn();
 			this.onRemoveElements();
 		},
 
@@ -70,8 +69,8 @@
 						newElement = $el.find('.element')
 							.clone()
 							.addClass('removable')
-							.prepend('<input name="' + this.settings.name + '[]" type="hidden" value="' + $el.data('id') + '">' +
-								'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
+							.prepend('<input type="hidden" name="' + this.settings.name + '[]" value="' + $el.data('id') + '">' +
+								'<a title="' + Craft.t('Remove') + '" class="delete icon"></a>');
 
 					// Disable items from being selected twice
 					$el.disable();
@@ -91,9 +90,11 @@
 		},
 
 		_createElementIndex: function() {
-			var $url = Craft.getActionUrl('wistia/video/getModal', {projectIds: this.settings.projectIds});
+			var url = Craft.getActionUrl('wistia/video/getModal', {
+				projectIds: this.settings.projectIds
+			});
 
-			Craft.postActionRequest($url, $.proxy(function(response, textStatus) {
+			Craft.postActionRequest(url, $.proxy(function(response, textStatus) {
 				if (textStatus === 'success') {
 					this.$body.html(response);
 
@@ -137,11 +138,7 @@
 					filter = $this.val(),
 					$clear = $this.siblings();
 
-				if (filter.length) {
-					$clear.removeClass(isHidden);
-				} else {
-					$clear.addClass(isHidden);
-				}
+				$clear.toggleClass(isHidden, ! filter.length);
 
 				if (scope.filterSearchTimer) {
 					clearTimeout(scope.filterSearchTimer);
@@ -155,7 +152,6 @@
 						if ($row.data('title').search(new RegExp(filter, 'i')) < 0) {
 							$row.hide();
 						} else {
-							// Show the row if the phrase matches
 							$row.show();
 						}
 					});

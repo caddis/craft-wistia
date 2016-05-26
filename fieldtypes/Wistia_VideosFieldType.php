@@ -14,7 +14,7 @@ class Wistia_VideosFieldType extends BaseFieldType
 	}
 
 	/**
-	 * Fieldtype name
+	 * Return fieldtype name
 	 *
 	 * @return string
 	 */
@@ -72,8 +72,8 @@ class Wistia_VideosFieldType extends BaseFieldType
 			$template = 'wistia/fieldtype/input';
 
 			$params = array(
-				'id' => craft()->templates->formatInputId($name),
 				'name'  => $name,
+				'id' => craft()->templates->formatInputId($name),
 				'settings' => $this->getSettings(),
 				'videos' => $value ? $value->getVideos() : null
 			);
@@ -82,38 +82,6 @@ class Wistia_VideosFieldType extends BaseFieldType
 		}
 
 		return craft()->templates->render($template, $params);
-	}
-
-	/**
-	 * Returns the label for the options setting.
-	 *
-	 * @access protected
-	 * @return string
-	 */
-	protected function getOptionsSettingsLabel()
-	{
-		return 'Wistia ' . Craft::t('Options');
-	}
-
-	/**
-	 * Define field settings
-	 *
-	 * @access protected
-	 * @return array
-	 */
-	protected function defineSettings()
-	{
-		return array(
-			'projects' => array(
-				AttributeType::Mixed,
-				'default' => '*'
-			),
-			'min' => array(
-				AttributeType::Number,
-				'default' => 0
-			),
-			'max' => AttributeType::Number
-		);
 	}
 
 	/**
@@ -148,5 +116,35 @@ class Wistia_VideosFieldType extends BaseFieldType
 	public function prepSettings($settings)
 	{
 		return $settings;
+	}
+
+	/**
+	 * Returns the label for the options setting
+	 *
+	 * @return string
+	 */
+	protected function getOptionsSettingsLabel()
+	{
+		return 'Wistia ' . Craft::t('Options');
+	}
+
+	/**
+	 * Define field settings
+	 *
+	 * @return array
+	 */
+	protected function defineSettings()
+	{
+		return array(
+			'projects' => array(
+				AttributeType::Mixed,
+				'default' => '*'
+			),
+			'min' => array(
+				AttributeType::Number,
+				'default' => 0
+			),
+			'max' => AttributeType::Number
+		);
 	}
 }

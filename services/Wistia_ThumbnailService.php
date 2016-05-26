@@ -5,12 +5,15 @@ require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
 class Wistia_ThumbnailService extends BaseApplicationComponent
 {
+	private $absoluteCachePath;
 	private $cacheDuration;
 	private $relativeCachePath;
-	private $absoluteCachePath;
 
 	public function __construct()
 	{
+		$this->absoluteCachePath = $_SERVER['DOCUMENT_ROOT'] .
+			$this->relativeCachePath;
+
 		$this->cacheDuration = craft()->plugins
 			->getPlugin('wistia')
 			->getSettings()
@@ -20,8 +23,6 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 			->getPlugin('wistia')
 			->getSettings()
 			->thumbnailPath;
-
-		$this->absoluteCachePath = $_SERVER['DOCUMENT_ROOT'] . $this->relativeCachePath;
 	}
 
 	/**
@@ -36,7 +37,7 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Download video screenshot and return local url
+	 * Download video screenshot and return local URL
 	 *
 	 * @param array $thumbData
 	 * @param array $transform
@@ -79,7 +80,7 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Transform the thumbnail and return new url
+	 * Transform the thumbnail and return new URL
 	 *
 	 * @param string $originalCachedFile
 	 * @param string $hashedId
@@ -95,9 +96,9 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 
 		// Check whether thumbnail exists and/or has not expired
 		if (IOHelper::fileExists($originalCachedFile) && ! DateTimeHelper::wasWithinLast(
-				$this->cacheDuration,
-				IOHelper::getLastTimeModified($cachedFile))
-			) {
+			$this->cacheDuration,
+			IOHelper::getLastTimeModified($cachedFile))
+		) {
 			craft()->images
 				->loadImage($originalCachedFile)
 				->scaleAndCrop($width, $height)

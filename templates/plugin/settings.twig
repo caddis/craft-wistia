@@ -1,34 +1,28 @@
 {% import '_includes/forms' as forms %}
 
-{{
-	forms.textField({
-		label: 'API Key'|t,
-		id: 'apiKey',
-		name: 'apiKey',
-		instructions: 'Your Wistia API key'|t,
-		value: settings.apiKey,
-		errors: settings.getErrors('apiKey')
-	})
-}}
+{{ forms.textField({
+	label: 'API Key'|t,
+	instructions: 'Your Wistia API key'|t,
+	name: 'apiKey',
+	id: 'apiKey',
+	value: settings.apiKey,
+	errors: settings.getErrors('apiKey')
+}) }}
 
-{{
-	forms.textField({
-		label: 'Cache Duration'|t,
-		id: 'cacheDuration',
-		name: 'cacheDuration',
-		instructions: 'Hours to cache video data by default'|t,
-		value: settings.cacheDuration,
-		errors: settings.getErrors('cacheDuration')
-	})
-}}
+{{ forms.textField({
+	label: 'Cache Duration'|t,
+	instructions: 'Hours to cache video data by default'|t,
+	name: 'cacheDuration',
+	id: 'cacheDuration',
+	value: settings.cacheDuration,
+	errors: settings.getErrors('cacheDuration')
+}) }}
 
-{{
-	forms.textField({
-		label: 'Thumbnail Path'|t,
-		id: 'thumbnailPath',
-		name: 'thumbnailPath',
-		instructions: 'Relative path from the public directory'|t,
-		value: settings.thumbnailPath,
-		errors: settings.getErrors('thumbnailPath')
-	})
-}}
+{{ forms.textField({
+	label: 'Thumbnail Path'|t,
+	instructions: 'Relative path from the public directory'|t,
+	name: 'thumbnailPath',
+	id: 'thumbnailPath',
+	value: settings.thumbnailPath,
+	errors: settings.getErrors('thumbnailPath')
+}) }}

@@ -3,81 +3,50 @@ namespace Craft;
 
 class WistiaPlugin extends BasePlugin
 {
-	/**
-	 * Name
-	 *
-	 * @return string
-	 */
+	private $name = 'Wistia';
+	private $version = '0.3.0';
+	private $description = 'Powerful fieldtype and template tags for Wistia videos.';
+
 	public function getName()
 	{
-		return 'Wistia';
+		return $this->name;
 	}
 
-	/**
-	 * Description
-	 *
-	 * @return string
-	 */
-	public function getDescription()
-	{
-		return 'Manage videos and output data using the Wistia API.';
-	}
-
-	/**
-	 * Version
-	 *
-	 * @return string
-	 */
 	public function getVersion()
 	{
-		return '0.2.3';
+		return $this->version;
 	}
 
-	/**
-	 * Schema version
-	 *
-	 * @return string
-	 */
 	public function getSchemaVersion()
 	{
 		return '1.0.0';
 	}
 
-	/**
-	 * Developer
-	 *
-	 * @return string
-	 */
+	public function getDescription()
+	{
+		return Craft::t($this->description);
+	}
+
 	public function getDeveloper()
 	{
 		return 'Caddis';
 	}
 
-	/**
-	 * Developer url
-	 *
-	 * @return string
-	 */
 	public function getDeveloperUrl()
 	{
 		return 'https://www.caddis.co';
 	}
 
-	/**
-	 * Documentation url
-	 *
-	 * @return string
-	 */
 	public function getDocumentationUrl()
 	{
-		return 'https://www.caddis.co/software/craft/wistia';
+		return 'https://github.com/caddis/craft-wistia';
 	}
 
-	/**
-	 * Define plugin settings
-	 *
-	 * @return array
-	 */
+	public function getReleaseFeedUrl()
+	{
+		return 'https://raw.githubusercontent.com/caddis/craft-wistia/master/releases.json';
+	}
+
 	protected function defineSettings()
 	{
 		return array(
@@ -93,11 +62,6 @@ class WistiaPlugin extends BasePlugin
 		);
 	}
 
-	/**
-	 * Output settings into template
-	 *
-	 * @return mixed
-	 */
 	public function getSettingsHtml()
 	{
 		return craft()->templates->render('wistia/plugin/settings', array(
@@ -105,18 +69,13 @@ class WistiaPlugin extends BasePlugin
 		));
 	}
 
-	/**
-	 * Clear plugin image cache
-	 *
-	 * @return array
-	 */
 	public function registerCachePaths()
 	{
+		$cachePath = $_SERVER['DOCUMENT_ROOT'] .
+			$this->getSettings()->thumbnailPath;
+
 		return array(
-			$_SERVER['DOCUMENT_ROOT'] . craft()->plugins
-				->getPlugin('wistia')
-				->getSettings()
-				->thumbnailPath => Craft::t('Wistia preview images')
+			$cachePath => Craft::t('Wistia preview images')
 		);
 	}
 }
