@@ -53,7 +53,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 		// Set default parameters
 		$defaultParams = array(
 			'autoPlay' => 'default',
-			'controlsVisibleOnLoad' => 'true',
+			'controlsVisibleOnLoad' => 'false',
 			'email' => 'default',
 			'endVideoBehavior' => 'pause',
 			'fullscreenButton' => 'true',
@@ -93,8 +93,10 @@ class Wistia_VideoService extends BaseApplicationComponent
 					'hashed_id' => $hashedId
 				)));
 
+				$video['hashedId'] = $hashedId;
+
 				// Remove old embed code
-				unset($video['embedCode']);
+				unset($video['embedCode'], $video['hashed_id']);
 
 				foreach ($video['assets'] as $asset) {
 					$type = $asset['type'];
@@ -143,6 +145,11 @@ class Wistia_VideoService extends BaseApplicationComponent
 				'url' => $video['thumbnail']['url']
 			));
 			$video['embed'] = $embed;
+
+			// Reset project hashed ID
+			$projectId = $video['project']['hashed_id'];
+			$video['project']['hashedId'] = $projectId;
+			unset($video['project']['hashed_id']);
 
 			// Remove original thumbnail
 			unset($video['thumbnail']);
