@@ -1,0 +1,28 @@
+{% import '_includes/forms' as forms %}
+
+{{ forms.textField({
+	label: 'API Key'|t,
+	instructions: 'Your Wistia API key'|t,
+	name: 'apiKey',
+	id: 'apiKey',
+	value: settings.apiKey,
+	errors: settings.getErrors('apiKey')
+}) }}
+
+{{ forms.textField({
+	label: 'Cache Duration'|t,
+	instructions: 'Hours to cache video data by default'|t,
+	name: 'cacheDuration',
+	id: 'cacheDuration',
+	value: settings.cacheDuration,
+	errors: settings.getErrors('cacheDuration')
+}) }}
+
+{{ forms.textField({
+	label: 'Thumbnail Path'|t,
+	instructions: 'Relative path from the public directory'|t,
+	name: 'thumbnailPath',
+	id: 'thumbnailPath',
+	value: settings.thumbnailPath,
+	errors: settings.getErrors('thumbnailPath')
+}) }}

@@ -1,0 +1,19 @@
+{% import '_includes/forms' as form %}
+
+{{ form.checkboxSelectField({
+	label: 'Projects'|t,
+	instructions: 'Which projects do you want to display in your field?'|t,
+	name: 'projects',
+	id: 'projects',
+	options: projects,
+	values: settings.projects
+}) }}
+
+{{ form.textField({
+	label: 'Limit'|t,
+	instructions: 'Limit the number of selectable videos.'|t,
+	name: 'max',
+	id: 'max',
+	value: settings.max,
+	size: 2
+}) }}

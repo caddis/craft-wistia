@@ -2,6 +2,7 @@
 namespace Craft;
 
 use Guzzle\Http\Client;
+
 require_once(CRAFT_PLUGINS_PATH . '/wistia/helpers/WistiaHelper.php');
 
 class Wistia_VideoService extends BaseApplicationComponent
@@ -18,7 +19,6 @@ class Wistia_VideoService extends BaseApplicationComponent
 			->apiKey;
 
 		$this->apiUrl = 'https://api.wistia.com/v1/';
-
 		$this->embedUrl = 'https://fast.wistia.com/assets/external/E-v1.js';
 	}
 
@@ -34,7 +34,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Get videos by hashed id
+	 * Get videos by hashed ID
 	 *
 	 * @param array $hashedIds
 	 * @param array $params (optional)
@@ -53,7 +53,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 		// Set default parameters
 		$defaultParams = array(
 			'autoPlay' => 'default',
-			'controlsVisibleOnLoad' => 'true',
+			'controlsVisibleOnLoad' => 'false',
 			'email' => 'default',
 			'endVideoBehavior' => 'pause',
 			'fullscreenButton' => 'true',
@@ -85,7 +85,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 
 			$cachedVideo = craft()->cache->get($cacheKey);
 
-			// Cache Wistia api data
+			// Cache Wistia API data
 			if ($cachedVideo) {
 				$video = $cachedVideo;
 			} else {
@@ -93,8 +93,10 @@ class Wistia_VideoService extends BaseApplicationComponent
 					'hashed_id' => $hashedId
 				)));
 
+				$video['hashedId'] = $hashedId;
+
 				// Remove old embed code
-				unset($video['embedCode']);
+				unset($video['embedCode'], $video['hashed_id']);
 
 				foreach ($video['assets'] as $asset) {
 					$type = $asset['type'];
@@ -143,6 +145,11 @@ class Wistia_VideoService extends BaseApplicationComponent
 				'url' => $video['thumbnail']['url']
 			));
 			$video['embed'] = $embed;
+
+			// Reset project hashed ID
+			$projectId = $video['project']['hashed_id'];
+			$video['project']['hashedId'] = $projectId;
+			unset($video['project']['hashed_id']);
 
 			// Remove original thumbnail
 			unset($video['thumbnail']);
@@ -226,7 +233,6 @@ class Wistia_VideoService extends BaseApplicationComponent
 	/**
 	 * Get the video hashed id and name
 	 *
-	 * @access private
 	 * @param array $videoData
 	 * @return array
 	 */
