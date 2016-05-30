@@ -5,12 +5,12 @@
 		{% for video in videos %}
 			<div
 				class="element small hasstatus removable"
-				data-id="{{ video.hashed_id }}"
+				data-id="{{ video.hashedId }}"
 			>
 				<input
 					name="{{ name }}[]"
 					type="hidden"
-					value="{{ video.hashed_id }}"
+					value="{{ video.hashedId }}"
 				>
 				<a class="delete icon"></a>
 				<span class="status live"></span>
