@@ -20,7 +20,15 @@
 		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.2.zip",
 		"date": "2016-06-02T11:06:10-05:00",
 		"notes": [
-			"[Added] releases.json file."
+			"[Added] Added releases.json file."
+		]
+	},
+	{
+		"version": "0.3.3",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.3.zip",
+		"date": "2016-06-02T11:30:25-05:00",
+		"notes": [
+			"Updated plugin version number."
 		]
 	}
 ]
