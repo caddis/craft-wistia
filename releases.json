@@ -28,7 +28,7 @@
 		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.3.zip",
 		"date": "2016-06-02T11:30:25-05:00",
 		"notes": [
-			"Updated plugin version number."
+			"[Fixed] Fixed plugin version number."
 		]
 	}
 ]
