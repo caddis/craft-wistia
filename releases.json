@@ -1,0 +1,26 @@
+[
+	{
+		"version": "0.3.0",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.0.zip",
+		"date": "2016-05-27T13:56:24",
+		"notes": [
+			"[Added] Initial release."
+		]
+	},
+	{
+		"version": "0.3.1",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.1.zip",
+		"date": "2016-05-30T23:26:16",
+		"notes": [
+			"[Fixed] Resolved invalid reference to hashed_id in input template."
+		]
+	},
+	{
+		"version": "0.3.2",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.2.zip",
+		"date": "2016-06-02T11:06:10-05:00",
+		"notes": [
+			"[Added] releases.json file."
+		]
+	}
+]
