@@ -11,9 +11,6 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 
 	public function __construct()
 	{
-		$this->absoluteCachePath = $_SERVER['DOCUMENT_ROOT'] .
-			$this->relativeCachePath;
-
 		$this->cacheDuration = craft()->plugins
 			->getPlugin('wistia')
 			->getSettings()
@@ -23,6 +20,9 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 			->getPlugin('wistia')
 			->getSettings()
 			->thumbnailPath;
+
+		$this->absoluteCachePath = $_SERVER['DOCUMENT_ROOT'] .
+			$this->relativeCachePath;
 	}
 
 	/**
