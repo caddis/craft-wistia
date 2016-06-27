@@ -28,7 +28,15 @@
 		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.3.zip",
 		"date": "2016-06-02T11:30:25-05:00",
 		"notes": [
-			"Updated plugin version number."
+			"[Fixed] Fixed plugin version number."
+		]
+	},
+	{
+		"version": "0.3.4",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.4.zip",
+		"date": "2016-06-27T14:58:31+00:00",
+		"notes": [
+			"[Fixed] Fixed thumbnail cache directory issue."
 		]
 	}
 ]
