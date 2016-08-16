@@ -38,5 +38,13 @@
 		"notes": [
 			"[Fixed] Fixed thumbnail cache directory issue."
 		]
+	},
+	{
+		"version": "0.3.5",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.5.zip",
+		"date": "2016-08-16T18:06:00+00:00",
+		"notes": [
+			"[Improved] Fieldtype returns actual value when no video is selected."
+		]
 	}
 ]
