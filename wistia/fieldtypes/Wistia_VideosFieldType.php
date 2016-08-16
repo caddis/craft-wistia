@@ -52,7 +52,9 @@ class Wistia_VideosFieldType extends BaseFieldType
 	 */
 	public function prepValue($value)
 	{
-		return craft()->wistia_video->getVideos(json_decode($value));
+		$value = json_decode($value);
+
+		return $value ? craft()->wistia_video->getVideos($value) : $value;
 	}
 
 	/**
