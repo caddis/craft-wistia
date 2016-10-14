@@ -50,9 +50,9 @@
 	{
 		"version": "0.3.6",
 		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.6.zip",
-		"date": "2016-10-07T01:27:49+00:00",
+		"date": "2016-10-14T19:17:21+00:00",
 		"notes": [
-			"[Fixed] Resolved issue where only videos from one project were showing when more than one project was selected."
+			"[Fixed] Fixed an issue where only videos from one project were showing when more than one project was selected."
 		]
 	}
 ]
