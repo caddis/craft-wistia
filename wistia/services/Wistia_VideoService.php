@@ -217,13 +217,23 @@ class Wistia_VideoService extends BaseApplicationComponent
 					continue;
 				}
 
-				$videos = $this->getVideoEssentials($data);
+				foreach ($data as $video) {
+					$hashedId = WistiaHelper::getValue('hashed_id', $video);
+					$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
+
+					$videos[$hashedId] = $name;
+				}
 			}
 		} else {
-			$videos = $this->getVideoEssentials($this->getApiData('medias.json'));
+			foreach ($this->getApiData('medias.json') as $video) {
+				$hashedId = WistiaHelper::getValue('hashed_id', $video);
+				$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
+
+				$videos[$hashedId] = $name;
+			}
 		}
 
-		ksort($videos);
+		asort($videos);
 
 		craft()->httpSession->add('wistiaProjectVideos' . $cacheString, $videos);
 
@@ -231,27 +241,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Get the video hashed id and name
-	 *
-	 * @param array $videoData
-	 * @return array
-	 */
-	private function getVideoEssentials($videoData)
-	{
-		$essentials = array();
-
-		foreach ($videoData as $video) {
-			$hashedId = WistiaHelper::getValue('hashed_id', $video);
-			$name = htmlspecialchars_decode(WistiaHelper::getValue('name', $video));
-
-			$essentials[$hashedId] = $name;
-		}
-
-		return $essentials;
-	}
-
-	/**
-	 * Get projects
+	 * Get all project names
 	 *
 	 * @return array
 	 * @throws Exception
