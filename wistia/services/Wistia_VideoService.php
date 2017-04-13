@@ -292,11 +292,11 @@ class Wistia_VideoService extends BaseApplicationComponent
 
 		$settings = http_build_query($params, '', ' ');
 
-		$oldPath = craft()->path->getTemplatesPath();
-
-		$newPath = craft()->path->getPluginsPath() . 'wistia/templates';
-
-		craft()->path->setTemplatesPath($newPath);
+		// Use plugin template path
+		$oldPath = craft()->templates->getTemplatesPath();
+		craft()->templates->setTemplatesPath(
+			craft()->path->getPluginsPath() . 'wistia/templates'
+		);
 
 		$html = craft()->templates->render('fieldtype/embed', array(
 			'embedUrl' => $this->embedUrl,
@@ -306,7 +306,8 @@ class Wistia_VideoService extends BaseApplicationComponent
 			'width' => $params['width']
 		));
 
-		craft()->path->setTemplatesPath($oldPath);
+		// Revert to site template path
+		craft()->templates->setTemplatesPath($oldPath);
 
 		return TemplateHelper::getRaw($html);
 	}
