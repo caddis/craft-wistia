@@ -2,6 +2,8 @@
 
 Wistia is an incredible video marketing platform we rely on every day. Craft Wistia includes a configurable fieldtype to easily relate videos to entries and flexible tags to get video data and output embed code.
 
+[Wistia Developer Docs →](https://wistia.com/doc/developers)
+
 ## Getting Started
 
 To output videos on the front-end, use your field's handle and append the `getVideos` method. The getVideos method will return an array of videos or `false` if no videos are saved to your field.
@@ -48,46 +50,36 @@ Pass your options as an object into the `getVideos` method.
 
 ## Template Tags
 
-- [created](#created)
-- [description](#description)
-- [duration](#duration)
-- [embed](#embed)
-- [hashedId](#hashedId)
-- [high.filesize](#highfilesize)
-- [high.height](#highheight)
-- [high.url](#highurl)
-- [high.width](#highwidth)
-- [id](#id)
-- [low.filesize](#lowfilesize)
-- [low.height](#lowheight)
-- [low.url](#lowurl)
-- [low.width](#lowwidth)
-- [name](#name)
-- [original.filesize](#originalfilesize)
-- [original.height](#originalheight)
-- [original.url](#originalurl)
-- [original.width](#originalwidth)
-- [preview.getUrl](#previewgeturl)
-- [project.hashedId](#projecthashedid)
-- [project.id](#projectid)
-- [project.name](#projectname)
-- [type](#type)
-- [updated](#updated)
-
 ### created
-ISO 8601 date the video was created in Wistia. e.g. "2013-01-30T16:01:05+00:00".
+The date when the media was originally uploaded.
+
+```
+"created":"2013-09-19T15:30:49+00:00"
+```
 
 ### description
-Description of the video added in Wistia.
+A description for the media which usually appears near the top of the sidebar on the media's page.
+
+```
+"description":"<p>\n\nWistia goes to Nevada to visit with Zappos to hear what they have to say about their company culture.&nbsp;</p>\n<p>\n\n&nbsp;</p>\n<p>\n\nFor more How They Work videos, check out:</p>\n<p>\n\n<a href=\"http://jeff.wistia.com/projects/ln2k6qwi9k\">http://jeff.wistia.com/projects/ln2k6qwi9k</a></p>\n"
+```
 
 ### duration
-Duration of the video in seconds.
+Specifies the length (in seconds) for audio and video files. Specifies number of pages in the document. Omitted for other types of media.
+
+```
+"duration":167.0
+```
 
 ### embed
 Formatted SEO-friendly embed code for the video.
 
 ### hashedId
-Hashed ID of the video.
+A unique alphanumeric identifier for this media.
+
+```
+"hashedId":"v80gyfkt28",
+```
 
 ### high.filesize
 File size in bytes of the high quality MP4 video file.
@@ -102,7 +94,11 @@ URL to the high quality MP4 video file.
 Width of the high quality MP4 video file.
 
 ### id
-Wisita ID of the video.
+A unique numeric identifier for the media within the system.
+
+```
+"id":4489021
+```
 
 ### low.filesize
 File size in bytes of the low quality MP4 video file.
@@ -117,7 +113,11 @@ URL to the low quality MP4 video file.
 Width of the low quality MP4 video file.
 
 ### name
-Name assigned to the video in Wistia.
+The display name of the media.
+
+```
+"name":"How They Work - Zappos"
+```
 
 ### original.filesize
 File size in bytes of the original video file.
@@ -134,7 +134,7 @@ Width of the original video file.
 ### preview.getUrl
 Video screenshot. Default size: 1280px by 720px.
 
-You can specify a width and/or height to resize the preview image. The image will be center-cropped based on the size you specify. The width parameter is required to transform the image, otherwise the image will output the default size.
+You can specify a width and/or height to resize the preview image. The image is center-cropped based on the size you specify. The width parameter is required to transform the image, otherwise the image will output the default size.
 
 ```twig
 {{ video.preview.getUrl({
@@ -143,20 +143,41 @@ You can specify a width and/or height to resize the preview image. The image wil
 }) }}
 ```
 
-### project.hashedId
-Hashed ID of the video's project.
+### project
+The project associated with the video.
 
-### project.id
-Wistia ID of the video's project.
-
-### project.name
-Name of the video's project.
+```
+"project":{
+  "id":464427,
+  "name":"How They Work",
+  "hashed_id":"ln2k6qwi9k"
+}
+```
 
 ### type
-Type of video.
+A string representing what type of media this is. Values can be **Video**, **Audio**, **Image**, **PdfDocument**, **MicrosoftOfficeDocument**, **Swf**, or **UnknownType**.
+
+```
+"type":"Video"
+```
+
+### thumbnail
+The thumbnail image for the video. Refer to [Asset URLs - Tips & Tricks](https://wistia.com/doc/data-api#asset_urls__tips__tricks) for more information.
+
+```
+"thumbnail":{
+  "url":"http://embed.wistia.com/deliveries/7fbf9c2fe9c6585f9aa032f43f0aecc3f287e86b.jpg?image_crop_resized=100x60",
+  "width":100,
+  "height":60
+}
+```
 
 ### updated
-ISO 8601 date the video was last updated in Wistia. e.g. "2016-02-25T20:19:17+00:00".
+The date when the media was last changed.
+
+```
+"updated":"2013-10-28T20:53:12+00:00"
+```
 
 ## Advanced
 
@@ -165,9 +186,9 @@ You can also override the default player color for all your videos site-wide. Ad
 ```php
 <?php
 
-return array(
+return [
 	'playerColor' => '#ff00ff'
-);
+];
 ```
 
 ## Installation
@@ -175,11 +196,11 @@ return array(
 1. Move the "wistia" directory to "craft/plugins".
 2. In Craft navigate to the Plugin section within Settings.
 3. Click the Install button on the Wistia entry.
-4. Update the following settings as applicable.
+4. Update the following settings as applicable:
 	* API Key: Your Wistia API key.
 	* Cache Duration: How long the Wistia API data is cached.
 	* Thumbnail Cache Path: Ensure the specified path exists and is writable by Craft.
 
 ## License
 
-Copyright 2016 [Caddis Interactive, LLC](https://www.caddis.co). Licensed under the [Apache License, Version 2.0](https://github.com/caddis/craft-wistia/blob/master/LICENSE).
+Copyright 2017 [Lewis Communications](http://www.lewiscommunications.com/). Licensed under the [Apache License, Version 2.0](https://github.com/caddis/craft-wistia/blob/master/LICENSE).

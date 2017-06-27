@@ -62,5 +62,13 @@
 		"notes": [
 			"[Improved] Updated deprecated template methods."
 		]
+	},
+	{
+		"version": "0.3.8",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.3.8.zip",
+		"date": "2017-06-27T17:01:28+00:00",
+		"notes": [
+			"[Added] Added video thumbnail to fieldtype template tags."
+		]
 	}
 ]
