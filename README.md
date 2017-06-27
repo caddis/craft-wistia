@@ -172,6 +172,15 @@ The thumbnail image for the video. Refer to [Asset URLs - Tips & Tricks](https:/
 }
 ```
 
+#### Get a larger thumbnail url
+To retrieve a larger thumbnail image, update the `image_crop_resized` query string in the thumbnail url.
+
+```
+{{ video.thumbnail.url|split('image_crop_resized')[0] ~ 'image_crop_resized=1044x514' }}
+```
+
+**Note:** It is more preferable to use the [preview.getUrl](#previewgeturl) tag since it caches the thumbnails on your server.
+
 ### updated
 The date when the media was last changed.
 
