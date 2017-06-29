@@ -151,9 +151,6 @@ class Wistia_VideoService extends BaseApplicationComponent
 			$video['project']['hashedId'] = $projectId;
 			unset($video['project']['hashed_id']);
 
-			// Remove original thumbnail
-			unset($video['thumbnail']);
-
 			$videos[] = $video;
 		}
 
