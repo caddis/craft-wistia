@@ -1,6 +1,8 @@
 <?php
 namespace Craft;
 
+use Guzzle\Http\Client;
+
 class Wistia_VideosFieldType extends BaseFieldType
 {
 	private $apiKey;
@@ -36,12 +38,25 @@ class Wistia_VideosFieldType extends BaseFieldType
 	/**
 	 * Modify data before it's stored
 	 *
-	 * @param array $value
+	 * @param array|string $hashedIds
 	 * @return string
 	 */
-	public function prepValueFromPost($value)
+	public function prepValueFromPost($hashedIds)
 	{
-		return json_encode($value);
+		if (is_array($hashedIds)) {
+			foreach(craft()->wistia_video->getVideosByHashedId($hashedIds) as $video) {
+				$client = new Client(craft()->wistia_thumbnail->getExternalThumbnailUrl($video['thumbnail']['url']));
+				$code = $client->get()
+					->send()
+					->getStatusCode();
+
+				if ($code !== 200) {
+					WistiaPlugin::log('Wistia video thumbnail with a hashed id of ' . $video['hashedId']. ' failed to load.', LogLevel::Warning);
+				}
+			}
+		}
+
+		return json_encode($hashedIds);
 	}
 
 	/**

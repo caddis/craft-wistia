@@ -8,6 +8,8 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	private $absoluteCachePath;
 	private $cacheDuration;
 	private $relativeCachePath;
+	private $defaultWidth = '1280';
+	private	$defaultHeight = '720';
 
 	public function __construct()
 	{
@@ -26,57 +28,41 @@ class Wistia_ThumbnailService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Pass the thumbnail data to the model
+	 * Get default sized external thumbnail url.
 	 *
-	 * @param array $thumbData
-	 * @return Wistia_ThumbnailModel
+	 * @param string $thumbnailUrl
+	 * @return string
 	 */
-	public function getThumbnail($thumbData)
+	public function getExternalThumbnailUrl($thumbnailUrl)
 	{
-		return new Wistia_ThumbnailModel($thumbData);
+		return strtok($thumbnailUrl, '?') . '?image_crop_resized=' . $this->defaultWidth . 'x' . $this->defaultHeight;
 	}
 
 	/**
 	 * Download video screenshot and return local URL
 	 *
-	 * @param array $thumbData
+	 * @param array $video
 	 * @param array $transform
 	 * @return string
 	 */
-	public function getThumbnailUrl($thumbData, $transform)
+	public function getPreviewUrl($video, $transform)
 	{
-		$defaultWidth = '1280';
-		$defaultHeight = '720';
-
 		// Set the base filename
-		$hashedId = WistiaHelper::getValue('hashedId', $thumbData);
+		$hashedId = WistiaHelper::getValue('hashedId', $video);
 		$filename = $hashedId;
 
-		// Extract the thumbnail URL from the video data
-		$thumbnail = strtok(WistiaHelper::getValue('url', $thumbData), '?') .
-			'?image_crop_resized=' . $defaultWidth . 'x' . $defaultHeight;
-
 		// Update filename with default width and height
-		$filename .= '-' . $defaultWidth . '-' . $defaultHeight . '.jpg';
-
+		$filename .= '-' . $this->defaultWidth . '-' . $this->defaultHeight . '.jpg';
 		$cachedFile = $this->absoluteCachePath . $filename;
 
 		// Check whether thumbnail exists and/or has not expired
-		if (! DateTimeHelper::wasWithinLast(
-			$this->cacheDuration,
-			IOHelper::getLastTimeModified($cachedFile))
-		) {
-			copy($thumbnail, $cachedFile);
+		if (! DateTimeHelper::wasWithinLast($this->cacheDuration, IOHelper::getLastTimeModified($cachedFile))) {
+			copy($this->getExternalThumbnailUrl($video['thumbnail']['url']), $cachedFile);
 		}
 
-		// Check if transform is defined
-		if (WistiaHelper::getValue('width', $transform)) {
-			$url = $this->transformThumbnail($cachedFile, $hashedId, $transform);
-		} else {
-			$url = $this->relativeCachePath . $filename;
-		}
-
-		return $url;
+		return WistiaHelper::getValue('width', $transform) ?
+			$this->transformThumbnail($cachedFile, $hashedId, $transform) :
+			$this->relativeCachePath . $filename;
 	}
 
 	/**
