@@ -6,6 +6,8 @@ class Wistia_ThumbnailModel extends BaseModel
 	private $thumbnail;
 
 	public function __construct($thumbnail) {
+		parent::__construct();
+
 		$this->thumbnail = $thumbnail;
 	}
 
@@ -18,6 +20,6 @@ class Wistia_ThumbnailModel extends BaseModel
 	public function getUrl($transform = array())
 	{
 		return craft()->wistia_thumbnail
-			->getThumbnailUrl($this->thumbnail, $transform);
+			->getPreviewUrl($this->thumbnail, $transform);
 	}
 }

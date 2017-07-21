@@ -139,11 +139,7 @@ class Wistia_VideoService extends BaseApplicationComponent
 					);
 			}
 
-			// Add preview and embed
-			$video['preview'] = craft()->wistia_thumbnail->getThumbnail(array(
-				'hashedId' => $hashedId,
-				'url' => $video['thumbnail']['url']
-			));
+			$video['preview'] = new Wistia_ThumbnailModel($video);
 			$video['embed'] = $embed;
 
 			// Reset project hashed ID
@@ -310,12 +306,12 @@ class Wistia_VideoService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Return api url
+	 * Get api data
 	 *
-	 * @param string $endpoint
+	 * @param $endpoint
 	 * @param array $params
 	 * @param int $page
-	 * @return string
+	 * @return array
 	 * @throws Exception
 	 */
 	private function getApiData($endpoint, $params = array(), $page = 1)
