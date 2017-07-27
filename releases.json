@@ -78,5 +78,13 @@
 		"notes": [
 			"[Added] Added external image pre-cache on save entry."
 		]
+	},
+	{
+		"version": "0.4.0",
+		"downloadUrl": "https://github.com/caddis/craft-wistia/archive/0.4.0.zip",
+		"date": "2017-07-27T19:16:58+00:00",
+		"notes": [
+			"[Added] Added Import plugin compatibility."
+		]
 	}
 ]
