@@ -15,6 +15,19 @@ To output videos on the front-end, use your field's handle and append the `getVi
 {% endfor %}
 ```
 
+### Inside a Matrix
+
+```twig
+{% for block in entry.matrixBlock %}
+    {% if block.type == 'videos' %}
+        {% for video in block.videos %}
+            <h3>{{ video.name }}</h3>
+            <img src="{{ video.preview.getUrl }}" alt="{{ video.name }}">
+        {% endfor %}
+    {% endif %}
+{% endfor %}
+```
+
 ## Parameters
 
 Pass your options as an object into the `getVideos` method.
@@ -187,6 +200,10 @@ The date when the media was last changed.
 ```
 "updated":"2013-10-28T20:53:12+00:00"
 ```
+
+## CSV Import
+
+The Wistia plugin provides compatibility with the [Import plugin](https://github.com/boboldehampsink/import).  Enter the name of the video in the video column of the .csv file. Make sure that the correct Wistia projects are selected for the field. If you want multiple videos saved on a single field, comma separate each video name in the column.
 
 ## Advanced
 
