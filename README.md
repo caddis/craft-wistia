@@ -1,4 +1,4 @@
-![Craft Wistia](craft-wistia.svg)
+![Craft Wistia](https://raw.githubusercontent.com/caddis/craft-wistia/master/craft-wistia.svg)
 
 Wistia is an incredible video marketing platform we rely on every day. Craft Wistia includes a configurable fieldtype to easily relate videos to entries and flexible tags to get video data and output embed code.
 
