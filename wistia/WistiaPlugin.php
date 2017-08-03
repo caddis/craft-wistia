@@ -105,12 +105,20 @@ class WistiaPlugin extends BasePlugin
 		$contentModel = $element->getContent();
 
 		foreach (array_combine($map, $data) as $handle => $value) {
-			if (isset($videos[$handle]) && ! empty($value)) {
-				$videoTitles = explode(',', $value);
-				$value = [];
+			if (isset($videos[$handle])) {
+				if (! empty(trim($value))) {
+					$videoTitles = explode(',', $value);
+					$value = [];
 
-				foreach($videoTitles as $videoTitle) {
-					$value[] = array_search($videoTitle, craft()->wistia_video->getVideosByProjectId($videos[$handle]));
+					foreach($videoTitles as $videoTitle) {
+						$value[] = array_search(
+							$videoTitle,
+							craft()->wistia_video->getVideosByProjectId($videos[$handle])
+						);
+					}
+				} else {
+					// Set the value to empty string so Wistia does not throw error
+					$value = '';
 				}
 			} else {
 				$value = $contentModel->getAttribute($handle);
