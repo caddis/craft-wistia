@@ -226,6 +226,21 @@ return [
 	* API Key: Your Wistia API key.
 	* Cache Duration: How long the Wistia API data is cached.
 	* Thumbnail Cache Path: Ensure the specified path exists and is writable by Craft.
+	
+## Roadmap
+
+- Add ability sort items in element selector modal
+- Add ability to toggle grid and list view element selector modal
+- Add additional info columns in element selector modal (group, category, post date, etc.)
+- Add ability select item in element selector modal by double clicking
+- Add ability to select multiple items in element selector modal
+- Add ability to upload and manage Wistia videos in the admin
+- Add sort and order parameters to variable tag
+- Consider adding functionality that automatically creates thumbnail cache directory on page load (if directory does not exist) 
+- Consider removing http session cache in admin
+- Display video thumbnails next to video titles (like assets) in element selector modal and element selector
+- Display spinner next to the search bar when searching in element selector modal
+- Group videos by project in the sidebar in the element selector modal
 
 ## License
 
