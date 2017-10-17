@@ -4,7 +4,7 @@ namespace Craft;
 class WistiaPlugin extends BasePlugin
 {
 	private $name = 'Wistia';
-	private $version = '0.4.1';
+	private $version = '0.4.2';
 	private $description = 'Powerful fieldtype and template tags for Wistia videos.';
 
 	public function getName()

@@ -94,5 +94,13 @@
 		"notes": [
 			"[Fixed] Fixed empty .csv import column issue."
 		]
+	},
+	{
+		"version": "0.4.2",
+		"downloadUrl": "https://github.com/lewiscommunications/craft-wistia/archive/0.4.2.zip",
+		"date": "2017-10-17T16:42:12+00:00",
+		"notes": [
+			"[Added] Migrated releases url to new plugin location."
+		]
 	}
 ]

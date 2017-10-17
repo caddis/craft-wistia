@@ -1,4 +1,4 @@
-# NOTICE: This plugin has been deprecated and is no longer in active development. Please download the [latest version](https://github.com/lewiscommunications/craft-wistia) managed by [Lewis Communications](https://github.com/lewiscommunications).
+# NOTICE: This plugin has been deprecated and is no longer in active development. Please download the [latest version](https://github.com/lewiscommunications/craft-wistia) managed by Lewis Communications.
 
 ![Craft Wistia](https://www.caddis.co/internal/repo/craft-wistia.svg)
 
